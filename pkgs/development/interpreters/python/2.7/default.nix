@@ -31,15 +31,20 @@ let
       # http://bugs.python.org/issue21963
       ./remove-avoid-daemon-thread-shutdown.patch
     ];
-    
-  preConfigure = ''
-      # Purity.
-      for i in /usr /sw /opt /pkg; do
-        substituteInPlace ./setup.py --replace $i /no-such-path
-      done
-    '' + optionalString (stdenv ? gcc && stdenv.gcc.libc != null) ''
+
+  ensurePurity = ''
+    substituteInPlace configure \
+      --replace '`/usr/bin/arch`' '"i386"'
+
+    # Purity.
+    for i in /usr /sw /opt /pkg; do
+      substituteInPlace ./setup.py --replace $i /no-such-path
+    done
+  '';
+
+  preConfigure = ensurePurity + optionalString (stdenv ? cc && stdenv.cc.libc != null) ''
       for i in Lib/plat-*/regen; do
-        substituteInPlace $i --replace /usr/include/ ${stdenv.gcc.libc}/include/
+        substituteInPlace $i --replace /usr/include/ ${stdenv.cc.libc}/include/
       done
     '' + optionalString stdenv.isCygwin ''
       # On Cygwin, `make install' tries to read this Makefile.
@@ -65,7 +70,7 @@ let
     C_INCLUDE_PATH = concatStringsSep ":" (map (p: "${p}/include") buildInputs);
     LIBRARY_PATH = concatStringsSep ":" (map (p: "${p}/lib") buildInputs);
 
-    configureFlags = "--enable-shared --with-threads --enable-unicode";
+    configureFlags = "--enable-shared --with-threads --enable-unicode" + stdenv.lib.optionalString stdenv.isDarwin " --disable-toolbox-glue";
 
     NIX_CFLAGS_COMPILE = optionalString stdenv.isDarwin "-msse2";
 
@@ -88,7 +93,7 @@ let
         ln -s $out/share/man/man1/{python2.7.1.gz,python.1.gz}
 
         paxmark E $out/bin/python${majorVersion}
-        
+
         ${ optionalString includeModules "$out/bin/python ./setup.py build_ext"}
       '';
 
