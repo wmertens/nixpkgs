@@ -2,8 +2,6 @@
 , tzdata, git
 }:
 
-assert stdenv.gcc.gcc != null;
-
 /* Rust's build process has a few quirks :
 
 - It requires some patched in llvm that haven't landed upstream, so it
@@ -56,8 +54,8 @@ in stdenv.mkDerivation {
       mkdir -p "$out"
       cp -r bin "$out/bin"
     '' + (if stdenv.isLinux then ''
-      patchelf --interpreter "${stdenv.glibc}/lib/${stdenv.gcc.dynamicLinker}" \
-               --set-rpath "${stdenv.gcc.gcc}/lib/:${stdenv.gcc.gcc}/lib64/" \
+      patchelf --interpreter "${stdenv.glibc}/lib/${stdenv.cc.dynamicLinker}" \
+               --set-rpath "${stdenv.cc.gcc}/lib/:${stdenv.cc.gcc}/lib64/" \
                "$out/bin/rustc"
     '' else "");
   };
@@ -68,9 +66,9 @@ in stdenv.mkDerivation {
   patches = [ ./hardcode_paths.HEAD.patch ./local_stage0.HEAD.patch ];
   postPatch = ''
     substituteInPlace src/librustc/back/link.rs \
-      --subst-var-by "ccPath" "${stdenv.gcc}/bin/cc"
+      --subst-var-by "ccPath" "${stdenv.cc}/bin/cc"
     substituteInPlace src/librustc_back/archive.rs \
-      --subst-var-by "arPath" "${stdenv.gcc.binutils}/bin/ar"
+      --subst-var-by "arPath" "${stdenv.cc.binutils}/bin/ar"
   '';
 
   buildInputs = [ which file perl curl python27 makeWrapper git ];

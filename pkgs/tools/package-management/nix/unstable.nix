@@ -1,5 +1,5 @@
 { stdenv, fetchurl, perl, curl, bzip2, sqlite, openssl ? null
-, pkgconfig, boehmgc, perlPackages
+, pkgconfig, boehmgc, perlPackages, bash
 , storeDir ? "/nix/store"
 , stateDir ? "/nix/var"
 }:

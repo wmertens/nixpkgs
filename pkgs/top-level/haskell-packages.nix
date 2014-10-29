@@ -361,7 +361,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   cairo = callPackage ../development/libraries/haskell/cairo {
     inherit (pkgs) cairo zlib;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   carray = callPackage ../development/libraries/haskell/carray {};
@@ -957,7 +957,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   glade = callPackage ../development/libraries/haskell/glade {
     inherit (pkgs.gnome) libglade;
     gtkC = pkgs.gtk;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   GLFW = callPackage ../development/libraries/haskell/GLFW {};
@@ -966,7 +966,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   glib = callPackage ../development/libraries/haskell/glib {
     glib = pkgs.glib;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   Glob = callPackage ../development/libraries/haskell/Glob {};
@@ -1018,7 +1018,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   gtk = callPackage ../development/libraries/haskell/gtk {
     inherit (pkgs) gtk;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   gtk3 = callPackage ../development/libraries/haskell/gtk3 {
@@ -1031,7 +1031,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   gtksourceview2 = callPackage ../development/libraries/haskell/gtksourceview2 {
     inherit (pkgs.gnome) gtksourceview;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   gtkTraymanager = callPackage ../development/libraries/haskell/gtk-traymanager {};
@@ -1896,7 +1896,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   pango = callPackage ../development/libraries/haskell/pango {
     inherit (pkgs) pango;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   parallel_1_1_0_1 = callPackage ../development/libraries/haskell/parallel/1.1.0.1.nix {};
@@ -2006,7 +2006,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   poppler = callPackage ../development/libraries/haskell/poppler {
     popplerGlib = pkgs.poppler.poppler_glib;
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   posixPaths = callPackage ../development/libraries/haskell/posix-paths {};
@@ -2498,7 +2498,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   stripe = callPackage ../development/libraries/haskell/stripe {};
 
   svgcairo = callPackage ../development/libraries/haskell/svgcairo {
-    libc = pkgs.stdenv.gcc.libc;
+    libc = pkgs.stdenv.cc.libc;
   };
 
   SVGFonts = callPackage ../development/libraries/haskell/SVGFonts {};

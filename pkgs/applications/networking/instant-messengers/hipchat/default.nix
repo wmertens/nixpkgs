@@ -41,7 +41,7 @@ let
     xz
     libcanberra
     xcbutilkeysyms
-  ] + ":${stdenv.gcc.gcc}/lib${stdenv.lib.optionalString stdenv.is64bit "64"}";
+  ] + ":${stdenv.cc.gcc}/lib${stdenv.lib.optionalString stdenv.is64bit "64"}";
 
   src =
     if stdenv.system == "x86_64-linux" then
@@ -78,7 +78,7 @@ stdenv.mkDerivation {
     patchShebangs $out/bin
 
     for file in $(find $d -type f); do
-        patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" $file || true
+        patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $file || true
         patchelf --set-rpath ${rpath}:\$ORIGIN $file || true
     done
 

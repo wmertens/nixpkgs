@@ -16,7 +16,6 @@ stdenv.mkDerivation rec {
     "--enable-python-binding"
     "--with-libgeoip=system"
     "--with-libiconv=yes"
-    "--with-boost=${boost.lib}"
  ];
   
   meta = with stdenv.lib; {

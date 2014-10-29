@@ -1,6 +1,6 @@
 let lib = import ../../../lib; in lib.makeOverridable (
 
-{ system, name ? "stdenv", preHook ? "", initialPath, gcc, shell
+{ system, name ? "stdenv", preHook ? "", initialPath, cc, shell
 , extraAttrs ? {}, overrides ? (pkgs: {}), config
 
 , # The `fetchurl' to use for downloading curl and its dependencies
@@ -58,12 +58,12 @@ let
 
       setup = setupScript;
 
-      inherit preHook initialPath gcc shell;
+      inherit preHook initialPath cc shell;
 
       # Whether we should run paxctl to pax-mark binaries
       needsPax = result.isLinux && !skipPaxMarking;
 
-      propagatedUserEnvPkgs = [gcc] ++
+      propagatedUserEnvPkgs = [cc] ++
         lib.filter lib.isDerivation initialPath;
     }
 
@@ -163,7 +163,8 @@ let
       isBSD = system == "i686-freebsd"
            || system == "x86_64-freebsd"
            || system == "i686-openbsd"
-           || system == "x86_64-openbsd";
+           || system == "x86_64-openbsd"
+           || system == "x86_64-darwin";
       isi686 = system == "i686-linux"
             || system == "i686-gnu"
             || system == "i686-freebsd"

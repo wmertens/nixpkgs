@@ -12,6 +12,8 @@ stdenv.mkDerivation (rec {
 
   nativeBuildInputs = [ m4 ];
 
+  patches = stdenv.lib.optional stdenv.isDarwin ./need-size-t.patch;
+
   configureFlags =
     # Build a "fat binary", with routines for several sub-architectures
     # (x86), except on Solaris where some tests crash with "Memory fault".
@@ -20,6 +22,7 @@ stdenv.mkDerivation (rec {
     ++ (if cxx then [ "--enable-cxx"  ]
                else [ "--disable-cxx" ])
     ++ optional (cxx && stdenv.isDarwin) "CPPFLAGS=-fexceptions"
+    ++ optional stdenv.isDarwin "ABI=64"
     ++ optional stdenv.is64bit "--with-pic"
     ;
 

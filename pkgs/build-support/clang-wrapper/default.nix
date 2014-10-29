@@ -7,7 +7,7 @@
 
 { name ? "", stdenv, nativeTools, nativeLibc, nativePrefix ? ""
 , clang ? null, libc ? null, binutils ? null, coreutils ? null, shell ? ""
-, zlib ? null, libcxx ? null
+, zlib ? null, libcxx
 }:
 
 assert nativeTools -> nativePrefix != "";
@@ -26,6 +26,8 @@ stdenv.mkDerivation {
     (if name != "" then name else clangName + "-wrapper") +
     (if clang != null && clangVersion != "" then "-" + clangVersion else "");
 
+  isDarwin = stdenv.isDarwin;
+
   builder = ./builder.sh;
   setupHook = ./setup-hook.sh;
   clangWrapper = ./clang-wrapper.sh;
@@ -37,7 +39,6 @@ stdenv.mkDerivation {
 
   libcxxabi = libcxx.abi or null;
 
-  gcc = clang.gcc;
   libc = if nativeLibc then null else libc;
   binutils = if nativeTools then null else binutils;
   # The wrapper scripts use 'cat', so we may need coreutils

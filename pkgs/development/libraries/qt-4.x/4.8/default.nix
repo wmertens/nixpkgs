@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     # remove impure reference to /usr/lib/libstdc++.6.dylib
     # there might be more references, but this is the only one I could find
     substituteInPlace tools/macdeployqt/tests/tst_deployment_mac.cpp \
-      --replace /usr/lib/libstdc++.6.dylib "${stdenv.gcc}/lib/libstdc++.6.dylib"
+      --replace /usr/lib/libstdc++.6.dylib "${stdenv.cc}/lib/libstdc++.6.dylib"
   '';
 
   patches =
@@ -52,7 +52,7 @@ stdenv.mkDerivation rec {
       (substituteAll {
         src = ./dlopen-absolute-paths.diff;
         inherit cups icu libXfixes;
-        glibc = stdenv.gcc.libc;
+        glibc = stdenv.cc.libc;
         openglDriver = if mesaSupported then mesa.driverLink else "/no-such-path";
       })
     ] ++ stdenv.lib.optional gtkStyle (substituteAll {
@@ -78,8 +78,6 @@ stdenv.mkDerivation rec {
       -translationdir $out/share/${name}/translations
     "
   '' + optionalString stdenv.isDarwin ''
-    export CXX=clang++
-    export CC=clang
     sed -i 's/QMAKE_CC = gcc/QMAKE_CC = clang/' mkspecs/common/g++-base.conf
     sed -i 's/QMAKE_CXX = g++/QMAKE_CXX = clang++/' mkspecs/common/g++-base.conf
   '';

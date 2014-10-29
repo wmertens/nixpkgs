@@ -175,6 +175,7 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
             extraConfigureFlags = [
               (enableFeature self.enableSplitObjs "split-objs")
               (enableFeature enableLibraryProfiling "library-profiling")
+              (enableFeature enableLibraryProfiling "executable-profiling")
               (enableFeature self.enableSharedLibraries "shared")
               (optional (versionOlder "7" ghc.version) (enableFeature self.enableStaticLibraries "library-vanilla"))
               (optional (versionOlder "7.4" ghc.version) (enableFeature self.enableSharedExecutables "executable-dynamic"))
@@ -218,6 +219,10 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
                 configureFlags+=" --ghc-option=-optl=-Wl,-headerpad_max_install_names"
               ''}
 
+              ${optionalString self.stdenv.isDarwin ''
+                configureFlags+=" --with-gcc=clang"
+              ''}
+
               echo "configure flags: $extraConfigureFlags $configureFlags"
               ./Setup configure --verbose --prefix="$out" --libdir='$prefix/lib/$compiler' \
                 --libsubdir='$pkgid' $extraConfigureFlags $configureFlags 2>&1 \
@@ -240,6 +245,7 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
 
               export GHC_PACKAGE_PATH=$(${ghc.GHCPackages})
               test -n "$noHaddock" || ./Setup haddock --html --hoogle \
+                  --ghc-options=-optP-P \
                   ${optionalString self.hyperlinkSource "--hyperlink-source"}
 
               eval "$postBuild"
