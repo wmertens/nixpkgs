@@ -4321,7 +4321,10 @@ let
     inherit pkgs ctags writeScriptBin;
   };
 
-  cmake = callPackage ../development/tools/build-managers/cmake { };
+  cmake = callPackage ../development/tools/build-managers/cmake {
+    wantPS = stdenv.isDarwin;
+    ps     = if stdenv.isDarwin then darwin.ps else null;
+  };
 
   cmake264 = callPackage ../development/tools/build-managers/cmake/264.nix { };
 
@@ -7675,6 +7678,7 @@ let
   darwin = let
     cmdline = callPackage ../os-specific/darwin/command-line-tools {};
   in rec {
+
     cctools = forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {
       cross = assert crossSystem != null; crossSystem;
       inherit maloader;
@@ -7695,6 +7699,8 @@ let
 
     osx_sdk = callPackage ../os-specific/darwin/osx-sdk {};
     osx_private_sdk = callPackage ../os-specific/darwin/osx-private-sdk { inherit osx_sdk; };
+
+    ps = callPackage ../os-specific/darwin/adv_cmds/ps.nix {};
 
     security_tool = callPackage ../os-specific/darwin/security-tool { inherit osx_private_sdk; };
 
