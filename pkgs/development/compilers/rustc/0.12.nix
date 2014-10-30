@@ -57,7 +57,8 @@ in stdenv.mkDerivation {
     '' else "");
   };
 
-  configureFlags = [ "--enable-local-rust" "--local-rust-root=$snapshot" ];
+  configureFlags = [ "--enable-local-rust" "--local-rust-root=$snapshot" ]
+                ++ stdenv.lib.optional (stdenv.cc ? clang) "--enable-clang";
 
   # The compiler requires cc, so we patch the source to tell it where to find it
   patches = [ ./hardcode_paths.patch ./local_stage0.patch ];
