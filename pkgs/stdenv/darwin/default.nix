@@ -77,6 +77,7 @@ rec {
         nativeLibc   = true;
         stdenv       = stage0.stdenv;
         libcxx       = "/usr";
+        libcxxabi    = "/usr";
         shell        = "/bin/bash";
         clang        = {
           name    = "clang-9.9.9";
