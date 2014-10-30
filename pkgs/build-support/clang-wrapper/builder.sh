@@ -117,6 +117,7 @@ then
     ln -sv clang++ $out/bin/c++
 fi
 
+mkClangWrapper $out/bin/cpp $clangPath/cpp || true
 
 # Create a symlink to as (the assembler).  This is useful when a
 # clang-wrapper is installed in a user environment, as it ensures that

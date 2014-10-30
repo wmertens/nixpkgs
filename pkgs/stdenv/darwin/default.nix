@@ -49,11 +49,10 @@ rec {
     dontFixLibtool=1
     stripAllFlags=" " # the Darwin "strip" command doesn't know "-s"
     xargsFlags=" "
-    export NIX_DARWIN_MIN=10.7
-    export MACOSX_DEPLOYMENT_TARGET="$NIX_DARWIN_MIN"
+    export MACOSX_DEPLOYMENT_TARGET=10.7
     export SDKROOT=
     export SDKROOT_X=/ # FIXME: impure!
-    export NIX_CFLAGS_COMPILE+=" --sysroot=/var/empty -idirafter $SDKROOT_X/usr/include -F$SDKROOT_X/System/Library/Frameworks -Wno-multichar -Wno-deprecated-declarations -mmacosx-version-min=$NIX_DARWIN_MIN"
+    export NIX_CFLAGS_COMPILE+=" --sysroot=/var/empty -idirafter $SDKROOT_X/usr/include -F$SDKROOT_X/System/Library/Frameworks -Wno-multichar -Wno-deprecated-declarations"
     export NIX_LDFLAGS_AFTER+=" -L$SDKROOT_X/usr/lib"
     export CMAKE_OSX_ARCHITECTURES=x86_64
   '';
