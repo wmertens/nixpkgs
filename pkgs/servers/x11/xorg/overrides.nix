@@ -257,7 +257,7 @@ in
         libpciaccess inputproto xextproto randrproto renderproto
         dri2proto kbproto xineramaproto resourceproto scrnsaverproto videoproto
       ];
-      commonPatches = [ ./xorgserver-xkbcomp-path.patch ];
+      commonPatches = [ ./xorgserver-xkbcomp-path.patch ./fix-clang.patch ];
       # XQuartz requires two compilations: the first to get X / XQuartz,
       # and the second to get Xvfb, Xnest, etc.
       darwinOtherX = overrideDerivation xorgserver (oldAttrs: {
