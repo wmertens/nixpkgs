@@ -7563,6 +7563,7 @@ let
       libxslt expat libpng zlib perl mesa_drivers spice_protocol
       dbus libuuid openssl gperf m4
       autoconf automake libtool xmlto asciidoc flex bison python mtdev pixman;
+    bootstrap_cmds = if stdenv.isDarwin then darwin.bootstrap_cmds else null;
     mesa = mesa_noglu;
     udev = if stdenv.isLinux then udev else null;
     libdrm = if stdenv.isLinux then libdrm else null;
@@ -7703,6 +7704,7 @@ let
     osx_private_sdk = callPackage ../os-specific/darwin/osx-private-sdk { inherit osx_sdk; };
 
     ps = callPackage ../os-specific/darwin/adv_cmds/ps.nix {};
+    bootstrap_cmds   = callPackage ../os-specific/darwin/bootstrap-cmds {};
 
     security_tool = callPackage ../os-specific/darwin/security-tool { inherit osx_private_sdk; };
 
