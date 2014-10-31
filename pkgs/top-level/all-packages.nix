@@ -3526,6 +3526,8 @@ let
 
     ocaml_cairo = callPackage ../development/ocaml-modules/ocaml-cairo { };
 
+    ocaml_cairo2 = callPackage ../development/ocaml-modules/ocaml-cairo2 { };
+
     cmdliner = callPackage ../development/ocaml-modules/cmdliner { };
 
     cppo = callPackage ../development/tools/ocaml/cppo { };
@@ -4183,6 +4185,8 @@ let
   guile_lib = callPackage ../development/guile-modules/guile-lib { };
 
   guile_ncurses = callPackage ../development/guile-modules/guile-ncurses { };
+
+  guile-opengl = callPackage ../development/guile-modules/guile-opengl { };
 
   guile-xcb = callPackage ../development/guile-modules/guile-xcb { };
 
@@ -11542,7 +11546,7 @@ let
         daemon = false;
         client = false;
         withKDE = false;
-        qt = qt5;
+        #qt = qt5;
         tag = "-without-kde";
       });
 
@@ -11551,7 +11555,7 @@ let
         daemon = true;
         client = false;
         withKDE = false;
-        qt = qt5;
+        #qt = qt5;
         tag = "-daemon";
       });
 
@@ -11567,7 +11571,7 @@ let
         daemon = false;
         client = true;
         withKDE = false;
-        qt = qt5;
+        #qt = qt5;
         tag = "-client-without-kde";
       });
 
@@ -11620,7 +11624,7 @@ let
   mate-themes = callPackage ../misc/themes/mate-themes { };
 
   xfce = xfce4_10;
-  xfce4_10 = recurseIntoAttrs (import ../desktops/xfce { inherit pkgs newScope; });
+  xfce4_10 = recurseIntoAttrs (import ../desktops/xfce { inherit config pkgs newScope; });
 
 
   ### SCIENCE

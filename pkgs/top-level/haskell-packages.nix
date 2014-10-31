@@ -977,6 +977,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   gloss = callPackage ../development/libraries/haskell/gloss {};
 
+  glossBanana = callPackage ../development/libraries/haskell/gloss-banana {};
+
   glossAccelerate = callPackage ../development/libraries/haskell/gloss-accelerate {};
 
   glossRaster = callPackage ../development/libraries/haskell/gloss-raster {};
@@ -2262,6 +2264,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   scottyHastache = callPackage ../development/libraries/haskell/scotty-hastache {};
 
   scrypt = callPackage ../development/libraries/haskell/scrypt {};
+
+  serialport = callPackage ../development/libraries/haskell/serialport {};
 
   securemem = callPackage ../development/libraries/haskell/securemem {};
 
