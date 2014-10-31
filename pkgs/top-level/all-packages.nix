@@ -1432,6 +1432,8 @@ let
 
   iftop = callPackage ../tools/networking/iftop { };
 
+  ifuse = callPackage ../tools/filesystems/ifuse/default.nix { };
+
   ihaskell = callPackage ../development/tools/haskell/ihaskell/wrapper.nix {
     inherit (pythonPackages) ipython;
     inherit (haskellPackages) ihaskell ghc;
@@ -9514,7 +9516,9 @@ let
 
   gqview = callPackage ../applications/graphics/gqview { };
 
-  gmpc = callPackage ../applications/audio/gmpc { };
+  gmpc = callPackage ../applications/audio/gmpc {
+    inherit (xlibs) libSM libICE;
+  };
 
   gmtk = callPackage ../applications/networking/browsers/mozilla-plugins/gmtk {
     inherit (gnome) GConf;
@@ -10115,6 +10119,7 @@ let
     gnutls = if config.pidgin.gnutls or false then gnutls else null;
     libgcrypt = if config.pidgin.gnutls or false then libgcrypt else null;
     startupnotification = libstartup_notification;
+    inherit (xlibs) libXext libICE libSM;
   };
 
   pidgin-with-plugins = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {

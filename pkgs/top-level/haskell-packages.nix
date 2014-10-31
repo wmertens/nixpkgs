@@ -125,6 +125,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   accelerateIo = callPackage ../development/libraries/haskell/accelerate-io {};
 
+  acmeLookofdisapproval = callPackage ../development/libraries/haskell/acme-lookofdisapproval {};
+
   active = callPackage ../development/libraries/haskell/active {};
 
   ACVector = callPackage ../development/libraries/haskell/AC-Vector {};
@@ -2044,7 +2046,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   punycode = callPackage ../development/libraries/haskell/punycode {};
 
-  pureCdb = callPackage ../development/libraries/haskell/pure-cdb { testSimple = null; };
+  pureCdb = callPackage ../development/libraries/haskell/pure-cdb {};
 
   primitive_0_5_0_1 = callPackage ../development/libraries/haskell/primitive/0.5.0.1.nix {};
   primitive_0_5_2_1 = callPackage ../development/libraries/haskell/primitive/0.5.2.1.nix {};
