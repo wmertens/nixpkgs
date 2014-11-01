@@ -3783,6 +3783,8 @@ let
 
   vala = callPackage ../development/compilers/vala/default.nix { };
 
+  verasco = callPackage ../development/compilers/verasco {};
+
   visualcpp = callPackage ../development/compilers/visual-c++ { };
 
   vs90wrapper = callPackage ../development/compilers/vs90wrapper { };
@@ -7458,7 +7460,9 @@ let
 
   postgresql93 = callPackage ../servers/sql/postgresql/9.3.x.nix { };
 
-  postgresql94 = callPackage ../servers/sql/postgresql/9.4.x.nix { };
+  postgresql94beta2 = callPackage ../servers/sql/postgresql/9.4beta2.nix { };
+  postgresql94beta3 = callPackage ../servers/sql/postgresql/9.4beta3.nix { };
+  postgresql94 = postgresql94beta3;
 
   postgresql_jdbc = callPackage ../servers/sql/postgresql/jdbc { };
 
@@ -9877,7 +9881,9 @@ let
     inherit (xlibs) libX11 xproto;
   };
 
-  easytag = callPackage ../applications/audio/easytag { };
+  easytag = callPackage ../applications/audio/easytag {
+    inherit (gnome3) gnome_icon_theme;
+  };
 
   mp3info = callPackage ../applications/audio/mp3info { };
 

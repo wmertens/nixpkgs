@@ -9,6 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "08aqis6j8nd1lb4f2h4h9d9kjvp54iwf8zvqzss0qn4v7nfcjyvx";
   };
 
+  patches = stdenv.lib.optionals stdenv.isDarwin [ ./yosemite.patch ];
   buildInputs = with stdenv.lib;
     optional (!stdenv.isDarwin) gobjectIntrospection # build problems of itself and flex
     ++ optionals stdenv.isDarwin [ gettext fontconfig ];
