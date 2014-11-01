@@ -1009,6 +1009,24 @@ in rec
     # git version. It also depends on some additional plugins (see addon-info.json)
   };
 
+  vim-rsi = buildVimPlugin {
+    name = "vim-rsi-2014-08-01";
+    src = fetchgit {
+      url = "https://github.com/tpope/vim-rsi.git";
+      rev = "ec39927fcbb53a77e628b2d138e0a43caa945a3b";
+      sha256 = "18c3a82c35d343e5ffca77a0470e88ff14d856deb81e65f0af9786e0cead4f3e";
+    };
+  };
+
+  vim-sensible = buildVimPlugin {
+    name = "vim-sensible-2014-07-06";
+    src = fetchgit {
+      url = "https://github.com/tpope/vim-sensible.git";
+      rev = "64aa12b07b0be90a8e98bc7be1b5faac4ac873a4";
+      sha256 = "425d8d51336e1796bf7a814e9931abf2418809257defb588f63a37a1a3d6c47a";
+    };
+  };
+
   youcompleteme = stdenv.mkDerivation {
     src = fetchgit {
       url = "https://github.com/Valloric/YouCompleteMe.git";
