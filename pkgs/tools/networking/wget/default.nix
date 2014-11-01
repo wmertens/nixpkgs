@@ -24,8 +24,8 @@ stdenv.mkDerivation rec {
     '';
 
   nativeBuildInputs = [ gettext ];
-  buildInputs = [ libidn ]
-    ++ stdenv.lib.optionals doCheck [ perl perlPackages.IOSocketSSL LWP python3 ]
+  buildInputs = [ libidn perl ]
+    ++ stdenv.lib.optionals doCheck [ perlPackages.IOSocketSSL LWP python3 ]
     ++ stdenv.lib.optional (gnutls != null) gnutls;
 
   configureFlags =
