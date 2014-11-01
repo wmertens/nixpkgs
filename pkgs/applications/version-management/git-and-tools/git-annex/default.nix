@@ -27,13 +27,13 @@ cabal.mkDerivation (self: {
     dlist dns editDistance exceptions fdoNotify feed filepath gnutls
     hamlet hinotify hS3 hslogger httpClient httpConduit httpTypes
     IfElse json MissingH monadControl mtl network networkInfo
-    networkMulticast networkProtocolXmpp networkUri optparseApplicative
+    networkMulticast networkUri optparseApplicative
     pathPieces QuickCheck random regexTdfa SafeSemaphore securemem SHA
     shakespeare stm tasty tastyHunit tastyQuickcheck tastyRerun text
     time transformers unixCompat utf8String uuid wai waiExtra warp
     warpTls xmlTypes yesod yesodCore yesodDefault yesodForm yesodStatic
   ];
-  buildTools = [ bup curl git gnupg1 lsof openssh perl rsync which ];
+  buildTools = [ curl git gnupg1 lsof openssh perl rsync which ];
   configureFlags = "-fAssistant -fProduction";
   preConfigure = "export HOME=$TEMPDIR";
   installPhase = "./Setup install";
