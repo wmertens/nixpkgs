@@ -1,5 +1,5 @@
 { fetchurl, stdenv, bash, emacs, fixDarwinDylibNames,
-  gdb, glib, gmime, gnupg,
+  glib, gmime, gnupg,
   pkgconfig, talloc, xapian
 }:
 
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "175wzrw1mfpl4h72n9ims66zn5l34zn2dn857vraj2i5w7z7p7z9";
   };
 
-  buildInputs = [ bash emacs gdb glib gmime gnupg pkgconfig talloc xapian ]
+  buildInputs = [ bash emacs glib gmime gnupg pkgconfig talloc xapian ]
     ++ stdenv.lib.optionals stdenv.isDarwin [ fixDarwinDylibNames ];
 
   patchPhase = ''
