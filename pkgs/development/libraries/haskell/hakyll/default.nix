@@ -15,6 +15,8 @@ cabal.mkDerivation (self: {
   sha256 = "060wcak242p2gja616bdair4sg2k04s8cld5nlk8p3b6an2isld9";
   isLibrary = true;
   isExecutable = true;
+  patches = [ ./deps.patch ];
+  doCheck = !self.stdenv.isDarwin;
   buildDepends = [
     binary blazeHtml blazeMarkup cmdargs cryptohash dataDefault deepseq
     filepath fsnotify httpConduit httpTypes lrucache mtl network
@@ -26,9 +28,8 @@ cabal.mkDerivation (self: {
     filepath fsnotify httpConduit httpTypes HUnit lrucache mtl network
     networkUri pandoc pandocCiteproc parsec QuickCheck random regexBase
     regexTdfa snapCore snapServer systemFilepath tagsoup testFramework
-    testFrameworkHunit testFrameworkQuickcheck2 text time utillinux
-  ];
-  jailbreak = true;
+    testFrameworkHunit testFrameworkQuickcheck2 text time
+  ] ++ (self.stdenv.lib.optional self.stdenv.isLinux utillinux);
   meta = {
     homepage = "http://jaspervdj.be/hakyll";
     description = "A static website compiler library";
