@@ -3783,6 +3783,8 @@ let
 
   vala = callPackage ../development/compilers/vala/default.nix { };
 
+  verasco = callPackage ../development/compilers/verasco {};
+
   visualcpp = callPackage ../development/compilers/visual-c++ { };
 
   vs90wrapper = callPackage ../development/compilers/vs90wrapper { };
