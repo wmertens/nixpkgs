@@ -1177,7 +1177,7 @@ let
   freetds = callPackage ../development/libraries/freetds { };
 
   frescobaldi = callPackage ../misc/frescobaldi {};
-  
+
   ftgl = callPackage ../development/libraries/ftgl { };
 
   ftgl212 = callPackage ../development/libraries/ftgl/2.1.2.nix { };
@@ -1377,6 +1377,8 @@ let
   partimage = callPackage ../tools/backup/partimage { };
 
   pigz = callPackage ../tools/compression/pigz { };
+
+  pxz = callPackage ../tools/compression/pxz { };
 
   haproxy = callPackage ../tools/networking/haproxy { };
 
@@ -2009,9 +2011,9 @@ let
   pdfread = callPackage ../tools/graphics/pdfread { };
 
   briss = callPackage ../tools/graphics/briss { };
- 
-  brickd = callPackage ../servers/brickd { 
-    libusb = libusb1; 
+
+  brickd = callPackage ../servers/brickd {
+    libusb = libusb1;
   };
 
   bully = callPackage ../tools/networking/bully { };
@@ -2841,7 +2843,7 @@ let
   eggDerivation = callPackage ../development/compilers/chicken/eggDerivation.nix { };
 
   chicken = callPackage ../development/compilers/chicken {
-    bootstrap-chicken = chicken.override { bootstrap-chicken = null; }; 
+    bootstrap-chicken = chicken.override { bootstrap-chicken = null; };
   };
 
   egg2nix = callPackage ../development/tools/egg2nix {
@@ -3517,10 +3519,12 @@ let
     camomile_0_8_2 = callPackage ../development/ocaml-modules/camomile/0.8.2.nix { };
     camomile = callPackage ../development/ocaml-modules/camomile { };
 
-    camlimages = callPackage ../development/ocaml-modules/camlimages {
+    camlimages_4_0 = callPackage ../development/ocaml-modules/camlimages/4.0.nix {
       libpng = libpng12;
       giflib = giflib_4_1;
     };
+    camlimages_4_1 = callPackage ../development/ocaml-modules/camlimages/4.1.nix {};
+    camlimages = camlimages_4_1;
 
     biniou = callPackage ../development/ocaml-modules/biniou { };
 
@@ -3705,7 +3709,8 @@ let
   // { lablgtk = ocamlPackages_3_10_0.lablgtk_2_14; };
   ocamlPackages_3_11_2 = (mkOcamlPackages ocaml_3_11_2 pkgs.ocamlPackages_3_11_2)
   // { lablgtk = ocamlPackages_3_11_2.lablgtk_2_14; };
-  ocamlPackages_3_12_1 = mkOcamlPackages ocaml_3_12_1 pkgs.ocamlPackages_3_12_1;
+  ocamlPackages_3_12_1 = (mkOcamlPackages ocaml_3_12_1 pkgs.ocamlPackages_3_12_1)
+  // { camlimages = ocamlPackages_3_12_1.camlimages_4_0; };
   ocamlPackages_4_00_1 = mkOcamlPackages ocaml_4_00_1 pkgs.ocamlPackages_4_00_1;
   ocamlPackages_4_01_0 = mkOcamlPackages ocaml_4_01_0 pkgs.ocamlPackages_4_01_0;
   ocamlPackages_4_02_0 = mkOcamlPackages ocaml_4_02_0 pkgs.ocamlPackages_4_02_0;
@@ -5173,9 +5178,10 @@ let
   glpk = callPackage ../development/libraries/glpk { };
 
   glsurf = callPackage ../applications/science/math/glsurf {
-    inherit (ocamlPackages) lablgl findlib camlimages ocaml_mysql mlgmp;
+    inherit (ocamlPackages) lablgl findlib ocaml_mysql mlgmp;
     libpng = libpng12;
     giflib = giflib_4_1;
+    camlimages = ocamlPackages.camlimages_4_0;
   };
 
   gmime = callPackage ../development/libraries/gmime { };
@@ -7191,14 +7197,14 @@ let
   R = callPackage ../applications/science/math/R {
     inherit (xlibs) libX11 libXt;
     texLive = texLiveAggregationFun { paths = [ texLive texLiveExtra ]; };
-    withRecommendedPackages = false;
+    withRecommendedPackages = true;
   };
 
   rWrapper = callPackage ../development/r-modules/wrapper.nix {
     # Those packages are usually installed as part of the R build.
-    recommendedPackages = with rPackages; [ MASS lattice Matrix nlme
-      survival boot cluster codetools foreign KernSmooth rpart class
-      nnet spatial mgcv ];
+    recommendedPackages = with rPackages; [ boot class cluster codetools
+      foreign KernSmooth lattice MASS Matrix mgcv nlme nnet rpart
+      spatial survival ];
     # Override this attribute to register additional libraries.
     packages = [];
   };
@@ -9241,6 +9247,8 @@ let
   fldigi = callPackage ../applications/audio/fldigi { };
 
   fluidsynth = callPackage ../applications/audio/fluidsynth { };
+
+  focuswriter = callPackage ../applications/editors/focuswriter { };
 
   fossil = callPackage ../applications/version-management/fossil { };
 
