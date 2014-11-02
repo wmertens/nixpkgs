@@ -15,7 +15,6 @@ cabal.mkDerivation (self: {
   sha256 = "0ihaw53935g9pyasa8g5qi1dgvxanhhpkg0xcjq7aazqk2cciqy3";
   isLibrary = true;
   isExecutable = true;
-  patches = [ ./deps.patch ];
   doCheck = !self.stdenv.isDarwin;
   buildDepends = [
     binary blazeHtml blazeMarkup cmdargs cryptohash dataDefault deepseq
