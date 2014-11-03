@@ -1078,7 +1078,7 @@ let
 
   evtest = callPackage ../applications/misc/evtest { };
 
-  exempi = callPackage ../development/libraries/exempi { };
+  exempi = callPackage ../development/libraries/exempi { boost = boost155; };
 
   execline = callPackage ../tools/misc/execline { };
 
@@ -1277,7 +1277,7 @@ let
 
   googleAuthenticator = callPackage ../os-specific/linux/google-authenticator { };
 
-  gource = callPackage ../applications/version-management/gource {};
+  gource = callPackage ../applications/version-management/gource { };
 
   gparted = callPackage ../tools/misc/gparted { };
 
@@ -1476,10 +1476,6 @@ let
 
   jdiskreport = callPackage ../tools/misc/jdiskreport { };
 
-  jfsrec = callPackage ../tools/filesystems/jfsrec {
-    boost = boost144;
-  };
-
   jfsutils = callPackage ../tools/filesystems/jfsutils { };
 
   jhead = callPackage ../tools/graphics/jhead { };
@@ -1640,7 +1636,9 @@ let
 
   memtest86plus = callPackage ../tools/misc/memtest86+ { };
 
-  meo = callPackage ../tools/security/meo { };
+  meo = callPackage ../tools/security/meo {
+    boost = boost155;
+  };
 
   mc = callPackage ../tools/misc/mc { };
 
@@ -2339,10 +2337,7 @@ let
 
   socat2pre = lowPrio (callPackage ../tools/networking/socat/2.x.nix { });
 
-  sourceHighlight = callPackage ../tools/text/source-highlight {
-    # Boost 1.54 causes the "test_regexranges" test to fail
-    boost = boost144;
-  };
+  sourceHighlight = callPackage ../tools/text/source-highlight { };
 
   spaceFM = callPackage ../applications/misc/spacefm { };
 
@@ -4813,7 +4808,6 @@ let
 
   boolstuff = callPackage ../development/libraries/boolstuff { };
 
-  boost144 = callPackage ../development/libraries/boost/1.44.nix { };
   boost155 = callPackage ../development/libraries/boost/1.55.nix { };
   boost156 = callPackage ../development/libraries/boost/1.56.nix { };
   boost = boost156;
@@ -6028,6 +6022,13 @@ let
   libtommath = callPackage ../development/libraries/libtommath { };
 
   libtorrentRasterbar = callPackage ../development/libraries/libtorrent-rasterbar { };
+
+  libtorrentRasterbar_0_16 = callPackage ../development/libraries/libtorrent-rasterbar/0.16.nix {
+    # fix "unrecognized option -arch" error
+    stdenv = if stdenv.isDarwin
+      then clangStdenv
+      else stdenv;
+  };
 
   libtoxcore = callPackage ../development/libraries/libtoxcore { };
 
@@ -7335,9 +7336,7 @@ let
 
   freeswitch = callPackage ../servers/sip/freeswitch { };
 
-  ghostOne = callPackage ../servers/games/ghost-one {
-    boost = boost144.override { taggedLayout = true; };
-  };
+  ghostOne = callPackage ../servers/games/ghost-one { };
 
   ircdHybrid = callPackage ../servers/irc/ircd-hybrid { };
 
@@ -7524,9 +7523,13 @@ let
 
   restund = callPackage ../servers/restund {};
 
-  rethinkdb = callPackage ../servers/nosql/rethinkdb { };
+  rethinkdb = callPackage ../servers/nosql/rethinkdb {
+    boost = boost155;
+  };
 
-  rippled = callPackage ../servers/rippled { };
+  rippled = callPackage ../servers/rippled {
+    boost = boost155;
+  };
 
   s6 = callPackage ../servers/s6 { };
 
@@ -8941,7 +8944,6 @@ let
 
   compiz = callPackage ../applications/window-managers/compiz {
     inherit (gnome) GConf ORBit2 metacity;
-    boost = boost144; # https://bugs.launchpad.net/compiz/+bug/1131864
   };
 
   coriander = callPackage ../applications/video/coriander {
@@ -9619,7 +9621,9 @@ let
     fltk = fltk13;
   };
 
-  hugin = callPackage ../applications/graphics/hugin { };
+  hugin = callPackage ../applications/graphics/hugin {
+    boost = boost155;
+  };
 
   hydrogen = callPackage ../applications/audio/hydrogen { };
 
@@ -9715,7 +9719,7 @@ let
 
   k3d = callPackage ../applications/graphics/k3d {
     inherit (pkgs.gnome2) gtkglext;
-    boost = boost144;
+    boost = boost155;
   };
 
   keepnote = callPackage ../applications/office/keepnote {
@@ -9775,6 +9779,7 @@ let
     inherit (gnome) GConf ORBit2 gnome_vfs;
     zip = zip.override { enableNLS = false; };
     jdk = openjdk;
+    boost = boost155;
     fontsConf = makeFontsConf {
       fontDirectories = [
         freefont_ttf xorg.fontmiscmisc xorg.fontbhttf
@@ -9904,7 +9909,6 @@ let
 
   monotone = callPackage ../applications/version-management/monotone {
     lua = lua5;
-    boost = boost144;
   };
 
   monotoneViz = builderDefsPackage (import ../applications/version-management/monotone-viz/mtn-head.nix) {
@@ -10229,7 +10233,9 @@ let
 
   pythonmagick = callPackage ../applications/graphics/PythonMagick { };
 
-  qbittorrent = callPackage ../applications/networking/p2p/qbittorrent { };
+  qbittorrent = callPackage ../applications/networking/p2p/qbittorrent {
+    libtorrentRasterbar = libtorrentRasterbar_0_16;
+  };
 
   eiskaltdcpp = callPackage ../applications/networking/p2p/eiskaltdcpp { lua5 = lua5_1; };
 
@@ -10368,9 +10374,7 @@ let
                                     })
                                  );
 
-  sxiv = callPackage ../applications/graphics/sxiv {
-    giflib = giflib_5_0;
-  };
+  sxiv = callPackage ../applications/graphics/sxiv { };
 
   bittorrentSync = callPackage ../applications/networking/bittorrentsync { };
 
@@ -11162,7 +11166,9 @@ let
 
   glestae = callPackage ../games/glestae {};
 
-  globulation2 = callPackage ../games/globulation {};
+  globulation2 = callPackage ../games/globulation {
+    boost = boost155;
+  };
 
   gltron = callPackage ../games/gltron { };
 
@@ -11182,7 +11188,9 @@ let
 
   icbm3d = callPackage ../games/icbm3d { };
 
-  ingen = callPackage ../applications/audio/ingen { };
+  ingen = callPackage ../applications/audio/ingen {
+    boost = boost155;
+  };
 
   instead = callPackage ../games/instead {
     lua = lua5;
@@ -11287,7 +11295,9 @@ let
   # You still can override by passing more arguments.
   spaceOrbit = callPackage ../games/orbit { };
 
-  spring = callPackage ../games/spring { };
+  spring = callPackage ../games/spring {
+    boost = boost155;
+  };
 
   springLobby = callPackage ../games/spring/springlobby.nix { };
 
