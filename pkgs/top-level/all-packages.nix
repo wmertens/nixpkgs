@@ -3743,7 +3743,8 @@ let
   opam_1_1 = callPackage ../development/tools/ocaml/opam/1.1.nix {
     inherit (ocamlPackages_4_01_0) ocaml;
   };
-  opam = opam_1_1;
+  opam_1_2_0 = callPackage ../development/tools/ocaml/opam/1.2.0.nix { };
+  opam = opam_1_2_0;
 
   ocamlnat = let callPackage = newScope pkgs.ocamlPackages_3_12_1; in callPackage ../development/ocaml-modules/ocamlnat { };
 
@@ -5644,6 +5645,10 @@ let
   libetpan = callPackage ../development/libraries/libetpan { };
 
   libfaketime = callPackage ../development/libraries/libfaketime { };
+
+  libfakekey = callPackage ../development/libraries/libfakekey {
+    inherit (xlibs) libX11 libXi xextproto;
+  };
 
   libfm = callPackage ../development/libraries/libfm { };
   libfm-extra = callPackage ../development/libraries/libfm {
