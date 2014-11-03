@@ -7392,6 +7392,11 @@ let
     syslog      = true;
     moreheaders = true;
   };
+  nginxUnstable = callPackage ../servers/http/nginx/unstable.nix {
+    fullWebDAV  = true;
+    syslog      = true;
+    moreheaders = true;
+  };
 
   ngircd = callPackage ../servers/irc/ngircd { };
 
@@ -8613,6 +8618,7 @@ let
   kochi-substitute-naga10 = callPackage ../data/fonts/kochi-substitute-naga10 {};
 
   liberation_ttf = callPackage ../data/fonts/redhat-liberation-fonts { };
+  liberation_ttf_binary = callPackage ../data/fonts/redhat-liberation-fonts/binary.nix { };
 
   libertine = builderDefsPackage (import ../data/fonts/libertine) {
     inherit fetchurl fontforge lib;
