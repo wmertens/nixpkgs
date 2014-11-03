@@ -3393,6 +3393,16 @@ let
     llvm = llvm_34;
     openblas = openblas_0_2_10;
   };
+  julia032 = let
+    liblapack = liblapack_3_5_0.override {shared = true;};
+  in callPackage ../development/compilers/julia/0.3.2.nix {
+    inherit liblapack;
+    suitesparse = suitesparse.override {
+      inherit liblapack;
+    };
+    llvm = llvm_34;
+    openblas = openblas_0_2_10;
+  };
   julia = julia031;
 
   lazarus = builderDefsPackage (import ../development/compilers/fpc/lazarus.nix) {
@@ -3562,6 +3572,8 @@ let
 
     patoline = callPackage ../tools/typesetting/patoline { };
 
+    gg = callPackage ../development/ocaml-modules/gg { };
+
     gmetadom = callPackage ../development/ocaml-modules/gmetadom { };
 
     js_of_ocaml = callPackage ../development/tools/ocaml/js_of_ocaml { };
@@ -3630,6 +3642,8 @@ let
     ocaml_react = callPackage ../development/ocaml-modules/react { };
     reactivedata = callPackage ../development/ocaml-modules/reactivedata {};
 
+    ocamlscript = callPackage ../development/tools/ocaml/ocamlscript { };
+
     ocamlsdl= callPackage ../development/ocaml-modules/ocamlsdl { };
 
     ocaml_sqlite3 = callPackage ../development/ocaml-modules/sqlite3 { };
@@ -3643,6 +3657,8 @@ let
     ocpIndent = callPackage ../development/tools/ocaml/ocp-indent { };
 
     ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { };
+
+    otfm = callPackage ../development/ocaml-modules/otfm { };
 
     ounit = callPackage ../development/ocaml-modules/ounit { };
 
@@ -3692,6 +3708,9 @@ let
     uucd = callPackage ../development/ocaml-modules/uucd { };
     uunf = callPackage ../development/ocaml-modules/uunf { };
     uutf = callPackage ../development/ocaml-modules/uutf { };
+
+    vg = callPackage ../development/ocaml-modules/vg { };
+
     xmlm = callPackage ../development/ocaml-modules/xmlm { };
 
     yojson = callPackage ../development/ocaml-modules/yojson { };
@@ -4194,6 +4213,8 @@ let
   guile_ncurses = callPackage ../development/guile-modules/guile-ncurses { };
 
   guile-opengl = callPackage ../development/guile-modules/guile-opengl { };
+
+  guile-sdl = callPackage ../development/guile-modules/guile-sdl { };
 
   guile-xcb = callPackage ../development/guile-modules/guile-xcb { };
 
@@ -4732,7 +4753,9 @@ let
 
   adns = callPackage ../development/libraries/adns { };
 
-  afflib = callPackage ../development/libraries/afflib {};
+  afflib = callPackage ../development/libraries/afflib {
+    automake = automake114x;
+  };
 
   agg = callPackage ../development/libraries/agg { };
 
@@ -4780,8 +4803,6 @@ let
   aubio = callPackage ../development/libraries/aubio { };
 
   audiofile = callPackage ../development/libraries/audiofile { };
-
-  babl_0_0_22 = callPackage ../development/libraries/babl/0_0_22.nix { };
 
   babl = callPackage ../development/libraries/babl { };
 
@@ -5076,14 +5097,7 @@ let
 
   gecode = callPackage ../development/libraries/gecode { };
 
-  gegl = callPackage ../development/libraries/gegl {
-    #  avocodec avformat librsvg
-  };
-
-  gegl_0_0_22 = callPackage ../development/libraries/gegl/0_0_22.nix {
-    #  avocodec avformat librsvg
-    libpng = libpng12;
-  };
+  gegl = callPackage ../development/libraries/gegl { };
 
   geoclue = callPackage ../development/libraries/geoclue {};
 
@@ -5628,6 +5642,8 @@ let
   libelf = callPackage ../development/libraries/libelf { };
 
   libetpan = callPackage ../development/libraries/libetpan { };
+
+  libfaketime = callPackage ../development/libraries/libfaketime { };
 
   libfm = callPackage ../development/libraries/libfm { };
   libfm-extra = callPackage ../development/libraries/libfm {
@@ -6859,6 +6875,10 @@ let
   wtk = callPackage ../development/libraries/wtk { };
 
   x264 = callPackage ../development/libraries/x264 { };
+
+  x265 = callPackage ../development/libraries/x265 { };
+
+  x265-hg = callPackage ../development/libraries/x265/hg.nix { };
 
   xapian = callPackage ../development/libraries/xapian { };
 
@@ -9052,7 +9072,13 @@ let
     withX = false;
   }));
 
-  emacs24Macport = lowPrio (callPackage ../applications/editors/emacs-24/macport.nix { });
+  emacs24Macport_24_3 = lowPrio (callPackage ../applications/editors/emacs-24/macport-24.3.nix {
+    stdenv = pkgs.clangStdenv;
+  });
+  emacs24Macport_24_4 = lowPrio (callPackage ../applications/editors/emacs-24/macport-24.4.nix {
+    stdenv = pkgs.clangStdenv;
+  });
+  emacs24Macport = self.emacs24Macport_24_4;
 
   emacsPackages = emacs: self: let callPackage = newScope self; in rec {
     inherit emacs;
@@ -9345,8 +9371,8 @@ let
   firefox-bin = callPackage ../applications/networking/browsers/firefox-bin {
     gconf = pkgs.gnome.GConf;
     inherit (pkgs.gnome) libgnome libgnomeui;
-    inherit (pkgs.xlibs) libX11 libXScrnSaver libXext
-      libXinerama libXrender libXt;
+    inherit (pkgs.xlibs) libX11 libXScrnSaver libXcomposite libXdamage libXext
+      libXfixes libXinerama libXrender libXt;
   };
 
   flac = callPackage ../applications/audio/flac { };
@@ -9718,6 +9744,8 @@ let
   lastfmsubmitd = callPackage ../applications/audio/lastfmsubmitd { };
 
   lbdb = callPackage ../tools/misc/lbdb { };
+
+  lbzip2 = callPackage ../tools/compression/lbzip2 { };
 
   lci = callPackage ../applications/science/logic/lci {};
 
@@ -10146,15 +10174,9 @@ let
     plugins = [];
   };
 
-  pidginlatex = callPackage ../applications/networking/instant-messengers/pidgin-plugins/pidgin-latex {
-    imagemagick = imagemagickBig;
-  };
+  pidginlatex = callPackage ../applications/networking/instant-messengers/pidgin-plugins/pidgin-latex { };
 
-  pidginlatexSF = builderDefsPackage
-    (import ../applications/networking/instant-messengers/pidgin-plugins/pidgin-latex/pidgin-latex-sf.nix)
-    {
-      inherit pkgconfig pidgin texLive imagemagick which glib gtk;
-    };
+  pidginlatexSF = pidginlatex;
 
   pidginmsnpecan = callPackage ../applications/networking/instant-messengers/pidgin-plugins/msn-pecan { };
 
