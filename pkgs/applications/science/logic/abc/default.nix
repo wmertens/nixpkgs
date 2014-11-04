@@ -11,6 +11,9 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ readline ];
+  preBuild = ''
+    export buildFlags="CC=$CC CXX=$CXX LD=$CXX"
+  '';
   enableParallelBuilding = true;
   installPhase = ''
     mkdir -p $out/bin
