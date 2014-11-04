@@ -4808,8 +4808,12 @@ let
 
   boolstuff = callPackage ../development/libraries/boolstuff { };
 
-  boost155 = callPackage ../development/libraries/boost/1.55.nix { };
-  boost156 = callPackage ../development/libraries/boost/1.56.nix { };
+  boost155 = callPackage ../development/libraries/boost/1.55.nix {
+    toolset = if stdenv.isDarwin then "clang" else null;
+  };
+  boost156 = callPackage ../development/libraries/boost/1.56.nix {
+    toolset = if stdenv.isDarwin then "clang" else null;
+  };
   boost = boost156;
 
   botan = callPackage ../development/libraries/botan { };
