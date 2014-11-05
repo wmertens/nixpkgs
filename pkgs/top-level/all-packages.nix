@@ -1114,6 +1114,10 @@ let
 
   fcitx-configtool = callPackage ../tools/inputmethods/fcitx/fcitx-configtool.nix { };
 
+  fcitx-with-plugins = callPackage ../tools/inputmethods/fcitx/wrapper.nix {
+    plugins = [ ];
+  };
+
   fcron = callPackage ../tools/system/fcron { };
 
   fdm = callPackage ../tools/networking/fdm {};
@@ -11159,6 +11163,8 @@ let
   egoboo = callPackage ../games/egoboo { };
 
   exult = callPackage ../games/exult { };
+
+  fairymax = callPackage ../games/fairymax {};
 
   flightgear = callPackage ../games/flightgear { };
 
