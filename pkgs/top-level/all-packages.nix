@@ -726,6 +726,8 @@ let
 
   bacula = callPackage ../tools/backup/bacula { };
 
+  bareos = callPackage ../tools/backup/bareos { };
+
   beanstalkd = callPackage ../servers/beanstalkd { };
 
   bgs = callPackage ../tools/X11/bgs { };
@@ -1177,6 +1179,8 @@ let
   freetds = callPackage ../development/libraries/freetds { };
 
   frescobaldi = callPackage ../misc/frescobaldi {};
+
+  frostwire = callPackage ../applications/networking/p2p/frostwire { };
 
   ftgl = callPackage ../development/libraries/ftgl { };
 
@@ -3287,6 +3291,7 @@ let
 
   icedtea7_web = callPackage ../development/compilers/icedtea-web {
     jdk = "${icedtea7_jdk}/lib/icedtea";
+    xulrunner = firefox;
   };
 
   ikarus = callPackage ../development/compilers/ikarus { };
