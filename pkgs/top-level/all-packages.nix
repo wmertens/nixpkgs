@@ -679,6 +679,10 @@ let
 
   dlx = callPackage ../misc/emulators/dlx { };
 
+  duperemove = callPackage ../tools/filesystems/duperemove {
+    linuxHeaders = linuxHeaders_3_14;
+  };
+
   eggdrop = callPackage ../tools/networking/eggdrop { };
 
   enca = callPackage ../tools/text/enca { };
@@ -2429,6 +2433,8 @@ let
   teamviewer9 = lowPrio (callPackage_i686 ../applications/networking/remote/teamviewer/9.nix { });
 
   telnet = callPackage ../tools/networking/telnet { };
+
+  tessel = callPackage ../applications/misc/tessel { };
 
   texmacs = callPackage ../applications/editors/texmacs {
     tex = texLive; /* tetex is also an option */
@@ -7263,7 +7269,7 @@ let
 
   rdf4store = callPackage ../servers/http/4store { };
 
-  apacheHttpd = pkgs.apacheHttpd_2_2;
+  apacheHttpd = pkgs.apacheHttpd_2_4;
 
   apacheHttpd_2_2 = callPackage ../servers/http/apache-httpd/2.2.nix {
     sslSupport = true;
@@ -8639,8 +8645,9 @@ let
 
   kochi-substitute-naga10 = callPackage ../data/fonts/kochi-substitute-naga10 {};
 
-  liberation_ttf = callPackage ../data/fonts/redhat-liberation-fonts { };
+  liberation_ttf_from_source = callPackage ../data/fonts/redhat-liberation-fonts { };
   liberation_ttf_binary = callPackage ../data/fonts/redhat-liberation-fonts/binary.nix { };
+  liberation_ttf = liberation_ttf_binary;
 
   libertine = builderDefsPackage (import ../data/fonts/libertine) {
     inherit fetchurl fontforge lib;

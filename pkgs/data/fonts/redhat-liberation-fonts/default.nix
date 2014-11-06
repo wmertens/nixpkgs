@@ -1,17 +1,18 @@
-{stdenv, fetchurl, fontforge, python, pythonPackages}:
+{stdenv, fetchurl, fontforge, pythonPackages, python}:
 
 stdenv.mkDerivation rec {
   name = "liberation-fonts-2.00.1";
+
   src = fetchurl {
     url = "https://fedorahosted.org/releases/l/i/liberation-fonts/${name}.tar.gz";
     sha256 = "1ymryvd2nw4jmw4w5y1i3ll2dn48rpkqzlsgv7994lk6qc9cdjvs";
   };
-  
-  buildInputs = [fontforge python pythonPackages.fonttools];
+
+  buildInputs = [ fontforge pythonPackages.fonttools python ];
 
   installPhase = ''
     mkdir -p $out/share/fonts/truetype
-    cp -v $( find . -name '*.ttf') $out/share/fonts/truetype
+    cp -v $(find . -name '*.ttf') $out/share/fonts/truetype
 
     mkdir -p "$out/doc/${name}"
     cp -v AUTHORS ChangeLog COPYING License.txt README "$out/doc/${name}" || true
@@ -38,7 +39,7 @@ stdenv.mkDerivation rec {
     '';
 
     # See `License.txt' for details.
-    license = "GPLv2 + exception";
+    license = stdenv.lib.licenses.gpl2Oss;
 
     homepage = https://fedorahosted.org/liberation-fonts/;
 
