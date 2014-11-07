@@ -9,6 +9,7 @@
 , enablePIC ? false
 , enableExceptions ? false
 , taggedLayout ? ((enableRelease && enableDebug) || (enableSingleThreaded && enableMultiThreaded) || (enableShared && enableStatic))
+, patches ? []
 
 # Attributes inherit from specific versions
 , version, src
@@ -105,7 +106,7 @@ in
 stdenv.mkDerivation {
   name = "boost-${version}";
 
-  inherit src;
+  inherit src patches;
 
   meta = {
     homepage = "http://boost.org/";
