@@ -4,7 +4,7 @@ stdenv.mkDerivation rec {
   name = "tokyocabinet-1.4.46";
 
   src = fetchurl {
-    url = "http://www.1978th.net/tokyocabinet/${name}.tar.gz";
+    url = "http://pkgs.fedoraproject.org/repo/pkgs/tokyocabinet/${name}.tar.gz/341dadd1f3d68760e350f7e731111786/${name}.tar.gz";
     sha256 = "18rkv6kq43cqabc9mvfw534nsv6v8bc2i2r2bmax0yxnbhqa7ahf";
   };
 
