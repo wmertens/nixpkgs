@@ -298,6 +298,9 @@ stdenv.mkDerivation ({
     export CXXFLAGS_FOR_TARGET="-Wl,-rpath,$prefix/lib/amd64 $CXXFLAGS_FOR_TARGET"
     export CFLAGS_FOR_TARGET="-Wl,-rpath,$prefix/lib/amd64 $CFLAGS_FOR_TARGET"
   '' + stdenv.lib.optionalString stdenv.isDarwin ''
+    # TODO: add llvm c++filt here once it is released
+    ln -s /usr/bin/c++filt $TMPDIR/c++filt
+    export PATH=$PATH:$TMPDIR
     if SDKROOT=$(/usr/bin/xcrun --show-sdk-path); then
       configureFlagsArray+=(--with-native-system-header-dir=$SDKROOT/usr/include)
       makeFlagsArray+=( \
