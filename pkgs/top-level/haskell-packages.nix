@@ -825,6 +825,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   fileLocation = callPackage ../development/libraries/haskell/file-location {};
 
+  fixedVector = callPackage ../development/libraries/haskell/fixed-vector {};
+
   fmlist = callPackage ../development/libraries/haskell/fmlist {};
 
   ftphs = callPackage ../development/libraries/haskell/ftphs {};
@@ -2646,6 +2648,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   text_1_2_0_0 = callPackage ../development/libraries/haskell/text/1.2.0.0.nix {};
   text = self.text_1_2_0_0;
 
+  textBinary = callPackage ../development/libraries/haskell/text-binary {};
+
   textFormat = callPackage ../development/libraries/haskell/text-format {};
 
   textIcu = callPackage ../development/libraries/haskell/text-icu {};
@@ -2749,7 +2753,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   unboundedDelays = callPackage ../development/libraries/haskell/unbounded-delays {};
 
-  unificationFd = callPackage ../development/libraries/haskell/unification-fd {};  
+  unificationFd = callPackage ../development/libraries/haskell/unification-fd {};
 
   unionFind = callPackage ../development/libraries/haskell/union-find {};
 
@@ -3116,7 +3120,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
         hyperlinkSource = false;
         configureFlags = super.configureFlags or "" +
           pkgs.lib.optionalString (pkgs.stdenv.lib.versionOlder "6.12" ghc.version) " --ghc-option=-rtsopts";
-      };
+      } // pkgs.stdenv.lib.optionalAttrs (pkgs.stdenv.lib.versionOlder "7.9" ghc.version) { noHaddock = true; };
     };
   };
 
