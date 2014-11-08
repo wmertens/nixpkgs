@@ -1271,15 +1271,13 @@ let
   # use config.packageOverrides if you prefer original gnupg1
   gnupg1 = gnupg1compat;
 
-  gnupg20 = callPackage ../tools/security/gnupg/20.nix {
-    libgcrypt = libgcrypt_1_6;
-  };
+  gnupg20 = callPackage ../tools/security/gnupg/20.nix {};
 
   gnupg21 = callPackage ../tools/security/gnupg/21.nix {
     libgcrypt = libgcrypt_1_6;
   };
 
-  gnupg = gnupg21;
+  gnupg = gnupg20;
 
   gnuplot = callPackage ../tools/graphics/gnuplot { };
 
