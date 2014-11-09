@@ -665,7 +665,11 @@ let
     flex = flex_2_5_35;
   };
 
-  crawl = callPackage ../games/crawl { lua = lua5; };
+  crawlTiles = callPackage ../games/crawl { };
+
+  crawl = callPackage ../games/crawl {
+    tileMode = false;
+  };
 
   cv = callPackage ../tools/misc/cv { };
 
@@ -1126,6 +1130,8 @@ let
   fcron = callPackage ../tools/system/fcron { };
 
   fdm = callPackage ../tools/networking/fdm {};
+
+  flannel = callPackage ../tools/networking/flannel { };
 
   figlet = callPackage ../tools/misc/figlet { };
 
@@ -3504,7 +3510,7 @@ let
 
   ocaml_4_01_0 = callPackage ../development/compilers/ocaml/4.01.0.nix { };
 
-  ocaml_4_02_0 = callPackage ../development/compilers/ocaml/4.02.0.nix { };
+  ocaml_4_02_1 = callPackage ../development/compilers/ocaml/4.02.1.nix { };
 
   orc = callPackage ../development/compilers/orc { };
 
@@ -3764,8 +3770,8 @@ let
   // { camlimages = ocamlPackages_3_12_1.camlimages_4_0; };
   ocamlPackages_4_00_1 = mkOcamlPackages ocaml_4_00_1 pkgs.ocamlPackages_4_00_1;
   ocamlPackages_4_01_0 = mkOcamlPackages ocaml_4_01_0 pkgs.ocamlPackages_4_01_0;
-  ocamlPackages_4_02_0 = mkOcamlPackages ocaml_4_02_0 pkgs.ocamlPackages_4_02_0;
-  ocamlPackages_latest = ocamlPackages_4_02_0;
+  ocamlPackages_4_02_1 = mkOcamlPackages ocaml_4_02_1 pkgs.ocamlPackages_4_02_1;
+  ocamlPackages_latest = ocamlPackages_4_02_1;
 
   ocaml_make = callPackage ../development/ocaml-modules/ocamlmake { };
 
@@ -4107,8 +4113,6 @@ let
   pythonDocs = recurseIntoAttrs (import ../development/interpreters/python/docs {
     inherit stdenv fetchurl lib;
   });
-
-  pythonLinkmeWrapper = callPackage ../development/interpreters/python/python-linkme-wrapper.nix { };
 
   pypi2nix = python27Packages.pypi2nix;
 
@@ -5086,6 +5090,8 @@ let
   fftwSinglePrec = fftw.override { precision = "single"; };
   fftwFloat = fftwSinglePrec; # the configure option is just an alias
 
+  fish-fillets-ng = callPackage ../games/fish-fillets-ng {};
+
   flann = callPackage ../development/libraries/flann { };
 
   flite = callPackage ../development/libraries/flite { };
@@ -5964,6 +5970,10 @@ let
   libnet = callPackage ../development/libraries/libnet { };
 
   libnetfilter_conntrack = callPackage ../development/libraries/libnetfilter_conntrack { };
+
+  libnetfilter_cthelper = callPackage ../development/libraries/libnetfilter_cthelper { };
+
+  libnetfilter_cttimeout = callPackage ../development/libraries/libnetfilter_cttimeout { };
 
   libnetfilter_queue = callPackage ../development/libraries/libnetfilter_queue { };
 
@@ -7807,6 +7817,8 @@ let
     weatherMetar = config.conky.weatherMetar or false;
     weatherXoap  = config.conky.weatherXoap  or false;
   };
+
+  conntrack_tools = callPackage ../os-specific/linux/conntrack-tools { };
 
   cpufrequtils = callPackage ../os-specific/linux/cpufrequtils { };
 
@@ -12547,6 +12559,12 @@ let
   xsane = callPackage ../applications/graphics/sane/xsane.nix {
     libpng = libpng12;
     saneBackends = saneBackends;
+  };
+
+  xwiimote = callPackage ../misc/drivers/xwiimote {
+    bluez = pkgs.bluez5.override {
+      enableWiimote = true;
+    };
   };
 
   yafc = callPackage ../applications/networking/yafc { };
