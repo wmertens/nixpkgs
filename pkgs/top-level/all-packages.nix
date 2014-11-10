@@ -1272,7 +1272,7 @@ let
 
   gnupg1orig = callPackage ../tools/security/gnupg/1.nix { };
 
-  gnupg1compat = callPackage ../tools/security/gnupg/1compat.nix { gnupg = gnupg20; };
+  gnupg1compat = callPackage ../tools/security/gnupg/1compat.nix { };
 
   # use config.packageOverrides if you prefer original gnupg1
   gnupg1 = gnupg1compat;
@@ -1447,6 +1447,8 @@ let
 
   httptunnel = callPackage ../tools/networking/httptunnel { };
 
+  i2pd = callPackage ../tools/networking/i2pd {};
+
   iasl = callPackage ../development/compilers/iasl { };
 
   icecast = callPackage ../servers/icecast { };
@@ -1565,7 +1567,8 @@ let
 
   ninka = callPackage ../development/tools/misc/ninka { };
 
-  nodejs = callPackage ../development/web/nodejs {};
+  nodejs = callPackage ../development/web/nodejs { };
+  nodejs-unstable = callPackage ../development/web/nodejs { unstableVersion = true; };
 
   nodePackages = recurseIntoAttrs (import ./node-packages.nix {
     inherit pkgs stdenv nodejs fetchurl fetchgit;
@@ -3488,7 +3491,8 @@ let
 
   monoDLLFixer = callPackage ../build-support/mono-dll-fixer { };
 
-  mozart = callPackage ../development/compilers/mozart { };
+  mozart-binary = callPackage ../development/compilers/mozart/binary.nix { };
+  mozart = mozart-binary;
 
   neko = callPackage ../development/compilers/neko { };
 
@@ -4268,6 +4272,8 @@ let
 
   ### DEVELOPMENT / TOOLS
 
+  augeas = callPackage ../tools/system/augeas { };
+
   ansible = callPackage ../tools/system/ansible { };
 
   antlr = callPackage ../development/tools/parsing/antlr/2.7.7.nix { };
@@ -4397,6 +4403,7 @@ let
     ps     = if stdenv.isDarwin then darwin.ps else null;
   };
 
+  cmake-3_0 = callPackage ../development/tools/build-managers/cmake/3.0.nix { };
   cmake264 = callPackage ../development/tools/build-managers/cmake/264.nix { };
 
   cmakeCurses = cmake.override { useNcurses = true; };
@@ -4483,6 +4490,8 @@ let
   epm = callPackage ../development/tools/misc/epm { };
 
   emma = callPackage ../development/tools/analysis/emma { };
+
+  eztrace = callPackage ../development/tools/profiling/EZTrace { };
 
   findbugs = callPackage ../development/tools/analysis/findbugs { };
 
@@ -5446,6 +5455,10 @@ let
     libusb = libusb1;
   };
 
+  hivex = callPackage ../development/libraries/hivex {
+    inherit (perlPackages) IOStringy;
+  };
+
   hspell = callPackage ../development/libraries/hspell { };
 
   hspellDicts = callPackage ../development/libraries/hspell/dicts.nix { };
@@ -5797,6 +5810,10 @@ let
 
   libgsystem = callPackage ../development/libraries/libgsystem { };
 
+  libguestfs = callPackage ../development/libraries/libguestfs {
+    inherit (perlPackages) libintlperl GetoptLong SysVirt;
+  };
+
   libharu = callPackage ../development/libraries/libharu { };
 
   libHX = callPackage ../development/libraries/libHX { };
@@ -6088,6 +6105,8 @@ let
   libtiger = callPackage ../development/libraries/libtiger { };
 
   libtommath = callPackage ../development/libraries/libtommath { };
+
+  libtomcrypt = callPackage ../development/libraries/libtomcrypt { };
 
   libtorrentRasterbar = callPackage ../development/libraries/libtorrent-rasterbar { };
 
@@ -10063,8 +10082,6 @@ let
 
   ncmpcpp = callPackage ../applications/audio/ncmpcpp { };
 
-  ncmpcppBeta = callPackage ../applications/audio/ncmpcpp/beta.nix { };
-
   normalize = callPackage ../applications/audio/normalize { };
 
   mplayer = callPackage ../applications/video/mplayer {
@@ -10121,6 +10138,10 @@ let
   musescore = callPackage ../applications/audio/musescore { };
 
   mutt = callPackage ../applications/networking/mailreaders/mutt { };
+  mutt-with-sidebar = callPackage ../applications/networking/mailreaders/mutt { 
+    withSidebar = true;
+    automake = automake113x;
+  };
 
   namecoin = callPackage ../applications/misc/namecoin { };
   namecoinqt = callPackage ../applications/misc/namecoin/qt.nix { };
@@ -12139,7 +12160,7 @@ let
 
   tulip = callPackage ../applications/science/misc/tulip { };
 
-  vite = callPackage ../applications/science/misc/vite { };
+  vite = enableDebugging (callPackage ../applications/science/misc/vite { });
 
   xplanet = callPackage ../applications/science/astronomy/xplanet { };
 
@@ -12190,6 +12211,8 @@ let
   cups = callPackage ../misc/cups { libusb = libusb1; };
 
   cups_pdf_filter = callPackage ../misc/cups/pdf-filter.nix { };
+
+  crashplan = callPackage ../applications/backup/crashplan { };
 
   gutenprint = callPackage ../misc/drivers/gutenprint { };
 
