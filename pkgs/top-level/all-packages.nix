@@ -7932,6 +7932,8 @@ let
 
   light = callPackage ../os-specific/linux/light { };
 
+  lightum = callPackage ../os-specific/linux/lightum { };
+
   e3cfsprogs = callPackage ../os-specific/linux/e3cfsprogs { };
 
   ebtables = callPackage ../os-specific/linux/ebtables { };
@@ -10777,7 +10779,7 @@ let
 
   vimHugeX = vim_configurable;
 
-  vim_configurable = callPackage ../applications/editors/vim/configurable.nix {
+  vim_configurable = vimrc.makeCustomizable (callPackage ../applications/editors/vim/configurable.nix {
     inherit (pkgs) fetchurl fetchhg stdenv ncurses pkgconfig gettext
       composableDerivation lib config glib gtk python perl tcl ruby;
     inherit (pkgs.xlibs) libX11 libXext libSM libXpm libXt libXaw libXau libXmu
@@ -11527,6 +11529,8 @@ let
 
   xskat = callPackage ../games/xskat { };
 
+  xsnow = callPackage ../games/xsnow { };
+
   xsokoban = builderDefsPackage (import ../games/xsokoban) {
     inherit (xlibs) libX11 xproto libXpm libXt;
   };
@@ -11898,6 +11902,8 @@ let
 
   sage = callPackage ../applications/science/math/sage { };
 
+  ipopt = callPackage ../development/libraries/science/math/ipopt { };
+
   ### SCIENCE/MOLECULAR-DYNAMICS
 
   gromacs = callPackage ../applications/science/molecular-dynamics/gromacs {
@@ -11956,6 +11962,8 @@ let
     ssreflect = callPackage ../development/coq-modules/ssreflect {};
 
     tlc = callPackage ../development/coq-modules/tlc {};
+
+    unimath = callPackage ../development/coq-modules/unimath {};
 
     ynot = callPackage ../development/coq-modules/ynot {};
 
@@ -12524,6 +12532,8 @@ let
   };
 
   viewnior = callPackage ../applications/graphics/viewnior { };
+
+  vimrc = callPackage ../misc/vim-plugins/vimrc.nix { inherit writeText; };
 
   vimPlugins = recurseIntoAttrs (callPackage ../misc/vim-plugins { });
 
