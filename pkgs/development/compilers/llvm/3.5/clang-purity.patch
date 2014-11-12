@@ -1,12 +1,15 @@
-diff -Naur clang-3.4-orig/lib/Driver/Tools.cpp clang-3.4/lib/Driver/Tools.cpp
---- clang-3.4-orig/lib/Driver/Tools.cpp	2013-12-08 21:59:27.000000000 -0500
-+++ clang-3.4/lib/Driver/Tools.cpp	2014-01-27 12:48:29.421872597 -0500
-@@ -6477,15 +6477,6 @@
-     }
+diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
+index 198e82e..810d006 100644
+--- a/lib/Driver/Tools.cpp
++++ b/lib/Driver/Tools.cpp
+@@ -7355,17 +7355,6 @@ void gnutools::Link::ConstructJob(Compilation &C, const JobAction &JA,
+     CmdArgs.push_back("-shared");
    }
  
 -  if (ToolChain.getArch() == llvm::Triple::arm ||
+-      ToolChain.getArch() == llvm::Triple::armeb ||
 -      ToolChain.getArch() == llvm::Triple::thumb ||
+-      ToolChain.getArch() == llvm::Triple::thumbeb ||
 -      (!Args.hasArg(options::OPT_static) &&
 -       !Args.hasArg(options::OPT_shared))) {
 -    CmdArgs.push_back("-dynamic-linker");

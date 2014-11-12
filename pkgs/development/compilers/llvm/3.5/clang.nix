@@ -19,6 +19,8 @@ stdenv.mkDerivation {
   ] ++
   (stdenv.lib.optional (stdenv.cc.libc != null) "-DC_INCLUDE_DIRS=${stdenv.cc.libc}/include");
 
+  patches = [ ./clang-purity.patch ];
+
   # Clang expects to find LLVMgold in its own prefix
   # Clang expects to find sanitizer libraries in its own prefix
   postInstall = ''
