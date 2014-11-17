@@ -8,15 +8,6 @@ rec {
     aclSupport = false;
   });
 
-  curl_ = import ../../tools/networking/curl {
-    inherit stdenv fetchurl;
-    zlibSupport = false;
-  };
-
-  bzip2_ = import ../../tools/compression/bzip2 {
-    inherit stdenv fetchurl;
-  };
-
   build = stdenv.mkDerivation {
     name = "build";
 
@@ -63,8 +54,10 @@ rec {
 
       # This used to be in-nixpkgs, but now is in the bundle
       # because I can't be bothered to make it partially static
-      cp ${curl_}/bin/curl $out/bin
-      cp -d ${curl_}/lib/libcurl*.dylib $out/lib
+      cp ${curl}/bin/curl $out/bin
+      cp -d ${curl}/lib/libcurl*.dylib $out/lib
+      cp -d ${libssh2}/lib/libssh*.dylib $out/lib
+      cp -d ${openssl}/lib/*.dylib $out/lib
 
       cp -d ${gnugrep.pcre}/lib/libpcre*.dylib $out/lib
       cp -d ${libiconv}/lib/libiconv*.dylib $out/lib
@@ -142,7 +135,7 @@ rec {
       cp ${stdenv.shell} $out/in-nixpkgs/sh
       cp ${cpio}/bin/cpio $out/in-nixpkgs
       cp ${coreutils_}/bin/mkdir $out/in-nixpkgs
-      cp ${bzip2_}/bin/bzip2 $out/in-nixpkgs
+      cp ${bzip2}/bin/bzip2 $out/in-nixpkgs
 
       chmod u+w $out/in-nixpkgs/*
       strip $out/in-nixpkgs/*
@@ -197,6 +190,8 @@ rec {
       awk --version
       grep --version
       clang --version
+
+      curl -k https://google.com > /dev/null
 
       ${build}/in-nixpkgs/sh -c 'echo Hello World'
 

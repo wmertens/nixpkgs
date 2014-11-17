@@ -51,13 +51,13 @@ in rec {
   bootstrapTools = derivation {
     name = "bootstrap-tools";
 
-    builder = bootstrapFiles.sh;
+    builder = bootstrapFiles.sh; # Not a filename! Attribute 'sh' on bootstrapFiles
 
     args = [ ./unpack-bootstrap-tools.sh ];
 
     tarball = import <nix/fetchurl.nix> {
       url    = "https://www.dropbox.com/s/38l9q6pm4udszvj/bootstrap-tools.cpio.bz2";
-      sha256 = "169m8liijvpkpw09diz7kibazb6fz66m3lkf96i5nkpiw067vmc7";
+      sha256 = "0wlkw2lljnjj0c9vij1s2zw6j2wld0mmfnd6mazswn711i6f5imc";
     };
 
     inherit system;
