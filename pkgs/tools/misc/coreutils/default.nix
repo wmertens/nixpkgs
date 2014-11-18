@@ -52,7 +52,19 @@ let
       doCheck = false;
     };
 
-    configureFlags = stdenv.lib.optional stdenv.isDarwin "ac_cv_func_readlinkat=no";
+    configureFlags = if stdenv.isDarwin then [
+      "ac_cv_func_fchmodat=no"
+      "ac_cv_func_fchownat=no"
+      "ac_cv_func_fstatat=no"
+      "ac_cv_func_mkdirat=no"
+      "ac_cv_func_openat=no"
+      "ac_cv_func_unlinkat=no"
+      "ac_cv_func_faccessat=no"
+      "ac_cv_func_linkat=no"
+      "ac_cv_func_readlinkat=no"
+      "ac_cv_func_renameat=no"
+      "ac_cv_func_symlinkat=no"
+    ] else [];
 
     # The tests are known broken on Cygwin
     # (http://thread.gmane.org/gmane.comp.gnu.core-utils.bugs/19025),

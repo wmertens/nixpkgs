@@ -19,6 +19,20 @@ stdenv.mkDerivation rec {
   buildInputs = [ sharutils libxml2 zlib bzip2 openssl xz ] ++
     stdenv.lib.optionals stdenv.isLinux [ e2fsprogs attr acl ];
 
+  configureFlags = if stdenv.isDarwin then [
+    "ac_cv_func_fchmodat=no"
+    "ac_cv_func_fchownat=no"
+    "ac_cv_func_fstatat=no"
+    "ac_cv_func_mkdirat=no"
+    "ac_cv_func_openat=no"
+    "ac_cv_func_unlinkat=no"
+    "ac_cv_func_faccessat=no"
+    "ac_cv_func_linkat=no"
+    "ac_cv_func_readlinkat=no"
+    "ac_cv_func_renameat=no"
+    "ac_cv_func_symlinkat=no"
+  ] else [];
+
   meta = {
     description = "Multi-format archive and compression library";
     longDescription = ''
