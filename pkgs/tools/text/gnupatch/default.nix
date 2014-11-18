@@ -14,6 +14,21 @@ stdenv.mkDerivation rec {
     configureFlags = [ "ac_cv_func_strnlen_working=yes" ];
   };
 
+  configureFlags = stdenv.lib.optionals stdenv.isDarwin [
+    "ac_cv_func_fchmodat=no"
+    "ac_cv_func_fchownat=no"
+    "ac_cv_func_fdopendir=no"
+    "ac_cv_func_fstatat=no"
+    "ac_cv_func_mkdirat=no"
+    "ac_cv_func_openat=no"
+    "ac_cv_func_unlinkat=no"
+    "ac_cv_func_faccessat=no"
+    "ac_cv_func_linkat=no"
+    "ac_cv_func_readlinkat=no"
+    "ac_cv_func_renameat=no"
+    "ac_cv_func_symlinkat=no"
+  ];
+
   patches = [ ./bashishms.patch ];
 
   doCheck = true;

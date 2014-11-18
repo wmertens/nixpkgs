@@ -9,6 +9,20 @@ stdenv.mkDerivation rec {
     sha256 = "1iip0fk0wqhxb0jcwphz43r4fxkx1y7mznnhmlvr618jhp7b63wv";
   };
 
+  configureFlags = if stdenv.isDarwin then [
+    "ac_cv_func_fchmodat=no"
+    "ac_cv_func_fchownat=no"
+    "ac_cv_func_fstatat=no"
+    "ac_cv_func_mkdirat=no"
+    "ac_cv_func_openat=no"
+    "ac_cv_func_unlinkat=no"
+    "ac_cv_func_faccessat=no"
+    "ac_cv_func_linkat=no"
+    "ac_cv_func_readlinkat=no"
+    "ac_cv_func_renameat=no"
+    "ac_cv_func_symlinkat=no"
+  ] else [];
+
   # May have some issues with root compilation because the bootstrap tool
   # cannot be used as a login shell for now.
   FORCE_UNSAFE_CONFIGURE = stdenv.lib.optionalString (stdenv.system == "armv7l-linux" || stdenv.isSunOS) "1";
