@@ -97,6 +97,7 @@ stdenv.mkDerivation rec {
 
     # TODO: figure out why I need to do this
     cp libsyscall/wrappers/gethostuuid*.h $out/include
+    cp EXTERNAL_HEADERS/AssertMacros.h    $out/include
 
     # Build the mach headers we crave
     export MIGCC=cc
