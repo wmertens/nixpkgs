@@ -12,7 +12,8 @@ stdenv.mkDerivation rec {
     sha256 = "12q5shx6ldqad3rky154nv8f2cy57sxy9idivz93ggqm1bsw7a0n";
   };
 
-  patches = [ ./socket-activate.patch ];
+  patches = [ ./socket-activate.patch ] ++ stdenv.lib.optional stdenv.isDarwin
+    ./libcommon-darwin.patch;
 
   buildInputs = [
     pkgconfig libgcrypt libassuan libksba npth
