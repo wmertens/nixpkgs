@@ -12,21 +12,6 @@ stdenv.mkDerivation rec {
 
   patches = [ ./findutils-path.patch ./change_echo_path.patch ];
 
-  configureFlags = stdenv.lib.optionals stdenv.isDarwin [
-    "ac_cv_func_fchmodat=no"
-    "ac_cv_func_fchownat=no"
-    "ac_cv_func_fdopendir=no"
-    "ac_cv_func_fstatat=no"
-    "ac_cv_func_mkdirat=no"
-    "ac_cv_func_openat=no"
-    "ac_cv_func_unlinkat=no"
-    "ac_cv_func_faccessat=no"
-    "ac_cv_func_linkat=no"
-    "ac_cv_func_readlinkat=no"
-    "ac_cv_func_renameat=no"
-    "ac_cv_func_symlinkat=no"
-  ];
-
   doCheck = true;
 
   crossAttrs = {
