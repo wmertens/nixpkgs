@@ -18,9 +18,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     scons PREFIX="$out" OPENSSL="${openssl}" ZLIB="${zlib}" APR="$(echo "${apr}"/bin/*-config)" \
-        APU="$(echo "${aprutil}"/bin/*-config)" GSSAPI="${krb5}" CC="${
-          if stdenv.isDarwin then "clang" else "${stdenv.cc}/bin/gcc"
-        }"
+        APU="$(echo "${aprutil}"/bin/*-config)" GSSAPI="${krb5}" CC="$CC"
   '';
 
   NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isDarwin "-L/usr/lib";

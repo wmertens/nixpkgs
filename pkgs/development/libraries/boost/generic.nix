@@ -1,5 +1,5 @@
 { stdenv, icu, expat, zlib, bzip2, python, fixDarwinDylibNames
-, toolset ? null
+, toolset ? if stdenv.isDarwin then "clang" else null
 , enableRelease ? true
 , enableDebug ? false
 , enableSingleThreaded ? false
@@ -9,6 +9,7 @@
 , enablePIC ? false
 , enableExceptions ? false
 , taggedLayout ? ((enableRelease && enableDebug) || (enableSingleThreaded && enableMultiThreaded) || (enableShared && enableStatic))
+, mpi ? null
 , patches ? []
 
 # Attributes inherit from specific versions
@@ -65,7 +66,8 @@ let
   nativeB2Flags = [
     "-sEXPAT_INCLUDE=${expat}/include"
     "-sEXPAT_LIBPATH=${expat}/lib"
-  ] ++ optional (toolset != null) "toolset=${toolset}";
+  ] ++ optional (toolset != null) "toolset=${toolset}"
+    ++ optional (mpi != null) "--user-config=user-config.jam";
   nativeB2Args = concatStringsSep " " (genericB2Flags ++ nativeB2Flags);
 
   crossB2Flags = [
@@ -129,6 +131,10 @@ stdenv.mkDerivation {
         substituteInPlace tools/build/src/tools/clang-darwin.jam \
           --replace '$(<[1]:D=)' "$lib/lib/\$(<[1]:D=)";
     fi;
+  '' + optionalString (mpi != null) ''
+    cat << EOF > user-config.jam
+    using mpi : ${mpi}/bin/mpiCC ;
+    EOF
   '';
 
   NIX_CFLAGS_LINK = stdenv.lib.optionalString stdenv.isDarwin
@@ -145,9 +151,7 @@ stdenv.mkDerivation {
     "--with-python=${python}/bin/python"
   ] ++ optional (toolset != null) "--with-toolset=${toolset}";
 
-  buildPhase = ''
-    ${stdenv.lib.optionalString (toolset == "clang") "unset NIX_ENFORCE_PURITY"}
-  '' + builder nativeB2Args;
+  buildPhase = builder nativeB2Args;
 
   installPhase = installer nativeB2Args;
 

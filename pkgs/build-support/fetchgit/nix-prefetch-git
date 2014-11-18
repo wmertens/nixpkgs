@@ -83,6 +83,7 @@ init_remote(){
     local url=$1
     git init
     git remote add origin $url
+    ( [ -n "$http_proxy" ] && git config http.proxy $http_proxy ) || true
 }
 
 # Return the reference of an hash if it exists on the remote repository.
@@ -148,7 +149,7 @@ init_submodules(){
         local hash=$(echo $l | awk '{print substr($1,2)}')
         local dir=$(echo $l | awk '{print $2}')
         local name=$(
-            git config -f .gitmodules --get-regexp submodule\.[^.]*\.path |
+            git config -f .gitmodules --get-regexp submodule\..*\.path |
             sed -n "s,^\(.*\)\.path $dir\$,\\1,p")
         local url=$(git config -f .gitmodules --get ${name}.url)
 
