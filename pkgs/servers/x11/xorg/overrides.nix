@@ -47,8 +47,10 @@ in
 
   imake = attrs: attrs // {
     inherit (xorg) xorgcffiles;
+    gcc = if stdenv.isDarwin then args.gcc else null;
     x11BuildHook = ./imake.sh;
     patches = [./imake.patch];
+    setupHook = if stdenv.isDarwin then ./darwin-imake-setup-hook.sh else null;
   };
 
   mkfontdir = attrs: attrs // {
