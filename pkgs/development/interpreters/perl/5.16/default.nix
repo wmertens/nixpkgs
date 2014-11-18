@@ -40,6 +40,8 @@ stdenv.mkDerivation rec {
     ]
     ++ optional (stdenv ? glibc) "-Dusethreads";
 
+  isAnAncientPoS=1;
+
   configureScript = "${stdenv.shell} ./Configure";
 
   dontAddPrefix = true;
