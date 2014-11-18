@@ -1,13 +1,12 @@
-{ stdenv, cmake, coreutils, fetchsvn, libcxx, libunwind, llvm }:
-let
-  rev = "217324";
-in stdenv.mkDerivation {
-  name = "libcxxabi-pre-${rev}";
+{ stdenv, cmake, coreutils, fetchurl, libcxx, libunwind, llvm }:
 
-  src = fetchsvn {
-    url = http://llvm.org/svn/llvm-project/libcxxabi/trunk;
-    inherit rev;
-    sha256 = "07nmvzw5rcxpaw03c18vkn2mxp0lhn6y4nn57d2vlxi36kcwfbb8";
+stdenv.mkDerivation rec {
+  version = "3.5.0";
+  name    = "libcxxabi-${version}";
+
+  src = fetchurl {
+    url    = "http://llvm.org/releases/${version}/${name}.src.tar.xz";
+    sha256 = "1ndcpw3gfrzh7m1jac2qadhkrqgvb65cns69j9niydyj5mmbxijk";
   };
 
   NIX_CFLAGS_LINK = if stdenv.isDarwin then "" else "-L${libunwind}/lib";
