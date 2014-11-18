@@ -42,6 +42,7 @@ stdenv.mkDerivation (rec {
     ${if httpSupport then "--enable-serf --with-serf=${serf}" else "--disable-serf"}
     --with-zlib=${zlib}
     --with-sqlite=${sqlite}
+    ${stdenv.lib.optionalString stdenv.isDarwin "--disable-keychain"}
   '';
 
   preBuild = ''
