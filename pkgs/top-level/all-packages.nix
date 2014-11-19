@@ -7898,6 +7898,7 @@ let
     libnotify        = callPackage ../os-specific/darwin/libnotify {};
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
     libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
+    libauto          = callPackage ../os-specific/darwin/libauto {};
 
     libSystem        = callPackage ../os-specific/darwin/libSystem {
       inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
