@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cctools }:
+{ stdenv, fetchurl, cctools, zlib }:
 
 stdenv.mkDerivation rec {
   version = "118.1";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0pp5x8dgvzmg9vvg32hpy2brm17dpmbwrcr4prsmdmfvd4767wcf";
   };
 
-  buildInputs = [ cctools ];
+  buildInputs = [ cctools zlib ];
 
   buildPhase = ''
     export CFLAGS=" -I$PWD/head -I$PWD/sys -I$PWD/libelf -I$PWD/libdwarf"
