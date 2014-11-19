@@ -7901,7 +7901,7 @@ let
 
     libSystem        = callPackage ../os-specific/darwin/libSystem {
       inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
-      inherit libclosure carbon-headers CommonCrypto copyfile removefile libresolv;
+      inherit libclosure carbon-headers CommonCrypto copyfile removefile libresolv libnotify;
     };
 
     # We only have headers for these for now
