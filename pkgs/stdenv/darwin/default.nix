@@ -80,9 +80,6 @@ in rec {
     bzip2 = bootstrapFiles.bzip2;
     cpio  = bootstrapFiles.cpio;
 
-    # FIXME: this is unnecessarily impure but I haven't done the work yet to build it
-    otool = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool";
-
     langC  = true;
     langCC = true;
   };
