@@ -32,10 +32,6 @@ let
       substituteInPlace cctools/configure.ac \
         --replace "-isystem /usr/local/include -isystem /usr/pkg/include" "" \
         --replace "-L/usr/local/lib" "" \
-        --replace "AC_CONFIG_FILES([otool/Makefile])" ""
-
-      substituteInPlace cctools/Makefile.am \
-        --replace 'SUBDIRS=libstuff ar as misc otool ld64 $(LD_CLASSIC)' 'SUBDIRS=libstuff ar as misc ld64 $(LD_CLASSIC)'
 
       substituteInPlace cctools/include/Makefile \
         --replace "/bin/" ""
@@ -54,6 +50,13 @@ let
       #  include_next "unistd.h"
       #endif
       EOF
+    '' + stdenv.lib.optionalString stdenv.isDarwin ''
+      substituteInPlace cctools/otool/Makefile.am \
+        --replace " -lobjc" ""
+
+      substituteInPlace cctools/otool/print_objc.c \
+        --replace "objc_getClass(objc_class.name)" "0" \
+        --replace "objc_getMetaClass(objc_class.name)" "0"
     '';
 
     preConfigure = ''
