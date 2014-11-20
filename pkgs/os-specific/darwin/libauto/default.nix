@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     cp ${./auto_dtrace.h} ./auto_dtrace.h
 
     substituteInPlace auto_zone.cpp \
-      --replace "#include <msgtracer_client.h>" ''$'#include <asl.h>\nvoid msgtracer_log_with_keys(...) { };'
+      --replace "#include <msgtracer_client.h>" ''$'#include <asl.h>\nstatic void msgtracer_log_with_keys(...) { };'
 
     substituteInPlace Definitions.h \
       --replace "#include <System/pthread_machdep.h>" ""
