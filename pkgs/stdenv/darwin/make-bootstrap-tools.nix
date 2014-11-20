@@ -91,7 +91,7 @@ rec {
       nuke-refs $out/bin/*
 
       rpathify() {
-        libs=$(/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool -L "$1" | tail -n +2 | grep -o "$NIX_STORE.*-\S*" | cat)
+        libs=$({darwin.cctools}/bin/otool -L "$1" | tail -n +2 | grep -o "$NIX_STORE.*-\S*" | cat)
 
         for lib in $libs; do
           ${darwin.cctools}/bin/install_name_tool -change $lib "@rpath/$(basename $lib)" "$1"
