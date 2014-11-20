@@ -80,7 +80,7 @@ rec {
       cp -d ${gmpxx}/lib/libgmp*.*   $out/lib
 
       # Copy binutils.
-      for i in as ld ar ranlib nm strip install_name_tool; do
+      for i in as ld ar ranlib nm strip otool install_name_tool; do
         cp ${darwin.cctools}/bin/$i $out/bin
       done
 
