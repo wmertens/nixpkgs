@@ -36,4 +36,4 @@ ln -s bzip2 $out/bin/bunzip2
 
 # FIXME!
 cd $out/bin
-ln -s /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil
+ln -s /usr/bin/dsymutil
