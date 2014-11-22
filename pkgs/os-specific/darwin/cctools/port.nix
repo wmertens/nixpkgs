@@ -80,8 +80,8 @@ in {
   native = stdenv.mkDerivation (baseParams // {
     # A hack for now...
     postInstall = ''
-      cat >$out/bin/dsymutil << EOF
-      #!${stdenv.shell}
+      cat $out/bin/dsymutil << EOF
+      # Intentionally left blank
       EOF
       chmod +x $out/bin/dsymutil
     '';
