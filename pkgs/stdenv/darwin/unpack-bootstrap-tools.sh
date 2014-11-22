@@ -33,7 +33,3 @@ done
 
 ln -s bash $out/bin/sh
 ln -s bzip2 $out/bin/bunzip2
-
-# FIXME!
-cd $out/bin
-ln -s /usr/bin/dsymutil

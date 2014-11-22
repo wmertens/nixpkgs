@@ -78,12 +78,12 @@ let
   };
 in {
   native = stdenv.mkDerivation (baseParams // {
-    # FIXME
+    # A hack for now...
     postInstall = ''
-      cd $out/bin
-      for tool in dwarfdump dsymutil; do
-        ln -s /usr/bin/$tool
-      done
+      cat >$out/bin/dsymutil << EOF
+      #!${stdenv.shell}
+      EOF
+      chmod +x $out/bin/dsymutil
     '';
   });
 

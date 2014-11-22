@@ -80,7 +80,7 @@ rec {
       cp -d ${gmpxx}/lib/libgmp*.*   $out/lib
 
       # Copy binutils.
-      for i in as ld ar ranlib nm strip otool install_name_tool; do
+      for i in as ld ar ranlib nm strip otool install_name_tool dsymutil; do
         cp ${darwin.cctools}/bin/$i $out/bin
       done
 
@@ -91,8 +91,7 @@ rec {
       nuke-refs $out/bin/*
 
       rpathify() {
-        libs=$({darwin.cctools}/bin/otool -L "$1" | tail -n +2 | grep -o "$NIX_STORE.*-\S*" | cat)
-
+        libs=$(${darwin.cctools}/bin/otool -L "$1" | tail -n +2 | grep -o "$NIX_STORE.*-\S*" | cat)
         for lib in $libs; do
           ${darwin.cctools}/bin/install_name_tool -change $lib "@rpath/$(basename $lib)" "$1"
         done
@@ -159,7 +158,7 @@ rec {
       for i in $out/bin/*; do
         if ! test -L $i; then
           echo patching $i
-          libs=$(/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool -L "$i" | tail -n +2 | grep -v libSystem | cat)
+          libs=$({darwin.cctools}/bin/otool -L "$i" | tail -n +2 | grep -v libSystem | cat)
 
           if [ -n "$libs" ]; then
             $out/bin/install_name_tool -add_rpath $out/lib $i
