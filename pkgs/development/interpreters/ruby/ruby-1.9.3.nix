@@ -52,11 +52,14 @@ stdenv.mkDerivation rec {
   # (The build process attempted to copy file a overwriting file b, where a and
   # b are hard-linked, which results in cp returning a non-zero exit code.)
   # https://github.com/NixOS/nixpkgs/issues/4266
-  postUnpack = ''rm "$sourceRoot/enc/unicode/name2ctype.h"'';
+  postUnpack = ''
+    rm "$sourceRoot/enc/unicode/name2ctype.h"
+  '';
 
   patches = [
     ./ruby19-parallel-install.patch
     ./bitperfect-rdoc.patch
+    ./no-libobjc.patch
   ] ++ ops useRailsExpress [
     "${patchSet}/patches/ruby/1.9.3/p547/railsexpress/01-fix-make-clean.patch"
     "${patchSet}/patches/ruby/1.9.3/p547/railsexpress/02-railsbench-gc.patch"
@@ -76,13 +79,17 @@ stdenv.mkDerivation rec {
     "${patchSet}/patches/ruby/1.9.3/p547/railsexpress/16-backport-psych-20.patch"
     "${patchSet}/patches/ruby/1.9.3/p547/railsexpress/17-fix-missing-c-return-event.patch"
     "${patchSet}/patches/ruby/1.9.3/p547/railsexpress/18-fix-process-daemon-call.patch"
-  ];
+  ] ++ op (!useRailsExpress) ./no-libobjc-configure.patch;
 
   configureFlags = [ "--enable-shared" "--enable-pthread" ]
     ++ op useRailsExpress "--with-baseruby=${baseruby}/bin/ruby"
     # on darwin, we have /usr/include/tk.h -- so the configure script detects
     # that tk is installed
     ++ ( if stdenv.isDarwin then [ "--with-out-ext=tk " ] else [ ]);
+
+  postConfigure = ''
+    substituteInPlace Makefile --replace '-Wl,-u,_objc_msgSend' ""
+  '';
 
   installFlags = stdenv.lib.optionalString docSupport "install-doc";
 
