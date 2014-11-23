@@ -33,3 +33,9 @@ done
 
 ln -s bash $out/bin/sh
 ln -s bzip2 $out/bin/bunzip2
+
+cat >$out/bin/dsymutil << EOF
+#!$out/bin/sh
+EOF
+
+
