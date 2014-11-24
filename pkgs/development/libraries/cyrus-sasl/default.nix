@@ -20,6 +20,8 @@ stdenv.mkDerivation rec {
                           --with-saslauthd=/run/saslauthd
                           --enable-login
                         )
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
+    export LD_RUN_PATH=$out/lib
   '';
 
   installFlags = if stdenv.isDarwin then [ "framedir=$(out)/Library/Frameworks/SASL2.framework" ] else null;
