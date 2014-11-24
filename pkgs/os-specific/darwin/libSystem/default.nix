@@ -42,7 +42,9 @@ stdenv.mkDerivation rec {
     cp ${csu}/lib/* $out/lib
 
     # This probably doesn't belong here, but we want to stay similar to glibc, which includes resolv internally...
-    ln -s ${libresolv}/lib/libresolv.dylib $out/lib/libresolv.dylib
+    # TODO: add darwin-conditional libresolv dependency to packages that need it instead of this...
+    ln -s ${libresolv}/lib/libresolv.9.dylib $out/lib/libresolv.9.dylib
+    ln -s libresolv.9.dylib $out/lib/libresolv.dylib
 
     # Set up the actual library link
     ln -s /usr/lib/libSystem.dylib $out/lib/libSystem.dylib
