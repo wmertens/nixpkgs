@@ -1,7 +1,7 @@
 { stdenv, fetchurl, composableDerivation, autoconf, automake, flex, bison
 , apacheHttpd, mysql, libxml2, readline, zlib, curl, gd, postgresql, gettext
 , openssl, pkgconfig, sqlite, config, libjpeg, libpng, freetype, libxslt
-, libmcrypt, bzip2, icu, libssh2, makeWrapper, libiconvOrEmpty, libiconv, uwimap
+, libmcrypt, bzip2, icu, libssh2, makeWrapper, libiconv, uwimap
 , pam }:
 
 let
@@ -55,10 +55,9 @@ composableDerivation.composableDerivation {} ( fixed : let inherit (fixed.fixed)
 
       libxml2 = {
         configureFlags
-          = [ "--with-libxml-dir=${libxml2}" ]
-            ++ stdenv.lib.optional (libiconvOrEmpty != [])
-              [ "--with-iconv=${libiconv}" ];
-        buildInputs = [ libxml2 ] ++ libiconvOrEmpty;
+          = [ "--with-libxml-dir=${libxml2}"
+              "--with-iconv=${libiconv}" ];
+        buildInputs = [ libxml2 libiconv ];
       };
 
       readline = {
