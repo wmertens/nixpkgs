@@ -24,8 +24,8 @@ rec {
       cp -d ${darwin.libSystem}/lib/*.dylib $out/lib/
 
       # Resolv is actually a link to another package, so let's copy it properly
-      rm $out/lib/libresolv.dylib
-      cp -L ${darwin.libSystem}/lib/libresolv.dylib $out/lib
+      rm $out/lib/libresolv.9.dylib
+      cp -L ${darwin.libSystem}/lib/libresolv.9.dylib $out/lib
 
       cp -rL ${darwin.libSystem}/include $out
       chmod -R u+w $out/include
@@ -158,7 +158,7 @@ rec {
       for i in $out/bin/*; do
         if ! test -L $i; then
           echo patching $i
-          libs=$({darwin.cctools}/bin/otool -L "$i" | tail -n +2 | grep -v libSystem | cat)
+          libs=$(${darwin.cctools}/bin/otool -L "$i" | tail -n +2 | grep -v libSystem | cat)
 
           if [ -n "$libs" ]; then
             $out/bin/install_name_tool -add_rpath $out/lib $i
