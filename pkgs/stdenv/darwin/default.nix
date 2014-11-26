@@ -70,8 +70,8 @@ in rec {
     args = [ ./unpack-bootstrap-tools.sh ];
 
     tarball = import <nix/fetchurl.nix> {
-      url    = "https://www.dropbox.com/s/vlgv9v4ohcjwocy/bootstrap-tools.1.cpio.bz2";
-      sha256 = "0sqlzm8j27j80hgyrlma706sg848vbg965rix6ab96r5zp52918l";
+      url    = "https://www.dropbox.com/s/w5wqzlkazrcbnb7/bootstrap-tools.3.cpio.bz2";
+      sha256 = "1fs58ip8mk9jdpcq292if14mi1sl0diw0kns44vkmj3cx4h1cgx7";
     };
 
     inherit system;
