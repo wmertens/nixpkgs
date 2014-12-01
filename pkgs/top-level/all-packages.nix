@@ -9584,7 +9584,6 @@ let
   git = gitAndTools.git;
   gitFull = gitAndTools.gitFull;
   gitMinimal = git.override {
-    withManual = false;
     pythonSupport = false;
   };
   gitSVN = gitAndTools.gitSVN;
