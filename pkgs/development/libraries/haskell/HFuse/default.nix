@@ -4,8 +4,8 @@
 
 cabal.mkDerivation (self: {
   pname = "HFuse";
-  version = "0.2.4.4";
-  sha256 = "1wsrf9y90dk27da9pm9m11hnrxwrqwvq6c9799b91a91mc2lxslc";
+  version = "0.2.4.3";
+  sha256 = "1daka673mx0gsnsa04pxani7n4wp93hflzxs3imzy4sgb30p7l01";
   isLibrary = true;
   isExecutable = true;
   extraLibraries = [ fuse ];
@@ -17,6 +17,6 @@ cabal.mkDerivation (self: {
     description = "HFuse is a binding for the Linux FUSE library";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.stdenv.lib.platforms.linux;
-    maintainers = with self.stdenv.lib.maintainers; [ andres ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

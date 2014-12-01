@@ -1,8 +1,9 @@
 { stdenv, fetchurl, pkgconfig, intltool, gperf, libcap, dbus, kmod
 , xz, pam, acl, cryptsetup, libuuid, m4, utillinux
-, glib, kbd, libxslt, coreutils, libgcrypt, sysvtools
+, glib, kbd, libxslt, coreutils, libgcrypt, sysvtools, docbook_xsl
 , kexectools, libmicrohttpd, linuxHeaders
 , pythonPackages ? null, pythonSupport ? false
+, autoreconfHook
 }:
 
 assert stdenv.isLinux;
@@ -10,27 +11,25 @@ assert stdenv.isLinux;
 assert pythonSupport -> pythonPackages != null;
 
 stdenv.mkDerivation rec {
-  version = "217";
+  version = "212";
   name = "systemd-${version}";
 
   src = fetchurl {
     url = "http://www.freedesktop.org/software/systemd/${name}.tar.xz";
-    sha256 = "163l1y4p2a564d4ynfq3k3xf53j2v5s81blb6cvpn1y7rpxyccd0";
+    sha256 = "1hpjcc42svrs06q3isjm3m5aphgkpfdylmvpnif71zh46ys0cab5";
   };
 
   patches =
     [ # These are all changes between upstream and
-      # https://github.com/edolstra/systemd/tree/nixos-v216.
+      # https://github.com/edolstra/systemd/tree/nixos-v212.
       ./fixes.patch
-      # Fixes systemd-journald so that it does not get killed
-      # by systemd-journal-flush starting too quickly
-      ./systemd-journald-type-notify.patch
     ];
 
   buildInputs =
     [ pkgconfig intltool gperf libcap kmod xz pam acl
-      /* cryptsetup */ libuuid m4 glib libxslt libgcrypt
+      /* cryptsetup */ libuuid m4 glib libxslt libgcrypt docbook_xsl
       libmicrohttpd linuxHeaders
+      autoreconfHook
     ] ++ stdenv.lib.optionals pythonSupport [pythonPackages.python pythonPackages.lxml];
 
   configureFlags =
@@ -46,23 +45,9 @@ stdenv.mkDerivation rec {
       "--with-dbussessionservicedir=$(out)/share/dbus-1/services"
       "--with-firmware-path=/root/test-firmware:/run/current-system/firmware"
       "--with-tty-gid=3" # tty in NixOS has gid 3
+      "--disable-networkd" # enable/use eventually
       "--enable-compat-libs" # get rid of this eventually
       "--disable-tests"
-
-      "--disable-hostnamed"
-      "--disable-networkd" # enable/use eventually
-      "--disable-sysusers"
-      "--disable-timedated"
-      "--disable-timesyncd"
-      "--disable-readahead"
-      "--disable-firstboot"
-      "--disable-localed"
-      "--disable-resolved"
-      "--disable-split-usr"
-
-      "--with-sysvinit-path="
-      "--with-sysvrcnd-path="
-      "--with-rc-local-script-path-stop=/etc/halt.local"
     ];
 
   preConfigure =
@@ -103,8 +88,6 @@ stdenv.mkDerivation rec {
       # currently running systemd (/run/current-system/systemd) so
       # that we don't use an obsolete/garbage-collected release agent.
       "-USYSTEMD_CGROUP_AGENT_PATH" "-DSYSTEMD_CGROUP_AGENT_PATH=\"/run/current-system/systemd/lib/systemd/systemd-cgroups-agent\""
-
-      "-USYSTEMD_BINARY_PATH" "-DSYSTEMD_BINARY_PATH=\"/run/current-system/systemd/lib/systemd/systemd\""
     ];
 
   # Use /var/lib/udev rather than /etc/udev for the generated hardware
@@ -121,14 +104,9 @@ stdenv.mkDerivation rec {
       "pamconfdir=$(out)/etc/pam.d"
     ];
 
+  # Get rid of configuration-specific data.
   postInstall =
     ''
-      # sysinit.target: Don't depend on
-      # systemd-tmpfiles-setup.service. This interferes with NixOps's
-      # send-keys feature (since sshd.service depends indirectly on
-      # sysinit.target).
-      mv $out/lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup-dev.service $out/lib/systemd/system/multi-user.target.wants/
-
       mkdir -p $out/example/systemd
       mv $out/lib/{modules-load.d,binfmt.d,sysctl.d,tmpfiles.d} $out/example
       mv $out/lib/systemd/{system,user} $out/example/systemd

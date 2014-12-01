@@ -3,20 +3,21 @@
 }:
 
 stdenv.mkDerivation rec {
-  version = "1.2.1";
+  version = "1.1.7";
   name = "slic3r-${version}";
 
+  # Slic3r doesn't put out tarballs, only a git repository is available
   src = fetchgit {
     url = "git://github.com/alexrj/Slic3r";
     rev = "refs/tags/${version}";
-    sha256 = "03xj2kv2d4j6nwmdd5cyghnvjyj4g7g9z0ynynbviyfiplmka2ph";
+    sha256 = "0hss90iw4xwca08d03wrz0fds5nqwb9zjqii2n6rgpcl4km69fka";
   };
 
   buildInputs = with perlPackages; [ perl makeWrapper which
     EncodeLocale MathClipper ExtUtilsXSpp BoostGeometryUtils
     MathConvexHullMonotoneChain MathGeometryVoronoi MathPlanePath Moo
     IOStringy ClassXSAccessor Wx GrowlGNTP NetDBus ImportInto XMLSAX
-    ExtUtilsMakeMaker OpenGL WxGLCanvas
+    ExtUtilsMakeMaker
   ];
 
   desktopItem = makeDesktopItem {
@@ -33,16 +34,12 @@ stdenv.mkDerivation rec {
     export SLIC3R_NO_AUTO=true
     export PERL5LIB="./xs/blib/arch/:./xs/blib/lib:$PERL5LIB"
 
-    substituteInPlace Build.PL \
-      --replace "0.9918" "0.9923" \
-      --replace "eval" ""
-
     pushd xs
       perl Build.PL
       perl Build
     popd
 
-    perl Build.PL --gui
+    perl Build.PL
   '';
 
   installPhase = ''

@@ -1,7 +1,7 @@
 { fetchurl, stdenv, zlib, bzip2 }:
 
 stdenv.mkDerivation rec {
-  name = "tokyocabinet-1.4.48";
+  name = "tokyocabinet-1.4.46";
 
   src = fetchurl {
     url = "http://pkgs.fedoraproject.org/repo/pkgs/tokyocabinet/${name}.tar.gz/341dadd1f3d68760e350f7e731111786/${name}.tar.gz";
@@ -9,6 +9,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ zlib bzip2 ];
+
+  doCheck = true;
 
   postInstall =
     '' sed -i "$out/lib/pkgconfig/tokyocabinet.pc" \

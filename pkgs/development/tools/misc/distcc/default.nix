@@ -41,10 +41,11 @@ let
       #
       # extraConfig is meant to be sh lines exporting environment
       # variables like DISTCC_HOSTS, DISTCC_DIR, ...
-      links = extraConfig : (runCommand "distcc-links" { }
+      links = extraConfig : (runCommand "distcc-links"
+          { inherit (gcc) langC langCC; }
         ''
           mkdir -p $out/bin
-          if [ -x "${gcc.gcc}/bin/gcc" ]; then
+          if [ $langC -eq 1 ]; then
             cat > $out/bin/gcc << EOF
             #!/bin/sh
             ${extraConfig}
@@ -52,7 +53,7 @@ let
           EOF
             chmod +x $out/bin/gcc
           fi
-          if [ -x "${gcc.gcc}/bin/g++" ]; then
+          if [ $langCC -eq 1 ]; then
             cat > $out/bin/g++ << EOF
             #!/bin/sh
             ${extraConfig}

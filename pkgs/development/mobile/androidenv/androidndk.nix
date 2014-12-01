@@ -1,28 +1,26 @@
-{ stdenv, fetchurl, zlib, ncurses, p7zip
+{ stdenv, fetchurl, zlib, ncurses
 }:
 
 stdenv.mkDerivation rec {
-  name = "android-ndk-r10c";
+  name = "android-ndk-r9d";
 
   src = if stdenv.system == "i686-linux"
     then fetchurl {
-      url = "http://dl.google.com/android/ndk/${name}-linux-x86.bin";
-      sha256 = "0gyq68zrpzj3gkh81czs6r0jmikg5rwzh1bqg4rk16g2nxm4lll3";
+      url = "http://dl.google.com/android/ndk/${name}-linux-x86.tar.bz2";
+      sha256 = "0lrxx8rclmda72dynh0qjr6xpcnv5vs3gc96jcia37h8mmn2xv6m";
     }
     else if stdenv.system == "x86_64-linux" then fetchurl {
-      url = "http://dl.google.com/android/ndk/${name}-linux-x86_64.bin";
-      sha256 = "126rqzkmf8xz1hqdziwx81yln17hpivs2j45rxhzdr45iw9b758c";
+      url = "http://dl.google.com/android/ndk/${name}-linux-x86_64.tar.bz2";
+      sha256 = "16miwrnf3c7x7rlpmssmjx9kybmapsjyamjyivhabb2wm21x3q8l";
     }
-    else throw "platform ${stdenv.system} not supported!";
+    else throw "platform not ${stdenv.system} supported!";
 
   phases = "installPhase";
-
-  buildInputs = [ p7zip ];
 
   installPhase = ''
     set -x
     mkdir -pv $out
-    7z x $src
+    tar xf $src
     mv */* $out
 
     # so that it doesn't fail because of read-only permissions set

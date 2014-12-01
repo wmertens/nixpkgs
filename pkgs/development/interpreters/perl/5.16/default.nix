@@ -1,10 +1,14 @@
-{ lib, stdenv, fetchurl, enableThreading ? true }:
+{ stdenv, fetchurl }:
 
 let
 
   libc = if stdenv.cc.libc or null != null then stdenv.cc.libc else "/usr";
 
 in
+
+with {
+  inherit (stdenv.lib) optional optionalString;
+};
 
 stdenv.mkDerivation rec {
   name = "perl-5.16.3";
@@ -17,12 +21,9 @@ stdenv.mkDerivation rec {
   patches =
     [ # Do not look in /usr etc. for dependencies.
       ./no-sys-dirs.patch
-      ./no-impure-config-time.patch
-      ./fixed-man-page-date.patch
-      ./no-date-in-perl-binary.patch
     ]
-    ++ lib.optional stdenv.isSunOS  ./ld-shared.patch
-    ++ lib.optional stdenv.isDarwin [ ./cpp-precomp.patch ./no-libutil.patch ] ;
+    ++ optional stdenv.isSunOS  ./ld-shared.patch
+    ++ stdenv.lib.optional stdenv.isDarwin [ ./cpp-precomp.patch ./no-libutil.patch ] ;
 
   # Build a thread-safe Perl with a dynamic libperls.o.  We need the
   # "installstyle" option to ensure that modules are put under
@@ -37,7 +38,7 @@ stdenv.mkDerivation rec {
       "-Dlocincpth=${libc}/include"
       "-Dloclibpth=${libc}/lib"
     ]
-    ++ lib.optional enableThreading "-Dusethreads";
+    ++ optional (stdenv ? glibc) "-Dusethreads";
 
   configureScript = "${stdenv.shell} ./Configure";
 
@@ -49,18 +50,18 @@ stdenv.mkDerivation rec {
     ''
       configureFlags="$configureFlags -Dprefix=$out -Dman1dir=$out/share/man/man1 -Dman3dir=$out/share/man/man3"
 
-      ${lib.optionalString stdenv.isArm ''
+      ${optionalString stdenv.isArm ''
         configureFlagsArray=(-Dldflags="-lm -lrt")
       ''}
 
-      ${lib.optionalString stdenv.isCygwin ''
+      ${optionalString stdenv.isCygwin ''
         cp cygwin/cygwin.c{,.bak}
         echo "#define PERLIO_NOT_STDIO 0" > tmp
         cat tmp cygwin/cygwin.c.bak > cygwin/cygwin.c
       ''}
     '';
 
-  preBuild = lib.optionalString (!(stdenv ? cc && stdenv.cc.nativeTools))
+  preBuild = optionalString (!(stdenv ? cc && stdenv.cc.nativeTools))
     ''
       # Make Cwd work on NixOS (where we don't have a /bin/pwd).
       substituteInPlace dist/Cwd/Cwd.pm --replace "'/bin/pwd'" "'$(type -tP pwd)'"

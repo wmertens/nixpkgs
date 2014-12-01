@@ -1,47 +1,61 @@
-{ stdenv, fetchurl, perl, python, ruby, bison, gperf, cmake
-, pkgconfig, gettext, gobjectIntrospection
+{ stdenv, fetchurl, perl, python, ruby, bison, gperf, flex
+, pkgconfig, which, gettext, gobjectIntrospection
 , gtk2, gtk3, wayland, libwebp, enchant
-, libxml2, libsoup, libsecret, libxslt, harfbuzz, libpthreadstubs
+, libxml2, libsoup, libsecret, libxslt, harfbuzz
 , gst-plugins-base
+, withGtk2 ? false
+, enableIntrospection ? true
 }:
 
 stdenv.mkDerivation rec {
-  name = "webkitgtk-${version}";
-  version = "2.6.2";
+  name = "webkitgtk-2.4.6";
 
-  meta = with stdenv.lib; {
+  meta = {
     description = "Web content rendering engine, GTK+ port";
     homepage = "http://webkitgtk.org/";
-    license = licenses.bsd2;
-    platforms = platforms.linux;
-    maintainers = with maintainers; [ iyzsong koral ];
+    license = stdenv.lib.licenses.bsd2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ iyzsong ];
   };
-
-  preConfigure = "patchShebangs Tools";
 
   src = fetchurl {
     url = "http://webkitgtk.org/releases/${name}.tar.xz";
-    sha256 = "1f9qm5g1mbjm2hrnlzymas99piws4h4y3yxz4p6f6gavnsvfjwji";
+    sha256 = "0mqlq4ivh921k92xjsp5pdvbg9vf75qjliqmx81qwrm2sjl4mvvg";
   };
 
-  patches = [ ./finding-harfbuzz-icu.patch ];
+  patches = [ ./webcore-svg-libxml-cflags.patch ];
 
-  cmakeFlags = [ "-DPORT=GTK" ];
+  CC = "cc";
+
+  prePatch = ''
+    patchShebangs Tools/gtk
+  '';
+
+  configureFlags = with stdenv.lib; [
+    "--disable-geolocation"
+    (optionalString enableIntrospection "--enable-introspection")
+  ] ++ stdenv.lib.optional withGtk2 [
+    "--with-gtk=2.0"
+    "--disable-webkit2"
+  ];
+
+  dontAddDisableDepTrack = true;
 
   nativeBuildInputs = [
-    cmake perl python ruby bison gperf
-    pkgconfig gettext gobjectIntrospection
+    perl python ruby bison gperf flex
+    pkgconfig which gettext gobjectIntrospection
   ];
 
   buildInputs = [
     gtk2 wayland libwebp enchant
-    libxml2 libsecret libxslt harfbuzz libpthreadstubs
+    libxml2 libsecret libxslt harfbuzz
     gst-plugins-base
   ];
 
   propagatedBuildInputs = [
-    libsoup gtk3
+    libsoup
+    (if withGtk2 then gtk2 else gtk3)
   ];
 
-  # enableParallelBuilding = true; # build problems on Hydra
+  #enableParallelBuilding = true; # build problems on Hydra
 }

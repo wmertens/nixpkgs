@@ -63,7 +63,7 @@ with lib;
 
     jobs.virtuoso = {
       name = "virtuoso";
-      startOn = "ip-up";
+      startOn = "filesystem";
 
       preStart = ''
 	mkdir -p ${stateDir}

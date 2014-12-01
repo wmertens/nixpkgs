@@ -42,8 +42,8 @@ stdenv.mkDerivation {
           mkdir -p $OCAMLFIND_DESTDIR
         fi
     }
-
-    envHooks+=(addOCamlPath)
+    
+    envHooks=(''${envHooks[@]} addOCamlPath)
   '';
 
   meta = {

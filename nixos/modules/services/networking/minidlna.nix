@@ -79,7 +79,7 @@ in
       { description = "MiniDLNA Server";
 
         wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" "local-fs.target" ];
+        after = [ "network.target" ];
 
         preStart =
           ''

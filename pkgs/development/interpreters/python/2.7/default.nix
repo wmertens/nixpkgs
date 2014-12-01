@@ -68,7 +68,6 @@ let
     configureFlags = "--enable-shared --with-threads --enable-unicode";
 
     NIX_CFLAGS_COMPILE = optionalString stdenv.isDarwin "-msse2";
-    DETERMINISTIC_BUILD = 1;
 
     setupHook = ./setup-hook.sh;
 
@@ -101,7 +100,6 @@ let
       libPrefix = "python${majorVersion}";
       executable = libPrefix;
       sitePackages = "lib/${libPrefix}/site-packages";
-      interpreter = "${self}/bin/${executable}";
     };
 
     enableParallelBuilding = true;

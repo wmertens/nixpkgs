@@ -26,7 +26,6 @@ cabal.mkDerivation (self: {
     description = "Libgit2 backend for gitlib";
     license = self.stdenv.lib.licenses.mit;
     platforms = self.ghc.meta.platforms;
-    hydraPlatforms = self.stdenv.lib.platforms.none;
     maintainers = with self.stdenv.lib.maintainers; [ ianwookim ];
   };
 })

@@ -153,6 +153,7 @@ let version = "4.9.1";
           " --disable-libssp --disable-nls" +
           " --without-headers" +
           " --disable-threads " +
+          " --disable-libmudflap " +
           " --disable-libgomp " +
           " --disable-libquadmath" +
           " --disable-shared" +
@@ -512,6 +513,4 @@ stdenv.mkDerivation ({
 
 # Strip kills static libs of other archs (hence cross != null)
 // optionalAttrs (!stripped || cross != null) { dontStrip = true; NIX_STRIP_DEBUG = 0; }
-
-// optionalAttrs (enableMultilib) { dontMoveLib64 = true; }
 )

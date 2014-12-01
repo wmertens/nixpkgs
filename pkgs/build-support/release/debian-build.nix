@@ -32,7 +32,7 @@ vmTools.runInLinuxImage (stdenv.mkDerivation (
     postHook = ''
       . ${./functions.sh}
       propagateImageName
-      src=$(findTarball $src)
+      src=$(findTarballs $src | head -1) # Find a tarball.
     '';
 
     installExtraDebsPhase = ''

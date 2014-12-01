@@ -818,7 +818,7 @@ let
       homepage = "http://cvxopt.org/";
       description = "Python Software for Convex Optimization";
       maintainers = with maintainers; [ edwtjo ];
-      license = licenses.gpl3Plus;
+      licsense = licenses.gpl3Plus;
     };
   };
 
@@ -6586,24 +6586,6 @@ let
   };
 
 
-  pyalgotrade = buildPythonPackage {
-    name = "pyalogotrade-0.16";
-
-    src = pkgs.fetchurl {
-      url = "https://pypi.python.org/packages/source/P/PyAlgoTrade/PyAlgoTrade-0.16.tar.gz";
-      md5 = "01d70583ab15eb3bad21027bdeb30ae5";
-    };
-
-    propagatedBuildInputs = with self; [ numpy scipy pytz ];
-
-    meta = {
-      description = "Python Algorithmic Trading";
-      homepage = http://gbeced.github.io/pyalgotrade/;
-      license = stdenv.lib.licenses.asl20;
-    };
-  };
-
-
   pyasn1 = buildPythonPackage ({
     name = "pyasn1-0.1.7";
 
@@ -6769,7 +6751,7 @@ let
       sha256 = "33b2b79438bb9bf37097966e1c90403c34ab49be1eb647ee251b62f362ee3537";
     };
 
-    buildInputs = with pkgs; [ capnproto self.cython ];
+    buildInputs = with pkgs; [ capnproto cython ];
 
     # import setuptools as soon as possible, to minimize monkeypatching mayhem.
     postConfigure = ''
@@ -7201,7 +7183,7 @@ let
       sha256 = "1fnhj26d9qrqqmjx092m1qspclh3mia3vag7rji5wciw0plpszi5";
     };
 
-    propagatedBuildInputs = with self; [ scipy pyqt4 pyopengl ];
+    propagatedBuildInputs = with self; [ scipy numpy pyqt4 pyopengl ];
 
     meta = with stdenv.lib; {
       description = "Scientific Graphics and GUI Library for Python";
@@ -7447,35 +7429,41 @@ let
     };
   };
 
+  pyopengl =
+    let version = "3.0.2";
+    in
+      buildPythonPackage {
+        name = "pyopengl-${version}";
 
-  pyopengl = buildPythonPackage rec {
-    name = "pyopengl-${version}";
-    version = "3.0.2";
+        src = pkgs.fetchurl {
+          url = "http://pypi.python.org/packages/source/P/PyOpenGL/PyOpenGL-${version}.tar.gz";
+          sha256 = "9ef93bbea2c193898341f574e281c3ca0dfe87c53aa25fbec4b03581f6d1ba03";
+        };
 
-    src = pkgs.fetchurl {
-      url = "http://pypi.python.org/packages/source/P/PyOpenGL/PyOpenGL-${version}.tar.gz";
-      sha256 = "9ef93bbea2c193898341f574e281c3ca0dfe87c53aa25fbec4b03581f6d1ba03";
-    };
-    propagatedBuildInputs = [ pkgs.mesa pkgs.freeglut self.pillow ];
-    patchPhase = ''
-      sed -i "s|util.find_library( name )|name|" OpenGL/platform/ctypesloader.py
-      sed -i "s|'GL',|'libGL.so',|" OpenGL/platform/glx.py
-      sed -i "s|'GLU',|'${pkgs.mesa}/lib/libGLU.so',|" OpenGL/platform/glx.py
-      sed -i "s|'glut',|'${pkgs.freeglut}/lib/libglut.so',|" OpenGL/platform/glx.py
-    '';
-    meta = {
-      homepage = http://pyopengl.sourceforge.net/;
-      description = "PyOpenGL, the Python OpenGL bindings";
-      longDescription = ''
-        PyOpenGL is the cross platform Python binding to OpenGL and
-        related APIs.  The binding is created using the standard (in
-        Python 2.5) ctypes library, and is provided under an extremely
-        liberal BSD-style Open-Source license.
-      '';
-      license = "BSD-style";
-      platforms = stdenv.lib.platforms.mesaPlatforms;
-    };
-  };
+        propagatedBuildInputs = with pkgs; [ mesa freeglut pil ];
+
+        patchPhase = ''
+          sed -i "s|util.find_library( name )|name|" OpenGL/platform/ctypesloader.py
+          sed -i "s|'GL',|'libGL.so',|" OpenGL/platform/glx.py
+          sed -i "s|'GLU',|'${pkgs.mesa}/lib/libGLU.so',|" OpenGL/platform/glx.py
+          sed -i "s|'glut',|'${pkgs.freeglut}/lib/libglut.so',|" OpenGL/platform/glx.py
+        '';
+
+        meta = {
+          homepage = http://pyopengl.sourceforge.net/;
+          description = "PyOpenGL, the Python OpenGL bindings";
+
+          longDescription = ''
+            PyOpenGL is the cross platform Python binding to OpenGL and
+            related APIs.  The binding is created using the standard (in
+            Python 2.5) ctypes library, and is provided under an extremely
+            liberal BSD-style Open-Source license.
+          '';
+
+          license = "BSD-style";
+          platforms = stdenv.lib.platforms.mesaPlatforms;
+        };
+      };
 
 
   pyquery = buildPythonPackage rec {
@@ -7717,9 +7705,8 @@ let
       sha256 = "1svlwyl61rvbqbcbalkg6pbf38yjyv7qkq9sx4x35yk69lscaac2";
     };
 
-    buildInputs = [
-      pkgs.pkgconfig pkgs.gtk2 self.pygtk pkgs.libxml2
-      pkgs.libxslt pkgs.libsoup pkgs.webkitgtk2 pkgs.icu
+    buildInputs = with pkgs; [
+      pkgconfig python gtk2 pygtk libxml2 libxslt libsoup webkitgtk2 icu
     ];
 
     meta = {
@@ -7887,10 +7874,10 @@ let
       sha1 = "76ba4991322a991d580e78a197adc80d58bd5fb3";
     };
 
-    propagatedBuildInputs = with self; [ numpy scipy matplotlib pyqt4
+    propagatedBuildInputs = with self; [ numpy scipy matplotlib pkgs.pyqt4
       cython ];
 
-    buildInputs = [ pkgs.gcc pkgs.qt4 pkgs.blas self.nose ];
+    buildInputs = with pkgs; [ gcc qt4 blas self.nose ];
 
     meta = {
       description = "QuTiP - Quantum Toolbox in Python";
@@ -8370,7 +8357,7 @@ let
       md5 = "d7c7f4ccf8b07b08d6fe49d5cd51f85d";
     };
 
-    buildInputs = [ pkgs.gfortran ];
+    buildInputs = with self; [pkgs.gfortran];
     propagatedBuildInputs = with self; [ numpy ];
 
     # TODO: add ATLAS=${pkgs.atlas}
@@ -8387,36 +8374,6 @@ let
     meta = {
       description = "SciPy (pronounced 'Sigh Pie') is open-source software for mathematics, science, and engineering. ";
       homepage = http://www.scipy.org/;
-    };
-  };
-
-
-  scikitlearn = buildPythonPackage {
-    name = "scikit-learn-0.15.2";
-
-    disabled = isPy3k;
-
-    src = pkgs.fetchurl {
-      url = "https://pypi.python.org/packages/source/s/scikit-learn/scikit-learn-0.15.2.tar.gz";
-      md5 = "d9822ad0238e17b382a3c756ea94fe0d";
-    };
-
-    buildInputs = with self; [ nose pillow pkgs.gfortran ];
-    propagatedBuildInputs = with self; [ numpy scipy pkgs.atlas ];
-
-    buildPhase = ''
-      export ATLAS=${pkgs.atlas}
-      ${self.python.executable} setup.py build_ext -i --fcompiler='gnu95'
-    '';
-
-    checkPhase = ''
-      LOCALE_ARCHIVE=${localePath} LC_ALL="en_US.UTF-8" HOME=$TMPDIR ATLAS="" nosetests
-    '';
-
-    meta = {
-      description = "A set of python modules for machine learning and data mining";
-      homepage = http://scikit-learn.org;
-      license = stdenv.lib.licenses.bsd3;
     };
   };
 

@@ -93,7 +93,6 @@ let
       libPrefix = "python${majorVersion}";
       executable = libPrefix;
       sitePackages = "lib/${libPrefix}/site-packages";
-      interpreter = "${self}/bin/${executable}";
     };
 
     enableParallelBuilding = true;

@@ -80,7 +80,6 @@ stdenv.mkDerivation {
     isPy32 = true;
     is_py3k = true;  # deprecated
     sitePackages = "lib/${libPrefix}/site-packages";
-    interpreter = "${self}/bin/${executable}";
   };
 
   enableParallelBuilding = true;

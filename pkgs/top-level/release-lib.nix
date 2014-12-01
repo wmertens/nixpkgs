@@ -1,9 +1,9 @@
-{ supportedSystems, packageSet ? (import ./all-packages.nix) }:
+{ supportedSystems }:
 
 rec {
 
   # Ensure that we don't build packages marked as unfree.
-  allPackages = args: packageSet (args // {
+  allPackages = args: import ./all-packages.nix (args // {
     config.allowUnfree = false;
   });
 

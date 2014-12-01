@@ -1,25 +1,32 @@
-{ stdenv, fetchgit, which, perl, jdk
-, ocamlPackages, openssl
-, coreutils, zlib, ncurses, makeWrapper
-, gcc, binutils, gnumake, nodejs} :
+{ stdenv, fetchurl, which, ocaml, perl, jdk
+, findlib, ocaml_ssl, openssl, cryptokit, camlzip, ulex
+, ocamlgraph, coreutils, zlib, ncurses, makeWrapper
+, gcc, binutils, gnumake, nodejs, git } :
 
 stdenv.mkDerivation rec {
   pname = "opa";
-  version = "4309";
+  version = "4308";
   name = "${pname}-${version}";
 
-  src = fetchgit {
-    url = https://github.com/MLstate/opalang.git;
-    rev = "047f58bfd4be35ee30176156b3718c707a6c0f76";
-    sha256 = "1jbxfrmpbjjk7qvaxdn47044w5m8wr96q9yx65ib3wlapmjbvdvf";
+  src = fetchurl {
+    url = "https://github.com/MLstate/opalang/tarball/v${version}";
+    name = "opa-${version}.tar.gz";
+    sha256 = "1farii9474i14ack6bpqm1jihs6i8pvwky3a7q8v8pbnl4i6lb5g";
   };
 
   # Paths so the opa compiler code generation will use the same programs as were
   # used to build opa.
-  codeGeneratorPaths = "${ocamlPackages.ocaml}/bin:${gcc}/bin:${binutils}/bin:${gnumake}/bin:${nodejs}/bin";
+  codeGeneratorPaths = "${ocaml}/bin:${gcc}/bin:${binutils}/bin:${gnumake}/bin";
+
+  prePatch = ''
+    find . -type f -exec sed -i 's@/usr/bin/env@${coreutils}/bin/env@' {} \;
+    find . -type f -exec sed -i 's@/usr/bin/perl@${perl}/bin/perl@' {} \;
+  '';
+
+  patches = [];
 
   preConfigure = ''
-    patchShebangs .
+    configureFlags="$configureFlags -prefix $out"
     (
     cat ./compiler/buildinfos/buildInfos.ml.pre
     ./compiler/buildinfos/generate_buildinfos.sh . --release --version ./compiler/buildinfos/version_major.txt 
@@ -29,17 +36,14 @@ stdenv.mkDerivation rec {
     )> ./compiler/buildinfos/buildInfos.ml
   '';
 
-  prefixKey = "-prefix ";
+  dontAddPrefix = true;
 
-  configureFlags = "-ocamlfind ${ocamlPackages.findlib}/bin/ocamlfind ";
+  configureFlags = "-ocamlfind ${findlib}/bin/ocamlfind ";
 
-  buildInputs = [ which perl jdk openssl coreutils zlib ncurses
-    makeWrapper gcc binutils gnumake nodejs
-  ] ++ (with ocamlPackages; [
-    ocaml findlib ocaml_ssl cryptokit camlzip ulex ocamlgraph
-  ]);
-
-  NIX_LDFLAGS = "-lgcc_s";
+  buildInputs = [ which ocaml perl jdk findlib ocaml_ssl openssl cryptokit camlzip ulex
+                  ocamlgraph coreutils zlib ncurses makeWrapper gcc binutils gnumake
+		  nodejs git
+		  ];
 
   postInstall = ''
     # Have compiler use same tools for code generation as used to build it.
@@ -49,7 +53,7 @@ stdenv.mkDerivation rec {
 
     # Install emacs mode.
     mkdir -p $out/share/emacs/site-lisp/opa
-    install -m 0644 -v ./tools/editors/emacs/{opa-mode.el,site-start.el} $out/share/emacs/site-lisp/opa
+    install -m 0644 -v ./utils/emacs/{opa-mode.el,site-start.el} $out/share/emacs/site-lisp/opa
   '';
 
   meta = {
@@ -62,6 +66,15 @@ stdenv.mkDerivation rec {
     homepage = http://opalang.org/;
     license = stdenv.lib.licenses.gpl3;
     maintainers = [ stdenv.lib.maintainers.kkallio ];
-    platforms = with stdenv.lib.platforms; linux;
+    platforms = [ "x86_64-linux" ];
+    # File "compiler/libqmlcompil/dbGen/schema_io.ml", line 199, characters 3-53:
+    # Error: Signature mismatch:
+    #        ...
+    #     The field `remove_edge_e' is required but not provided
+    #     The field `remove_edge' is required but not provided
+    #     The field `remove_vertex' is required but not provided
+    # Command exited with code 2.
+    # make: *** [node] Error 10
+    broken = true;
   };
 }

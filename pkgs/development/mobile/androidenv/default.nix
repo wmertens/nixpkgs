@@ -129,7 +129,7 @@ rec {
   };
 
   androidndk = import ./androidndk.nix {
-    inherit (pkgs) stdenv fetchurl zlib ncurses p7zip;
+    inherit (pkgs) stdenv fetchurl zlib ncurses;
   };
   
   buildApp = import ./build-app.nix {

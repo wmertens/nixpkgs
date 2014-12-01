@@ -3,14 +3,11 @@
 rec {
   inherit (pkgs) glib gtk2 gtk3 gnome2;
   gnome3 = pkgs.gnome3_12 // { recurseForDerivations = false; };
-
-  # DO NOT UPGRADE CLUTTER, IT BREAKS GNOME 3.12
   clutter = pkgs.clutter_1_18;
   clutter_gtk = pkgs.clutter_gtk.override { inherit clutter; };
   clutter-gst = pkgs.clutter-gst.override { inherit clutter; };
-  cogl = pkgs.cogl_1_18;
-
   upower = pkgs.upower_99;
+  cogl = pkgs.cogl_1_18;
   gtk = gtk3; # just to be sure
   libcanberra = pkgs.libcanberra_gtk3; # just to be sure
   inherit (pkgs.gnome2) ORBit2;
@@ -25,13 +22,9 @@ rec {
 
   dconf = callPackage ./core/dconf { };
 
-  empathy = callPackage ./core/empathy {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  empathy = callPackage ./core/empathy { };
 
-  epiphany = callPackage ./core/epiphany {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  epiphany = callPackage ./core/epiphany { };
 
   evince = callPackage ./core/evince { }; # ToDo: dbus would prevent compilation, enable tests
 
@@ -83,9 +76,7 @@ rec {
 
   folks = callPackage ./core/folks { };
 
-  gnome_online_accounts = callPackage ./core/gnome-online-accounts {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  gnome_online_accounts = callPackage ./core/gnome-online-accounts { };
 
   gnome-online-miners = callPackage ./core/gnome-online-miners { };
 
@@ -167,9 +158,7 @@ rec {
 
   rest = callPackage ./core/rest { };
 
-  sushi = callPackage ./core/sushi {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  sushi = callPackage ./core/sushi { };
 
   totem = callPackage ./core/totem { };
 
@@ -185,9 +174,7 @@ rec {
 
   vino = callPackage ./core/vino { };
 
-  yelp = callPackage ./core/yelp {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  yelp = callPackage ./core/yelp { };
 
   yelp_xsl = callPackage ./core/yelp-xsl { };
 
@@ -198,13 +185,9 @@ rec {
 
 #### Apps (http://ftp.acc.umu.se/pub/GNOME/apps/)
 
-  bijiben = callPackage ./apps/bijiben {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  bijiben = callPackage ./apps/bijiben { };
 
-  evolution = callPackage ./apps/evolution {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  evolution = callPackage ./apps/evolution { };
 
   file-roller = callPackage ./apps/file-roller { };
 
@@ -219,9 +202,7 @@ rec {
 
   gnome-clocks = callPackage ./apps/gnome-clocks { };
 
-  gnome-documents = callPackage ./apps/gnome-documents {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  gnome-documents = callPackage ./apps/gnome-documents { };
 
   gnome-music = callPackage ./apps/gnome-music { };
 
@@ -244,17 +225,13 @@ rec {
 
 #### Misc -- other packages on http://ftp.gnome.org/pub/GNOME/sources/
 
-  geary = callPackage ./misc/geary {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  geary = callPackage ./misc/geary { };
 
   gfbgraph = callPackage ./misc/gfbgraph { };
 
   goffice = callPackage ./misc/goffice { };
 
-  gitg = callPackage ./misc/gitg {
-    webkitgtk = pkgs.webkitgtk24x;
-  };
+  gitg = callPackage ./misc/gitg { };
 
   libgda = callPackage ./misc/libgda { };
 

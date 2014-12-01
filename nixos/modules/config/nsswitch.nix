@@ -35,27 +35,29 @@ in
 
   config = {
 
-    # Name Service Switch configuration file.  Required by the C
-    # library.  !!! Factor out the mdns stuff.  The avahi module
-    # should define an option used by this module.
-    environment.etc."nsswitch.conf".text =
-      ''
-        passwd:    files ldap
-        group:     files ldap
-        shadow:    files ldap
-        hosts:     files ${optionalString nssmdns "mdns_minimal [NOTFOUND=return]"} dns ${optionalString nssmdns "mdns"} ${optionalString nsswins "wins"} myhostname mymachines
-        networks:  files dns
-        ethers:    files
-        services:  files
-        protocols: files
-      '';
+    environment.etc =
+      [ # Name Service Switch configuration file.  Required by the C library.
+        # !!! Factor out the mdns stuff.  The avahi module should define
+        # an option used by this module.
+        { source = pkgs.writeText "nsswitch.conf"
+            ''
+              passwd:    files ldap
+              group:     files ldap
+              shadow:    files ldap
+              hosts:     files ${optionalString nssmdns "mdns_minimal [NOTFOUND=return]"} dns ${optionalString nssmdns "mdns"} ${optionalString nsswins "wins"} myhostname
+              networks:  files dns
+              ethers:    files
+              services:  files
+              protocols: files
+            '';
+          target = "nsswitch.conf";
+        }
+      ];
 
-    # Systemd provides nss-myhostname to ensure that our hostname
-    # always resolves to a valid IP address.  It returns all locally
-    # configured IP addresses, or ::1 and 127.0.0.2 as
-    # fallbacks. Systemd also provides nss-mymachines to return IP
-    # addresses of local containers.
-    system.nssModules = [ config.systemd.package ];
+    # Use nss-myhostname to ensure that our hostname always resolves to
+    # a valid IP address.  It returns all locally configured IP
+    # addresses, or ::1 and 127.0.0.2 as fallbacks.
+    system.nssModules = [ pkgs.systemd ];
 
   };
 }

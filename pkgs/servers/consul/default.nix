@@ -2,7 +2,7 @@
 , ruby, rubyLibs, nodejs }:
 
 let
-  version = "0.4.1";
+  version = "0.4.0";
 in
 
 with lib;

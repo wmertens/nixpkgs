@@ -62,7 +62,7 @@ in
             mkdir -m 0755 -p /var/db/nscd
           '';
 
-        restartTriggers = [ config.environment.etc.hosts.source config.environment.etc."nsswitch.conf".source ];
+        restartTriggers = [ config.environment.etc.hosts.source ];
 
         serviceConfig =
           { ExecStart = "@${pkgs.glibc}/sbin/nscd nscd -f ${cfgFile}";

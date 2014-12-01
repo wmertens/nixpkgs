@@ -1,12 +1,13 @@
 { stdenv, fetchgit, libX11, imlib2, giflib, libexif }:
 
-stdenv.mkDerivation {
-  name = "sxiv-1.3-git";
+stdenv.mkDerivation rec {
+  version = "1.3-git";
+  name = "sxiv-${version}";
 
   src = fetchgit {
     url = "https://github.com/muennich/sxiv.git";
-    rev = "54af451b4a81b5b1072f27de0981a2d39cabc2d6";
-    sha256 = "1b0fb6bd8d36af4c7f1160fcc12b5b7382546c7da35b4924d259f7efaa4c97d0";
+    rev = "f55d9f4283f7133ab5a137fc04ee19d1df62fafb";
+    sha256 = "85f734f40fdc837514b72694de12bac92fe130286fa6f1dc374e94d575ca8280";
   };
 
   postUnpack = ''

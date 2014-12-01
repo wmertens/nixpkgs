@@ -95,6 +95,7 @@ let
       gajim = linux;
       gawk = all;
       gcc = linux;
+      gcc33 = linux;
       gcc34 = linux;
       gcc44 = linux;
       gcj = linux;

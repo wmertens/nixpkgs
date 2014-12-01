@@ -114,4 +114,13 @@ fi
 # We want gcc to call the wrapper linker, not that of binutils.
 export PATH="@ldPath@:$PATH"
 
-exec @gccProg@ ${extraBefore[@]} "${params[@]}" ${extraAfter[@]}
+# Call the real `gcc'.  Filter out warnings from stderr about unused
+# `-B' flags, since they confuse some programs.  Deep bash magic to
+# apply grep to stderr (by swapping stdin/stderr twice).
+if test -z "$NIX_GCC_NEEDS_GREP"; then
+    @gccProg@ ${extraBefore[@]} "${params[@]}" ${extraAfter[@]}
+else
+    (@gccProg@ ${extraBefore[@]} "${params[@]}" ${extraAfter[@]} 3>&2 2>&1 1>&3- \
+        | (grep -v 'file path prefix' || true); exit ${PIPESTATUS[0]}) 3>&2 2>&1 1>&3-
+    exit $?
+fi    

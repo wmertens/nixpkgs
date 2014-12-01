@@ -28,8 +28,6 @@ stdenv.mkDerivation rec {
     HOME=$TMPDIR
   '';
 
-  configureFlags = [ "--with-boost-libdir=${boost.lib}/lib" ];
-
   doCheck = true;
 
   enableParallelBuilding = true;
@@ -47,6 +45,5 @@ stdenv.mkDerivation rec {
       homepage = "http://www.bitcoin.org/";
       maintainers = [ maintainers.roconnor ];
       license = licenses.mit;
-      platforms = platforms.unix;
   };
 }

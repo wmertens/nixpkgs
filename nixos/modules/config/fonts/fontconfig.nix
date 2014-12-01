@@ -27,11 +27,9 @@ with lib;
 
   config = mkIf config.fonts.enableFontConfig {
 
-    # Fontconfig 2.10 backward compatibility
-
-    # Bring in the default (upstream) fontconfig configuration, only for fontconfig 2.10
+    # Bring in the default (upstream) fontconfig configuration.
     environment.etc."fonts/fonts.conf".source =
-      pkgs.makeFontsConf { fontconfig = pkgs.fontconfig_210; fontDirectories = config.fonts.fonts; };
+      pkgs.makeFontsConf { fontDirectories = config.fonts.fonts; };
 
     environment.etc."fonts/conf.d/00-nixos.conf".text =
       ''
@@ -45,29 +43,6 @@ with lib;
               <const>hintslight</const>
             </edit>
           </match>
-
-        </fontconfig>
-      '';
-
-    # Versioned fontconfig > 2.10. Take shared fonts.conf from fontconfig.
-    # Otherwise specify only font directories.
-    environment.etc."fonts/${pkgs.fontconfig.configVersion}/fonts.conf".source =
-      "${pkgs.fontconfig}/etc/fonts/fonts.conf";
-    environment.etc."fonts/${pkgs.fontconfig.configVersion}/conf.d/00-nixos.conf".text =
-      ''
-        <?xml version='1.0'?>
-        <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
-        <fontconfig>
-
-          <!-- Set the default hinting style to "slight". -->
-          <match target="font">
-            <edit mode="assign" name="hintstyle">
-              <const>hintslight</const>
-            </edit>
-          </match>
-
-          <!-- Font directories -->
-          ${concatStringsSep "\n" (map (font: "<dir>${font}</dir>") config.fonts.fonts)}
 
         </fontconfig>
       '';

@@ -6,8 +6,8 @@
 
 cabal.mkDerivation (self: {
   pname = "digestive-functors-aeson";
-  version = "1.1.12.1";
-  sha256 = "1jwrlmavwjq3bf8ylazi91mwl47n5pdh3lipv4p7v0gq45dm3hg9";
+  version = "1.1.11";
+  sha256 = "0jf62ssyc317x070xkjdnfbb2g8mb19a83hig08j95vyqwjgk4vg";
   buildDepends = [
     aeson digestiveFunctors lens lensAeson safe text vector
   ];
@@ -20,5 +20,6 @@ cabal.mkDerivation (self: {
     license = self.stdenv.lib.licenses.gpl3;
     platforms = self.ghc.meta.platforms;
     maintainers = with self.stdenv.lib.maintainers; [ ocharles ];
+    broken = true;
   };
 })

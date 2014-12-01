@@ -12,8 +12,7 @@
 
 stdenv.mkDerivation rec {
   name = "pidgin-${version}";
-  majorVersion = "2";
-  version = "${majorVersion}.10.10";
+  version = "2.10.10";
 
   src = fetchurl {
     url = "mirror://sourceforge/pidgin/${name}.tar.bz2";
@@ -51,8 +50,6 @@ stdenv.mkDerivation rec {
     "--disable-tcl"
   ]
   ++ (lib.optionals (gnutls != null) ["--enable-gnutls=yes" "--enable-nss=no"]);
-
-  enableParallelBuilding = true;
 
   meta = with stdenv.lib; {
     description = "Multi-protocol instant messaging client";

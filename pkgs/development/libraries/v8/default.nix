@@ -63,7 +63,7 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Google's open source JavaScript engine";
-    platforms = with platforms; linux;
+    platforms = with platforms; linux ++ darwin;
     license = licenses.bsd3;
   };
 }

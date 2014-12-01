@@ -31,7 +31,6 @@ let
     buildCommand = ''
       mkdir -p $out
       shopt -s nullglob
-      set +o pipefail
 
       # Set a reasonable $PATH for programs called by udev rules.
       echo 'ENV{PATH}="${udevPath}/bin:${udevPath}/sbin"' > $out/00-path.rules

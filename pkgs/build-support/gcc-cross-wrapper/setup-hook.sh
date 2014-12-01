@@ -11,7 +11,7 @@ crossAddCVars () {
     fi
 }
 
-crossEnvHooks+=(crossAddCVars)
+crossEnvHooks=(${crossEnvHooks[@]} crossAddCVars)
 
 crossStripDirs() {
     local dirs="$1"

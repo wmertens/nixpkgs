@@ -72,8 +72,7 @@ let
        # disable test_os because test_urandom_failure fails
        # disable test_urllib2net and test_urllibnet because it requires networking (example.com)
        # disable test_zipfile64 because it randomly timeouts
-       # disable test_default_ciphers because of error message mismatch
-      ./pypy-c ./pypy/test_all.py --pypy=./pypy-c -k 'not (test_sqlite or test_default_ciphers or test_urllib2net or test_urllibnet or test_socket or test_os or test_shutil or test_mhlib or test_multiprocessing or test_zipfile64)' lib-python
+      ./pypy-c ./pypy/test_all.py --pypy=./pypy-c -k 'not (test_sqlite or test_urllib2net or test_urllibnet or test_socket or test_os or test_shutil or test_mhlib or test_multiprocessing or test_zipfile64)' lib-python
     '';
 
     installPhase = ''
@@ -96,12 +95,11 @@ let
          --set LIBRARY_PATH "${LIBRARY_PATH}"
     '';
 
-    passthru = rec {
+    passthru = {
       inherit zlibSupport libPrefix;
       executable = "pypy";
       isPypy = true;
       buildEnv = callPackage ../../python/wrapper.nix { python = self; };
-      interpreter = "${self}/bin/${executable}";
     };
 
     enableParallelBuilding = true;

@@ -108,7 +108,7 @@ stdenv.mkDerivation (
       . ${./functions.sh}
 
       origSrc=$src
-      src=$(findTarball $src)
+      src=$(findTarballs $src | head -1)
     ''; 
   }
 )

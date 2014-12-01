@@ -1,10 +1,10 @@
 #! @shell@ -e
 
-if [ -n "$NIX_GNAT_WRAPPER_START_HOOK" ]; then
+if test -n "$NIX_GNAT_WRAPPER_START_HOOK"; then
     source "$NIX_GNAT_WRAPPER_START_HOOK"
 fi
 
-if [ -z "$NIX_GNAT_WRAPPER_FLAGS_SET" ]; then
+if test -z "$NIX_GNAT_WRAPPER_FLAGS_SET"; then
     source @out@/nix-support/add-flags.sh
 fi
 
@@ -18,14 +18,14 @@ getVersion=0
 nonFlagArgs=0
 
 for i in "$@"; do
-    if [ "$i" = -c ]; then
+    if test "$i" = "-c"; then
         dontLink=1
-    elif [ "$i" = -M ]; then
+    elif test "$i" = "-M"; then
         dontLink=1
-    elif [ "${i:0:1}" != - ]; then
+    elif test "${i:0:1}" != "-"; then
         nonFlagArgs=1
-    elif [ "$i" = -m32 ]; then
-        if [ -e @out@/nix-support/dynamic-linker-m32 ]; then
+    elif test "$i" = "-m32"; then
+        if test -e @out@/nix-support/dynamic-linker-m32; then
             NIX_LDFLAGS="$NIX_LDFLAGS -dynamic-linker $(cat @out@/nix-support/dynamic-linker-m32)"
         fi
     fi
@@ -36,26 +36,26 @@ done
 # "-c" flag).  So if no non-flag arguments are given, don't pass any
 # linker flags.  This catches cases like "gcc" (should just print
 # "gcc: no input files") and "gcc -v" (should print the version).
-if [ "$nonFlagArgs" = 0 ]; then
+if test "$nonFlagArgs" = "0"; then
     dontLink=1
 fi
 
 
 # Optionally filter out paths not refering to the store.
 params=("$@")
-if [ "$NIX_ENFORCE_PURITY" = 1 -a -n "$NIX_STORE" ]; then
+if test "$NIX_ENFORCE_PURITY" = "1" -a -n "$NIX_STORE"; then
     rest=()
     n=0
-    while [ $n -lt ${#params[*]} ]; do
+    while test $n -lt ${#params[*]}; do
         p=${params[n]}
         p2=${params[$((n+1))]}
-        if [ "${p:0:3}" = -L/ ] && badPath "${p:2}"; then
+        if test "${p:0:3}" = "-L/" && badPath "${p:2}"; then
             skip $p
-        elif [ "${p:0:3}" = -I/ ] && badPath "${p:2}"; then
+        elif test "${p:0:3}" = "-I/" && badPath "${p:2}"; then
             skip $p
-        elif [ "${p:0:4}" = -aI/ ] && badPath "${p:3}"; then
+        elif test "${p:0:4}" = "-aI/" && badPath "${p:3}"; then
             skip $p
-        elif [ "${p:0:4}" = -aO/ ] && badPath "${p:3}"; then
+        elif test "${p:0:4}" = "-aO/" && badPath "${p:3}"; then
             skip $p
         else
             rest=("${rest[@]}" "$p")
@@ -81,23 +81,33 @@ fi
 #done
 
 # Optionally print debug info.
-if [ -n "$NIX_DEBUG" ]; then
-  echo "original flags to @prog@:" >&2
+if test "$NIX_DEBUG" = "1"; then
+  echo "original flags to @gnatProg@:" >&2
   for i in "${params[@]}"; do
       echo "  $i" >&2
   done
-  echo "extraBefore flags to @prog@:" >&2
+  echo "extraBefore flags to @gnatProg@:" >&2
   for i in ${extraBefore[@]}; do
       echo "  $i" >&2
   done
-  echo "extraAfter flags to @prog@:" >&2
+  echo "extraAfter flags to @gnatProg@:" >&2
   for i in ${extraAfter[@]}; do
       echo "  $i" >&2
   done
 fi
 
-if [ -n "$NIX_GNAT_WRAPPER_EXEC_HOOK" ]; then
+if test -n "$NIX_GNAT_WRAPPER_EXEC_HOOK"; then
     source "$NIX_GNAT_WRAPPER_EXEC_HOOK"
 fi
 
-exec @prog@ ${extraBefore[@]} "${params[@]}" ${extraAfter[@]}
+
+# Call the real `gcc'.  Filter out warnings from stderr about unused
+# `-B' flags, since they confuse some programs.  Deep bash magic to
+# apply grep to stderr (by swapping stdin/stderr twice).
+if test -z "$NIX_GNAT_NEEDS_GREP"; then
+    @gnatProg@ ${extraBefore[@]} "${params[@]}" ${extraAfter[@]}
+else
+    (@gnatProg@ ${extraBefore[@]} "${params[@]}" ${extraAfter[@]} 3>&2 2>&1 1>&3- \
+        | (grep -v 'file path prefix' || true); exit ${PIPESTATUS[0]}) 3>&2 2>&1 1>&3-
+    exit $?
+fi
