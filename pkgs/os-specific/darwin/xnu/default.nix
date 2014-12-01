@@ -1,6 +1,12 @@
-{ stdenv, fetchurl, bootstrap_cmds, bison, flex, gnum4, unifdef, perl }:
+{ stdenv, fetchurl, fetchzip, bootstrap_cmds, bison, flex, gnum4, unifdef, perl }:
 
-stdenv.mkDerivation rec {
+let
+  newXnu = fetchzip {
+    url    = "http://opensource.apple.com/tarballs/xnu/xnu-2782.1.97.tar.gz";
+    sha256 = "17cf879fgf863vkhm8jdjkx94pykbzbky1bcp8xgmh61yifzbip3";
+  };
+
+in stdenv.mkDerivation rec {
   version = "2422.115.4";
   name    = "xnu-${version}";
 
@@ -45,6 +51,8 @@ stdenv.mkDerivation rec {
       --replace '$SRC/servers/netname.defs' '-I$DSTROOT/include $SRC/servers/netname.defs'
 
     patchShebangs .
+
+    cp ${newXnu}/EXTERNAL_HEADERS/Availability*.h EXTERNAL_HEADERS
   '';
 
   installPhase = ''
