@@ -1,6 +1,6 @@
 { fetchurl, stdenv, pkgconfig, libgcrypt, libassuan, libksba, npth
 , readline ? null, libusb ? null, gnutls ? null, adns ? null, openldap ? null
-, zlib ? null, bzip2 ? null, pinentry ? null, autoreconfHook, gettext
+, zlib ? null, bzip2 ? null, pinentry ? null
 }:
 
 with stdenv.lib;
@@ -12,13 +12,9 @@ stdenv.mkDerivation rec {
     sha256 = "12q5shx6ldqad3rky154nv8f2cy57sxy9idivz93ggqm1bsw7a0n";
   };
 
-  patches = [ ./socket-activate.patch ] ++ stdenv.lib.optional stdenv.isDarwin
-    ./libcommon-darwin.patch;
-
   buildInputs = [
     pkgconfig libgcrypt libassuan libksba npth
     readline libusb gnutls adns openldap zlib bzip2
-    autoreconfHook gettext
   ];
 
   configureFlags =
