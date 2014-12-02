@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl, ncurses, gmp}:
+{stdenv, fetchurl, perl, ncurses, gmp, makeWrapper}:
 
 stdenv.mkDerivation rec {
   version = "7.8.3";
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
       }
     else throw "cannot bootstrap GHC on this platform";
 
-  buildInputs = [perl];
+  buildInputs = [perl makeWrapper];
 
   postUnpack =
     # Strip is harmful, see also below. It's important that this happens
@@ -83,6 +83,10 @@ stdenv.mkDerivation rec {
           module Main where
           main = putStrLn "yes"
         EOF
+        echo sanity check
+      '' + stdenv.lib.optionalString stdenv.isDarwin ''
+        wrapProgram $out/bin/ghc --set NIX_ENFORCE_PURITY "" --add-flags -optl-L/usr/lib
+      '' + ''
         $out/bin/ghc --make main.hs
         echo compilation ok
         [ $(./main) == "yes" ]

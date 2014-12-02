@@ -11,6 +11,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ dyld icu libdispatch launchd libclosure ];
 
+  patches = [ ./add-cf-initialize.patch ];
+
   preBuild = ''
     substituteInPlace Makefile \
       --replace "/usr/bin/clang" "clang" \

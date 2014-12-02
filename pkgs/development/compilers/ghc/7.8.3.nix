@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, ghc, perl, gmp, ncurses }:
+{ stdenv, fetchurl, ghc, perl, gmp, ncurses, libiconv }:
 
 stdenv.mkDerivation rec {
   version = "7.8.3";
@@ -10,6 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ ghc perl gmp ncurses ];
+  propagatedBuildInputs = [ libiconv ];
 
   enableParallelBuilding = true;
 

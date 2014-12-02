@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, libiconvOrEmpty, libintlOrEmpty
+{ stdenv, fetchurl, pkgconfig, libiconv, libintlOrEmpty
 , expat, zlib, libpng, pixman, fontconfig, freetype, xlibs
 , gobjectSupport ? true, glib
 , xcbSupport ? true # no longer experimental since 1.12
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     sha256 = "0inqwsylqkrzcjivdirkjx5nhdgxbdc62fq284c3xppinfg9a195";
   };
 
-  nativeBuildInputs = [ pkgconfig ] ++ libintlOrEmpty ++ libiconvOrEmpty;
+  nativeBuildInputs = [ pkgconfig libiconv ] ++ libintlOrEmpty;
 
   propagatedBuildInputs =
     with xlibs; [ xlibs.xlibs fontconfig expat freetype pixman zlib libpng ]
