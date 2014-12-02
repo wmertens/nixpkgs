@@ -693,6 +693,7 @@ let self = _self // overrides; _self = with self; {
     meta = {
       description = "A storage class for Catalyst Authentication using DBIx::Class";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
+      platforms = stdenv.lib.platforms.linux;
     };
   };
 
@@ -992,6 +993,7 @@ let self = _self // overrides; _self = with self; {
     meta = {
       description = "Display a stack trace on the debug screen";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
+      platforms = stdenv.lib.platforms.linux;
     };
   };
 
@@ -1017,6 +1019,10 @@ let self = _self // overrides; _self = with self; {
     };
     buildInputs = [  TestWWWMechanizeCatalyst Testuseok ];
     propagatedBuildInputs = [ CatalystRuntime TextCSV XMLSimple ];
+    meta = {
+      license = "perl";
+      platforms = stdenv.lib.platforms.linux;
+    };
   };
 
   CatalystViewJSON = buildPerlPackage {
@@ -1068,14 +1074,19 @@ let self = _self // overrides; _self = with self; {
     propagatedBuildInputs = [ MooseXRelatedClassRoles CatalystRuntime ];
   };
 
-  CatalystTraitForRequestProxyBase = buildPerlPackage rec {
+  CatalystTraitForRequestProxyBase = buildPerlPackage {
     name = "Catalyst-TraitFor-Request-ProxyBase-0.000005";
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/Catalyst/${name}.tar.gz";
-      sha256 = "02kir63d5cs2ipj3fn1qlmmx3gqi1xqzrxfr4pv5vjhjgsm0zgx7";
+      url = mirror://cpan/authors/id/B/BO/BOBTFISH/Catalyst-TraitFor-Request-ProxyBase-0.000005.tar.gz;
+      sha256 = "a7bf0faa7e12ca5df625d9f5fc710f11bfd16ba5385837e48d42b3d286c9710a";
     };
-    buildInputs = [ CatalystRuntime ];
-    propagatedBuildInputs = [ Moose URI CatalystXRoleApplicator ];
+    buildInputs = [ CatalystRuntime HTTPMessage ];
+    propagatedBuildInputs = [ CatalystXRoleApplicator Moose URI namespaceautoclean ];
+    meta = {
+      description = "Replace request base with value passed by HTTP proxy";
+      license = "perl";
+      platforms = stdenv.lib.platforms.linux;
+    };
   };
 
   CatalystXScriptServerStarman = buildPerlPackage {
@@ -3185,16 +3196,18 @@ let self = _self // overrides; _self = with self; {
   };
 
   EmailSender = buildPerlPackage {
-    name = "Email-Sender-1.300014";
+    name = "Email-Sender-1.300016";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RJ/RJBS/Email-Sender-1.300014.tar.gz;
-      sha256 = "0yxqk0fjxasd7q62m65dl2n6xm4xcvfb6i1lajvwibygd9ckifw6";
+      url = mirror://cpan/authors/id/R/RJ/RJBS/Email-Sender-1.300016.tar.gz;
+      sha256 = "00042de1b78fb26b2ff37bd92c0d61631810725a5235f4841e38a501a533a2a3";
     };
-    propagatedBuildInputs = [ CaptureTiny EmailAbstract EmailAddress EmailSimple ListMoreUtils Moose Throwable TryTiny ];
+    buildInputs = [ CaptureTiny ];
+    propagatedBuildInputs = [ EmailAbstract EmailAddress EmailSimple ListMoreUtils ModuleRuntime Moo MooXTypesMooseLike SubExporter Throwable TryTiny ];
     meta = {
-      homepage = https://github.com/rjbs/email-sender;
+      homepage = https://github.com/rjbs/Email-Sender;
       description = "A library for sending email";
-      license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
+      license = "perl";
+      platforms = stdenv.lib.platforms.linux;
     };
   };
 
@@ -6833,6 +6846,29 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
+  OpenGL = buildPerlPackage rec {
+    name = "OpenGL-0.6703";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/C/CH/CHM/${name}.tar.gz";
+      sha256 = "0k2k8zg84qj1ry77i9dvmfdfpg13s6117wy5bc4nvnzv37qcvy32";
+    };
+
+    buildInputs = with pkgs; [ mesa mesa_glu freeglut xlibs.libX11 xlibs.libXi xlibs.libXmu xlibs.libXext xdummy ];
+
+    patches = [ ../development/perl-modules/perl-opengl.patch ];
+
+    configurePhase = ''
+      substituteInPlace Makefile.PL \
+        --replace "@@libpaths@@" '${stdenv.lib.concatStringsSep "\n" (map (f: "-L${f}/lib") buildInputs)}'
+
+      cp -v ${../development/perl-modules/perl-opengl-gl-extensions.txt} utils/glversion.txt
+
+      perl Makefile.PL PREFIX=$out INSTALLDIRS=site $makeMakerFlags
+    '';
+
+    doCheck = false;
+  };
+
   NetOpenIDCommon = buildPerlPackage rec {
     name = "Net-OpenID-Common-1.18";
     src = fetchurl {
@@ -9950,6 +9986,16 @@ let self = _self // overrides; _self = with self; {
     propagatedBuildInputs = [ ExtUtilsXSpp AlienWxWidgets ];
     # Testing requires an X server:
     #   Error: Unable to initialize GTK+, is DISPLAY set properly?"
+    doCheck = false;
+  };
+
+  WxGLCanvas = buildPerlPackage rec {
+    name = "Wx-GLCanvas-0.09";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/M/MB/MBARBON/${name}.tar.gz";
+      sha256 = "1q4gvj4gdx4l8k4mkgiix24p9mdfy1miv7abidf0my3gy2gw5lka";
+    };
+    propagatedBuildInputs = [ Wx OpenGL pkgs.mesa_glu ];
     doCheck = false;
   };
 

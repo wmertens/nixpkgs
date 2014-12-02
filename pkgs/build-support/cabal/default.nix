@@ -197,7 +197,16 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
             configurePhase = ''
               eval "$preConfigure"
 
-              ${optionalString self.jailbreak "${jailbreakCabal}/bin/jailbreak-cabal ${self.pname}.cabal"}
+              ${let newCabalFile = fetchurl {
+                      url = "http://hackage.haskell.org/package/${self.fname}/${self.pname}.cabal";
+                      sha256 = self.editedCabalFile;
+                    };
+                in
+                  optionalString (self.editedCabalFile or "" != "") ''
+                    echo "Replace Cabal file with edited version ${newCabalFile}."
+                    cp ${newCabalFile} ${self.pname}.cabal
+                  ''
+              }${optionalString self.jailbreak "${jailbreakCabal}/bin/jailbreak-cabal ${self.pname}.cabal"}
 
               for i in Setup.hs Setup.lhs ${defaultSetupHs}; do
                 test -f $i && break
@@ -234,6 +243,10 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
                 configureFlags+=" --ghc-option=-pgmPcpphs --ghc-option=-optP--cpp"
               ''}
 
+              ${optionalString self.stdenv.isDarwin ''
+                configureFlags+=" --with-gcc=clang"
+              ''}
+
               echo "configure flags: $extraConfigureFlags $configureFlags"
               ./Setup configure --verbose --prefix="$out" --libdir='$prefix/lib/$compiler' \
                 --libsubdir='$pkgid' $extraConfigureFlags $configureFlags 2>&1 \
@@ -256,7 +269,7 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
 
               export GHC_PACKAGE_PATH=$(${ghc.GHCPackages})
               test -n "$noHaddock" || ./Setup haddock --html --hoogle \
-                  --ghc-option=-optP-P \
+                  ${optionalString (stdenv.lib.versionOlder "6.12" ghc.version) "--ghc-options=-optP-P"} \
                   ${optionalString self.hyperlinkSource "--hyperlink-source"} \
                   ${optionalString self.useCpphs ''
                     --haddock-options="--optghc=-pgmPcpphs --optghc=-optP--cpp"
