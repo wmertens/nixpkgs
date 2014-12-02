@@ -6147,7 +6147,9 @@ let
 
   liburcu = callPackage ../development/libraries/liburcu { };
 
-  libusb = callPackage ../development/libraries/libusb {};
+  libusb = callPackage ../development/libraries/libusb {
+    inherit (darwin) iokit;
+  };
 
   libusb1 = callPackage ../development/libraries/libusb1 { };
 
@@ -7894,11 +7896,13 @@ let
     CommonCrypto     = callPackage ../os-specific/darwin/CommonCrypto {};
     copyfile         = callPackage ../os-specific/darwin/copyfile {};
     removefile       = callPackage ../os-specific/darwin/removefile {};
-    configd          = callPackage ../os-specific/darwin/configd { inherit launchd; };
+    configd          = callPackage ../os-specific/darwin/configd { inherit launchd Security; };
     libnotify        = callPackage ../os-specific/darwin/libnotify {};
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
     libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
     libauto          = callPackage ../os-specific/darwin/libauto {};
+    iokit            = callPackage ../os-specific/darwin/iokit {};
+    Security         = callPackage ../os-specific/darwin/Security {};
 
     libSystem        = callPackage ../os-specific/darwin/libSystem {
       inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;

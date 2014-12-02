@@ -1,4 +1,4 @@
-{stdenv, fetchurl}:
+{stdenv, fetchurl, iokit}:
 
 stdenv.mkDerivation {
   name = "libusb-0.1.12";
@@ -8,6 +8,8 @@ stdenv.mkDerivation {
   patchPhase = ''
     sed -i s/-Werror// Makefile.in
   '';
+
+  buildInputs = stdenv.lib.optional stdenv.isDarwin iokit;
 
   src = fetchurl {
     url = mirror://sourceforge/libusb/libusb-0.1.12.tar.gz;
