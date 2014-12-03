@@ -124,7 +124,7 @@ rec {
       inherit stdenv;
       nativeTools  = false;
       nativeLibc   = true;
-      inherit (pkgs) libcxx;
+      inherit (pkgs) libcxx libcxxabi;
       binutils  = pkgs.darwin.cctools_native;
       clang     = pkgs.llvmPackages.clang;
       coreutils = pkgs.coreutils;

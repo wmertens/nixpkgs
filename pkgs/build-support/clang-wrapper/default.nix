@@ -33,7 +33,6 @@ stdenv.mkDerivation {
   clangWrapper = ./clang-wrapper.sh;
   ldWrapper = ../gcc-wrapper/ld-wrapper.sh;
   utils = ../gcc-wrapper/utils.sh;
-  addFlags = ./add-flags;
 
   inherit nativeTools nativeLibc nativePrefix clang clangVersion libcxx libcxxabi;
 
