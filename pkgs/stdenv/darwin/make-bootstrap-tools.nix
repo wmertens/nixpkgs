@@ -145,11 +145,13 @@ rec {
       done
 
       mkdir -p $out/nix-support
-      echo "file source-dist $out/on-server/bootstrap-tools.cpio.bz2" >> $out/nix-support/hydra-build-products
-      echo "Darwin bootstrap tools $(date +%Y-%m-%d)" >> $out/nix-support/hydra-release-name
-    '';
 
-    allowedReferences = [];
+      for i in "$out/on-server/"*; do
+        echo "file binary-dist $i" >> $out/nix-support/hydra-build-products
+      done
+
+      echo "darwin-bootstrap-tools-$(date +%Y.%m.%d)" >> $out/nix-support/hydra-release-name
+    '';
   };
 
   unpack = stdenv.mkDerivation {
