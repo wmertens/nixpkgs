@@ -7407,7 +7407,7 @@ let
     packages = [];
   };
 
-  rPackages = import ../development/r-modules/cran-packages.nix {
+  rPackages = import ../development/r-modules {
     inherit pkgs;
     overrides = (config.rPackageOverrides or (p: {})) pkgs;
   };
@@ -8082,6 +8082,8 @@ let
   iw = callPackage ../os-specific/linux/iw { };
 
   iwlwifi = callPackage ../os-specific/linux/firmware/iwlwifi { };
+
+  iwlegacy = callPackage ../os-specific/linux/firmware/iwlegacy { };
 
   jujuutils = callPackage ../os-specific/linux/jujuutils { };
 

@@ -192,11 +192,11 @@ let
 
 
   actdiag = buildPythonPackage rec {
-    name = "actdiag-0.5.1";
+    name = "actdiag-0.5.3";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/a/actdiag/${name}.tar.gz";
-      md5 = "171c47bc1f70e5fadfffd9df0c3157be";
+      sha256 = "1vr4hnkr0gcvvpaycd8q3vcx029b2f5yv8swhdr8kwspaqb0dvfa";
     };
 
     buildInputs = with self; [ pep8 nose unittest2 docutils ];
@@ -587,6 +587,24 @@ let
     };
   }));
 
+  azure = buildPythonPackage rec {
+    version = "0.9.0";
+    name = "azure-${version}";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/a/azure/${name}.zip";
+      md5 = "9616767cf45c1c00794624e2a0889f23";
+    };
+
+    propagatedBuildInputs = with self; [ dateutil ];
+
+    meta = with stdenv.lib; {
+      description = "Microsoft Azure SDK for Python";
+      homepage = "http://azure.microsoft.com/en-us/develop/python/";
+      license = licenses.asl20;
+    };
+  };
+
   backports_ssl_match_hostname_3_4_0_2 = self.buildPythonPackage rec {
     name = "backports.ssl_match_hostname-3.4.0.2";
 
@@ -972,11 +990,11 @@ let
 
 
   blockdiag = buildPythonPackage rec {
-    name = "blockdiag-1.3.2";
+    name = "blockdiag-1.4.7";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/b/blockdiag/${name}.tar.gz";
-      md5 = "602a8750f312eeee84d6d138055dfae7";
+      sha256 = "0bc29sh8hj3hmhclifh1by0n6vg2pl9wkxb7fmljyw0arjas54bf";
     };
 
     buildInputs = with self; [ pep8 nose unittest2 docutils ];
@@ -1632,11 +1650,11 @@ let
 
 
   construct = buildPythonPackage rec {
-    name = "construct-2.5.1";
+    name = "construct-2.5.2";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/c/construct/${name}.tar.gz";
-      sha256 = "08qksl87vr6g2wjxwsyrjh4w6v8bfmcgrcgln7irqvw5vv7qgqss";
+      sha256 = "084h02p0m8lhmlywlwjdg0kd0hd6sz481c96qwcm5wddxrqn4nv6";
     };
 
     propagatedBuildInputs = with self; [ six ];
@@ -4405,12 +4423,12 @@ let
 
   greenlet = buildPythonPackage rec {
     name = "greenlet-${version}";
-    version = "0.4.4";
+    version = "0.4.5";
     disabled = isPyPy;  # builtin for pypy
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/g/greenlet/${name}.zip";
-      sha256 = "935a76b7ad3c41846af26e136e2fd8ec763794cbc5b5fbc4b7b09d9a8de1d056";
+      sha256 = "1gidivqcpn6i6k01bf3hgcn0m68h4b9srhpff9kgnk0c287z145r";
     };
 
     meta = with stdenv.lib; {
@@ -6008,11 +6026,11 @@ let
 
 
   nwdiag = buildPythonPackage rec {
-    name = "nwdiag-1.0.0";
+    name = "nwdiag-1.0.3";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/n/nwdiag/${name}.tar.gz";
-      md5 = "d81581a028840f8f7362ab21bf73e941";
+      sha256 = "0n7ary1fngxk8bk15vabc8fhnmxlh098piciwaviwn7l4a5q1zys";
     };
 
     buildInputs = with self; [ pep8 nose unittest2 docutils ];
@@ -8233,13 +8251,13 @@ let
   };
 
   robotframework = buildPythonPackage rec {
-    version = "2.8.5";
+    version = "2.8.6";
     name = "robotframework-${version}";
     disabled = isPy3k;
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/r/robotframework/${name}.tar.gz";
-      sha256 = "0rzdn2gvmcrxs2fvxm11h55w4j5pv0lf443fc4hl8kzwjwgjckga";
+      sha256 = "0hl44pwfkagr5272s90y0bkfllj0q1l4yw4rvkdrc6ikn6l61d9v";
     };
 
     # error: invalid command 'test'
@@ -8256,12 +8274,12 @@ let
 
 
   robotframework-selenium2library = buildPythonPackage rec {
-    version = "1.5.0";
+    version = "1.6.0";
     name = "robotframework-selenium2library-${version}";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/r/robotframework-selenium2library/${name}.tar.gz";
-      sha256 = "0hjmar9766jqfpbckac8zncyal546vm059wnkbn33f68djdcnwz1";
+      sha256 = "1asdwrpb4s7q08bx641yrh3yicgba14n3hxmsqs58mqf86ignwly";
     };
 
     # error: invalid command 'test'
@@ -8531,11 +8549,11 @@ let
   };
 
   seqdiag = buildPythonPackage rec {
-    name = "seqdiag-0.9.0";
+    name = "seqdiag-0.9.4";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/s/seqdiag/${name}.tar.gz";
-      md5 = "92946555ce219df18002e6c88b4055d3";
+      sha256 = "1qa7d0m1wahvmrj95rxkb6128cbwd4w3gy8gbzncls66h46bifiz";
     };
 
     buildInputs = with self; [ pep8 nose unittest2 docutils ];
@@ -9445,16 +9463,20 @@ let
 
   sure = buildPythonPackage rec {
     name = "sure-${version}";
-    version = "1.2.7";
+    version = "1.2.8";
 
     preBuild = ''
       export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
+    # https://github.com/gabrielfalcao/sure/issues/71
+    doCheck = !isPy3k;
+    disabled = isPyPy;
+
     src = pkgs.fetchurl {
       url = "http://pypi.python.org/packages/source/s/sure/${name}.tar.gz";
-      md5 = "6dbecef27dffc41c8cd8aab8a8b3fdfb";
+      sha256 = "0pgi9xg00wcw0m1pv5qp7jv53q38yffcmkf2fj1zlfi2b9c3njid";
     };
 
     buildInputs = with self; [ nose ];
