@@ -539,6 +539,8 @@ let
 
   grc = callPackage ../tools/misc/grc { };
 
+  lastpass-cli = callPackage ../tools/security/lastpass-cli { };
+
   otool = callPackage ../os-specific/darwin/otool { };
 
   pass = callPackage ../tools/security/pass {
@@ -3591,7 +3593,9 @@ let
       libpng = libpng12;
       giflib = giflib_4_1;
     };
-    camlimages_4_1 = callPackage ../development/ocaml-modules/camlimages/4.1.nix {};
+    camlimages_4_1 = callPackage ../development/ocaml-modules/camlimages/4.1.nix {
+      giflib = giflib_4_1;
+    };
     camlimages = camlimages_4_1;
 
     biniou = callPackage ../development/ocaml-modules/biniou { };
@@ -5277,6 +5281,7 @@ let
   };
 
   glm = callPackage ../development/libraries/glm { };
+  glm_0954 = callPackage ../development/libraries/glm/0954.nix { };
 
   glog = callPackage ../development/libraries/glog { };
 
@@ -10007,6 +10012,7 @@ let
     zip = zip.override { enableNLS = false; };
     jdk = openjdk;
     boost = boost155;
+    glm = glm_0954;
     fontsConf = makeFontsConf {
       fontDirectories = [
         freefont_ttf xorg.fontmiscmisc xorg.fontbhttf
@@ -10915,7 +10921,7 @@ let
 
   vimHugeX = vim_configurable;
 
-  vim_configurable = vimrc.makeCustomizable (callPackage ../applications/editors/vim/configurable.nix {
+  vim_configurable = vimUtils.makeCustomizable (callPackage ../applications/editors/vim/configurable.nix {
     inherit (pkgs) fetchurl fetchhg stdenv ncurses pkgconfig gettext
       composableDerivation lib config glib gtk python perl tcl ruby;
     inherit (pkgs.xlibs) libX11 libXext libSM libXpm libXt libXaw libXau libXmu
@@ -11738,6 +11744,8 @@ let
 
     cjs = callPackage ../desktops/cinnamon/cjs.nix { };
   };
+
+  clearlooks-phenix = callPackage ../misc/themes/gtk3/clearlooks-phenix { };
 
   enlightenment = callPackage ../desktops/enlightenment { };
 
@@ -12705,7 +12713,7 @@ let
 
   viewnior = callPackage ../applications/graphics/viewnior { };
 
-  vimrc = callPackage ../misc/vim-plugins/vimrc.nix { inherit writeText; };
+  vimUtils = callPackage ../misc/vim-plugins/vim-utils.nix { inherit writeText; };
 
   vimPlugins = recurseIntoAttrs (callPackage ../misc/vim-plugins { });
 

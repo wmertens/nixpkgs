@@ -1566,6 +1566,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   linear = callPackage ../development/libraries/haskell/linear {};
 
+  linearOpenGL = callPackage ../development/libraries/haskell/linear-opengl {};
+
   linuxInotify = callPackage ../development/libraries/haskell/linux-inotify {};
 
   List = callPackage ../development/libraries/haskell/List {};
@@ -1696,6 +1698,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   monadLogger = callPackage ../development/libraries/haskell/monad-logger {};
 
+  monadIO = callPackage ../development/libraries/haskell/monadIO {};
+
   monadPar_0_1_0_3 = callPackage ../development/libraries/haskell/monad-par/0.1.0.3.nix {};
   monadPar_0_3_4_6 = callPackage ../development/libraries/haskell/monad-par/0.3.4.6.nix {};
   monadPar = self.monadPar_0_3_4_6;
@@ -1759,6 +1763,10 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   multiset = callPackage ../development/libraries/haskell/multiset {};
 
   murmurHash = callPackage ../development/libraries/haskell/murmur-hash {};
+
+  mvc = callPackage ../development/libraries/haskell/mvc {};
+
+  mvcUpdates = callPackage ../development/libraries/haskell/mvc-updates {};
 
   mwcRandom = callPackage ../development/libraries/haskell/mwc-random {};
 
