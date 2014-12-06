@@ -1036,6 +1036,8 @@ let
 
   dtach = callPackage ../tools/misc/dtach { };
 
+  duff = callPackage ../tools/filesystems/duff { };
+
   duo-unix = callPackage ../tools/security/duo-unix { };
 
   duplicity = callPackage ../tools/backup/duplicity {
@@ -1763,6 +1765,8 @@ let
   mpage = callPackage ../tools/text/mpage { };
 
   mr = callPackage ../applications/version-management/mr { };
+
+  mrtg = callPackage ../tools/misc/mrtg { };
 
   mscgen = callPackage ../tools/graphics/mscgen { };
 
@@ -6957,8 +6961,6 @@ let
 
   unicap = callPackage ../development/libraries/unicap {};
 
-  tsocks = callPackage ../development/libraries/tsocks { };
-
   unixODBC = callPackage ../development/libraries/unixODBC { };
 
   unixODBCDrivers = recurseIntoAttrs (import ../development/libraries/unixODBCDrivers {
@@ -9018,6 +9020,8 @@ let
   };
 
   milkytracker = callPackage ../applications/audio/milkytracker { };
+
+  schismtracker = callPackage ../applications/audio/schismtracker { };
 
   aumix = callPackage ../applications/audio/aumix {
     gtkGUI = false;
