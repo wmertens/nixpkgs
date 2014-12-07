@@ -2635,7 +2635,7 @@ let
 
   html2text = callPackage ../tools/text/html2text { };
 
-  htmlTidy = callPackage ../tools/text/html-tidy { };
+  html-tidy = callPackage ../tools/text/html-tidy { };
 
   html-xml-utils = callPackage ../tools/text/xml/html-xml-utils { };
 
@@ -6874,7 +6874,7 @@ let
 
   sqlite = lowPrio (callPackage ../development/libraries/sqlite { });
 
-  sqliteInteractive = appendToName "interactive" (sqlite.override { interactive = true; });
+  sqlite-interactive = appendToName "interactive" (sqlite.override { interactive = true; });
 
   sqlcipher = lowPrio (callPackage ../development/libraries/sqlcipher {
     readline = null;
@@ -7856,7 +7856,7 @@ let
 
   _915resolution = callPackage ../os-specific/linux/915resolution { };
 
-  nfsUtils = callPackage ../os-specific/linux/nfs-utils { };
+  nfs-utils = callPackage ../os-specific/linux/nfs-utils { };
 
   acpi = callPackage ../os-specific/linux/acpi { };
 
@@ -10108,6 +10108,8 @@ let
   merkaartor = callPackage ../applications/misc/merkaartor { };
 
   meshlab = callPackage ../applications/graphics/meshlab { };
+
+  metersLv2 = callPackage ../applications/audio/meters_lv2 { };
 
   mhwaveedit = callPackage ../applications/audio/mhwaveedit {};
 
@@ -12850,6 +12852,9 @@ let
   jquery_ui = jquery-ui;  # added 2014-09-07
   youtubeDL = youtube-dl;  # added 2014-10-26
   rdiff_backup = rdiff-backup;  # added 2014-11-23
+  htmlTidy = html-tidy;  # added 2014-12-06
+  sqliteInteractive = sqlite-interactive;  # added 2014-12-06
+  nfsUtils = nfs-utils;  # added 2014-12-06
 
   opentsdb = callPackage ../tools/misc/opentsdb {};
 
