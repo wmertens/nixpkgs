@@ -4062,7 +4062,7 @@ let
 
   perl = if system != "i686-cygwin" then perl520 else sysPerl;
 
-  perlPure = perl516.override { inherit fetchurl; };
+  perlPure = perl.override { inherit fetchurl; };
 
   php = php54;
 
