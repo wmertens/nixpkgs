@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
   # Miniperl needs -lm. perl needs -lrt.
   configureFlags =
     [ "-de"
-      "-Dcc=gcc"
+      "-Dcc=cc"
       "-Uinstallusrbinperl"
       "-Dinstallstyle=lib/perl5"
       "-Duseshrplib"
