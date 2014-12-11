@@ -263,6 +263,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
     libusb = pkgs.libusb1;
   };
 
+  bindingsPortaudio = callPackage ../development/libraries/haskell/bindings-portaudio {};
+
   bindingsPosix = callPackage ../development/libraries/haskell/bindings-posix {};
 
   bitarray = callPackage ../development/libraries/haskell/bitarray {};
@@ -342,6 +344,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   bytestringProgress = callPackage ../development/libraries/haskell/bytestring-progress {};
 
   bzlib = callPackage ../development/libraries/haskell/bzlib {};
+
+  call = callPackage ../development/libraries/haskell/call {};
 
   c2hs = callPackage ../development/tools/haskell/c2hs {};
 
@@ -775,6 +779,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   enumset = callPackage ../development/libraries/haskell/enumset {};
 
   entropy = callPackage ../development/libraries/haskell/entropy {};
+
+  elevator = callPackage ../development/libraries/haskell/elevator {};
 
   equationalReasoning = callPackage ../development/libraries/haskell/equational-reasoning {};
 
@@ -1342,6 +1348,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   hspecDiscover = callPackage ../development/libraries/haskell/hspec-discover {};
 
+  hspecLaws = callPackage ../development/libraries/haskell/hspec-laws {};
+
   hstatsd = callPackage ../development/libraries/haskell/hstatsd {};
 
   hsyslog = callPackage ../development/libraries/haskell/hsyslog {};
@@ -1851,6 +1859,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   ObjectName = callPackage ../development/libraries/haskell/ObjectName {};
 
   oeis = callPackage ../development/libraries/haskell/oeis {};
+
+  ofx = callPackage ../development/libraries/haskell/ofx {};
 
   opaleye = callPackage ../development/libraries/haskell/opaleye {};
 
