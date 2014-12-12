@@ -1270,6 +1270,12 @@ let
 
   gifsicle = callPackage ../tools/graphics/gifsicle { };
 
+  gitlab = callPackage ../applications/version-management/gitlab {
+    libiconv = libiconvOrLibc;
+  };
+
+  gitlab-shell = callPackage ../applications/version-management/gitlab-shell { };
+
   glusterfs = callPackage ../tools/filesystems/glusterfs { };
 
   glmark2 = callPackage ../tools/graphics/glmark2 { };
@@ -4698,7 +4704,7 @@ let
 
   remake = callPackage ../development/tools/build-managers/remake { };
 
-  rr = callPackage_i686 ../development/tools/analysis/rr { };
+  rr = callPackage ../development/tools/analysis/rr { };
 
   saleae-logic = callPackage ../development/tools/misc/saleae-logic { };
 
@@ -9148,6 +9154,8 @@ let
   };
   funpidgin = carrier;
 
+  cava = callPackage ../applications/audio/cava { };
+
   cc1394 = callPackage ../applications/video/cc1394 { };
 
   cddiscid = callPackage ../applications/audio/cd-discid { };
@@ -10824,6 +10832,8 @@ let
   telepathy_rakia = callPackage ../applications/networking/instant-messengers/telepathy/rakia { };
 
   telepathy_salut = callPackage ../applications/networking/instant-messengers/telepathy/salut {};
+
+  telepathy_idle = callPackage ../applications/networking/instant-messengers/telepathy/idle {};
 
   terminator = callPackage ../applications/misc/terminator {
     vte = gnome.vte.override { pythonSupport = true; };
@@ -12524,6 +12534,8 @@ let
   };
 
   nixops = callPackage ../tools/package-management/nixops { };
+
+  nixopsUnstable = callPackage ../tools/package-management/nixops/unstable.nix { };
 
   nix-prefetch-scripts = callPackage ../tools/package-management/nix-prefetch-scripts { };
 
