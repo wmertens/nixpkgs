@@ -2164,6 +2164,8 @@ let
 
   prey-bash-client = callPackage ../tools/security/prey { };
 
+  profile-sync-daemon = callPackage ../tools/misc/profile-sync-daemon { };
+
   projectm = callPackage ../applications/audio/projectm { };
 
   proot = callPackage ../tools/system/proot { };
@@ -11115,6 +11117,7 @@ let
     in
     import ../applications/networking/browsers/firefox/wrapper.nix {
       inherit stdenv lib makeWrapper makeDesktopItem browser browserName desktopName nameSuffix icon;
+      libtrick = true;
       plugins =
          assert !(enableGnash && enableAdobeFlash);
          assert !(jre && icedtea);

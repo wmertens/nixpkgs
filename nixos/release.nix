@@ -214,7 +214,7 @@ in rec {
   });
 
   # Provide container tarball for lxc, libvirt-lxc, docker-lxc, ...
-  container_tarball = forAllSystems (system: makeSystemTarball {
+  containerTarball = forAllSystems (system: makeSystemTarball {
     module = ./modules/virtualisation/lxc-container.nix;
     inherit system;
   });
@@ -306,6 +306,7 @@ in rec {
   tests.simple = callTest tests/simple.nix {};
   tests.tomcat = callTest tests/tomcat.nix {};
   tests.udisks2 = callTest tests/udisks2.nix {};
+  tests.virtualbox = callTest tests/virtualbox.nix {};
   tests.xfce = callTest tests/xfce.nix {};
 
 
