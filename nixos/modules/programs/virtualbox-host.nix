@@ -3,20 +3,53 @@
 with lib;
 
 let
-  virtualbox = config.boot.kernelPackages.virtualbox;
+  cfg = config.services.virtualboxHost;
+  virtualbox = config.boot.kernelPackages.virtualbox.override {
+    inherit (cfg) enableHardening;
+  };
+
 in
 
 {
-  options = {
-    services.virtualboxHost.enable = mkEnableOption "VirtualBox Host support";
-    services.virtualboxHost.addNetworkInterface = mkOption {
+  options.services.virtualboxHost = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable host-side support for VirtualBox.
+
+        <note><para>
+          In order to pass USB devices from the host to the guests, the user
+          needs to be in the <literal>vboxusers</literal> group.
+        </para></note>
+      '';
+    };
+
+    addNetworkInterface = mkOption {
       type = types.bool;
       default = true;
-      description = "Automatically set up a vboxnet0 host-only network interface.";
+      description = ''
+        Automatically set up a vboxnet0 host-only network interface.
+      '';
+    };
+
+    enableHardening = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Enable hardened VirtualBox, which ensures that only the binaries in the
+        system path get access to the devices exposed by the kernel modules
+        instead of all users in the vboxusers group.
+
+        <important><para>
+          Disabling this can put your system's security at risk, as local users
+          in the vboxusers group can tamper with the VirtualBox device files.
+        </para></important>
+      '';
     };
   };
 
-  config = mkIf config.services.virtualboxHost.enable (mkMerge [{
+  config = mkIf cfg.enable (mkMerge [{
     boot.kernelModules = [ "vboxdrv" "vboxnetadp" "vboxnetflt" ];
     boot.extraModulePackages = [ virtualbox ];
     environment.systemPackages = [ virtualbox ];
@@ -28,11 +61,11 @@ in
         group = "vboxusers";
         setuid = true;
       };
-    in map mkVboxStub [
+    in mkIf cfg.enableHardening (map mkVboxStub [
       "VBoxHeadless"
       "VBoxSDL"
       "VirtualBox"
-    ];
+    ]);
 
     users.extraGroups.vboxusers.gid = config.ids.gids.vboxusers;
 
@@ -48,7 +81,7 @@ in
       '';
 
     # Since we lack the right setuid binaries, set up a host-only network by default.
-  } (mkIf config.services.virtualboxHost.addNetworkInterface {
+  } (mkIf cfg.addNetworkInterface {
     systemd.services."vboxnet0" =
       { description = "VirtualBox vboxnet0 Interface";
         requires = [ "dev-vboxnetctl.device" ];

@@ -1916,7 +1916,6 @@ let
 
   nox = callPackage ../tools/package-management/nox {
     pythonPackages = python3Packages;
-    nix = nixUnstable;
   };
 
   nss_pam_ldapd = callPackage ../tools/networking/nss-pam-ldapd {};
