@@ -2802,7 +2802,7 @@ let
   };
 
   wml = callPackage ../development/web/wml { };
-  
+
   wv = callPackage ../tools/misc/wv { };
 
   wv2 = callPackage ../tools/misc/wv2 { };
@@ -6610,6 +6610,8 @@ let
 
   podofo = callPackage ../development/libraries/podofo { lua5 = lua5_1; };
 
+  poker-eval = callPackage ../development/libraries/poker-eval { };
+
   polkit = callPackage ../development/libraries/polkit {
     spidermonkey = spidermonkey_185;
   };
@@ -7156,6 +7158,8 @@ let
 
   cppzmq = callPackage ../development/libraries/cppzmq {};
 
+  czmq = callPackage ../development/libraries/czmq { };
+
   zziplib = callPackage ../development/libraries/zziplib { };
 
   ### DEVELOPMENT / LIBRARIES / AGDA
@@ -7663,6 +7667,7 @@ let
   mariadb = callPackage ../servers/sql/mariadb {};
 
   mongodb = callPackage ../servers/nosql/mongodb {
+    boost = boost156;
     sasl = cyrus_sasl;
   };
 
