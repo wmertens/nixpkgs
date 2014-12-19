@@ -2802,7 +2802,7 @@ let
   };
 
   wml = callPackage ../development/web/wml { };
-  
+
   wv = callPackage ../tools/misc/wv { };
 
   wv2 = callPackage ../tools/misc/wv2 { };
@@ -5901,6 +5901,8 @@ let
 
   libmcrypt = callPackage ../development/libraries/libmcrypt {};
 
+  libmediainfo = callPackage ../development/libraries/libmediainfo { };
+
   libmhash = callPackage ../development/libraries/libmhash {};
 
   libmodbus = callPackage ../development/libraries/libmodbus {};
@@ -6290,6 +6292,8 @@ let
 
   libyubikey = callPackage ../development/libraries/libyubikey { };
 
+  libzen = callPackage ../development/libraries/libzen { };
+
   libzip = callPackage ../development/libraries/libzip { };
 
   libzdb = callPackage ../development/libraries/libzdb { };
@@ -6600,6 +6604,8 @@ let
   pocketsphinx = callPackage ../development/libraries/pocketsphinx { };
 
   podofo = callPackage ../development/libraries/podofo { lua5 = lua5_1; };
+
+  poker-eval = callPackage ../development/libraries/poker-eval { };
 
   polkit = callPackage ../development/libraries/polkit {
     spidermonkey = spidermonkey_185;
@@ -7147,6 +7153,8 @@ let
 
   cppzmq = callPackage ../development/libraries/cppzmq {};
 
+  czmq = callPackage ../development/libraries/czmq { };
+
   zziplib = callPackage ../development/libraries/zziplib { };
 
   ### DEVELOPMENT / LIBRARIES / AGDA
@@ -7654,6 +7662,7 @@ let
   mariadb = callPackage ../servers/sql/mariadb {};
 
   mongodb = callPackage ../servers/nosql/mongodb {
+    boost = boost156;
     sasl = cyrus_sasl;
   };
 
@@ -10138,6 +10147,10 @@ let
   mcpp = callPackage ../development/compilers/mcpp { };
 
   mda_lv2 = callPackage ../applications/audio/mda-lv2 { };
+
+  mediainfo = callPackage ../applications/misc/mediainfo { };
+
+  mediainfo-gui = callPackage ../applications/misc/mediainfo-gui { };
 
   meld = callPackage ../applications/version-management/meld {
     inherit (gnome) scrollkeeper;

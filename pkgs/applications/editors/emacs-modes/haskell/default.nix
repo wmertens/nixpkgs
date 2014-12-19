@@ -1,11 +1,13 @@
-{ stdenv, fetchgit, emacs, texinfo }:
+{ stdenv, fetchFromGitHub, emacs, texinfo }:
 
 stdenv.mkDerivation rec {
   name = "haskell-mode-20141113";
 
-  src = fetchgit {
-    url = "https://github.com/haskell/haskell-mode.git";
-    sha256 = "fc2a15f3a88f2343663e8b078464991a1af5ffe36c8158ee4f61c5d0358c9daf";
+  src = fetchFromGitHub {
+    owner = "haskell";    
+    repo = "haskell-mode";
+    rev = "fa6468ed36166799439ffea454dddf85335bb424";
+    sha256 = "12qvlcbil25fs1amndpy03pfqlsbidav9rd1fc79whqxrgylxxnz";
   };
 
   buildInputs = [ emacs texinfo ];

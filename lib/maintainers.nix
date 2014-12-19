@@ -50,6 +50,7 @@
   davidrusu = "David Rusu <davidrusu.me@gmail.com>";
   dbohdan = "Danyil Bohdan <danyil.bohdan@gmail.com>";
   DerGuteMoritz = "Moritz Heidkamp <moritz@twoticketsplease.de>";
+  devhell = "devhell <\"^\"@regexmail.net>";
   dmalikov = "Dmitry Malikov <malikov.d.y@gmail.com>";
   doublec = "Chris Double <chris.double@double.co.nz>";
   ederoyd46 = "Matthew Brown <matt@ederoyd.co.uk>";
@@ -110,6 +111,7 @@
   mornfall = "Petr Ročkai <me@mornfall.net>";
   MP2E = "Cray Elliott <MP2E@archlinux.us>";
   msackman = "Matthew Sackman <matthew@wellquite.org>";
+  mtreskin = "Max Treskin <zerthurd@gmail.com>";
   muflax = "Stefan Dorn <mail@muflax.com>";
   nathan-gs = "Nathan Bijnens <nathan@nathan.gs>";
   nckx = "Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>";
@@ -178,6 +180,7 @@
   wjlroe = "William Roe <willroe@gmail.com>";
   wkennington = "William A. Kennington III <william@wkennington.com>";
   wmertens = "Wout Mertens <Wout.Mertens@gmail.com>";
+  wscott = "Wayne Scott <wsc9tt@gmail.com>";
   wyvie = "Elijah Rum <elijahrum@gmail.com>";
   yarr = "Dmitry V. <savraz@gmail.com>";
   z77z = "Marco Maggesi <maggesi@math.unifi.it>";
