@@ -6200,9 +6200,7 @@ let
 
   liburcu = callPackage ../development/libraries/liburcu { };
 
-  libusb = callPackage ../development/libraries/libusb {
-    inherit (darwin) iokit;
-  };
+  libusb = callPackage ../development/libraries/libusb { };
 
   libusb1 = callPackage ../development/libraries/libusb1 { };
 
