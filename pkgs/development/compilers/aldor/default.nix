@@ -23,7 +23,7 @@ stdenv.mkDerivation {
     do
       wrapProgram $out/bin/$prog --set ALDORROOT $out \
         --prefix PATH : ${openjdk}/bin \
-        --prefix PATH : ${stdenv.cc}/bin ;
+        --prefix PATH : ${stdenv.gcc}/bin ;
     done
   '';
 

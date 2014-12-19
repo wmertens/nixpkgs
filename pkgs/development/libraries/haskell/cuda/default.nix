@@ -9,7 +9,7 @@ cabal.mkDerivation (self: {
   isLibrary = true;
   isExecutable = true;
   buildTools = [ c2hs ];
-  extraLibraries = [ cudatoolkit nvidia_x11 self.stdenv.cc ];
+  extraLibraries = [ cudatoolkit nvidia_x11 self.stdenv.gcc ];
   doCheck = false;
   # Perhaps this should be the default in cabal.nix ...
   #

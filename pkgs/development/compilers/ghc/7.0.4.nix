@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags=[
-    "--with-gcc=${stdenv.cc}/bin/gcc"
+    "--with-gcc=${stdenv.gcc}/bin/gcc"
   ];
 
   NIX_CFLAGS_COMPILE = "-fomit-frame-pointer";

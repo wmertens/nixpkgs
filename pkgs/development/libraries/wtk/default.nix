@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ unzip ];
 
-  libraries = [ xlibs.libXpm xlibs.libXt xlibs.libX11 xlibs.libICE xlibs.libSM stdenv.cc.gcc ];
+  libraries = [ xlibs.libXpm xlibs.libXt xlibs.libX11 xlibs.libICE xlibs.libSM stdenv.gcc.gcc ];
 
   meta = {
     homepage = http://java.sun.com/products/sjwtoolkit/download.html;

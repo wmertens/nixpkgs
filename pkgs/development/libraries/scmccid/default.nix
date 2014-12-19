@@ -1,6 +1,6 @@
 {stdenv, fetchurl, patchelf, libusb}:
 
-assert stdenv ? cc && stdenv.cc.libc != null;
+assert stdenv ? gcc && stdenv.gcc.libc != null;
 
 stdenv.mkDerivation rec {
   name = "scmccid-5.0.11";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ patchelf ];
 
   installPhase = ''
-    RPATH=${libusb}/lib:${stdenv.cc.libc}/lib
+    RPATH=${libusb}/lib:${stdenv.gcc.libc}/lib
 
     for a in proprietary/*/Contents/Linux/*.so*; do
         if ! test -L $a; then

@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libxml2 openssl readline gawk ];
 
-  CPP = "${stdenv.cc}/bin/gcc -E";
+  CPP = "${stdenv.gcc}/bin/gcc -E";
 
   configureFlags = "
     --enable-shared --disable-all-vads --with-readline=${readline}

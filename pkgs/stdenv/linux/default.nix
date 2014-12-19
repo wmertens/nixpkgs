@@ -83,7 +83,7 @@ rec {
           curl = bootstrapTools;
         };
 
-        cc = if isNull gccPlain
+        gcc = if isNull gccPlain
              then "/no-such-path"
              else lib.makeOverridable (import ../../build-support/gcc-wrapper) {
           nativeTools = false;
@@ -232,7 +232,7 @@ rec {
       gcc = lib.makeOverridable (import ../../build-support/gcc-wrapper) {
         nativeTools = false;
         nativeLibc = false;
-        gcc = stage4.stdenv.cc.gcc;
+        gcc = stage4.stdenv.gcc.gcc;
         libc = stage4.pkgs.glibc;
         inherit (stage4.pkgs) binutils coreutils;
         name = "";
@@ -267,9 +267,9 @@ rec {
 
     extraBuildInputs = [ stage4.pkgs.patchelf stage4.pkgs.paxctl ];
 
-    cc = stage4.pkgs.gcc;
+    gcc = stage4.pkgs.gcc;
 
-    shell = cc.shell;
+    shell = gcc.shell;
 
     inherit (stage4.stdenv) fetchurlBoot;
 
@@ -286,7 +286,7 @@ rec {
       ];
 
     overrides = pkgs: {
-      inherit cc;
+      inherit gcc;
       inherit (stage4.pkgs)
         gzip bzip2 xz bash binutils coreutils diffutils findutils gawk
         glibc gnumake gnused gnutar gnugrep gnupatch patchelf

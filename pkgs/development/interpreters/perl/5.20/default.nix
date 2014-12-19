@@ -14,7 +14,7 @@ assert enableThreading -> (stdenv ? glibc);
 
 let
 
-  libc = if stdenv.cc.libc or null != null then stdenv.cc.libc else "/usr";
+  libc = if stdenv.gcc.libc or null != null then stdenv.gcc.libc else "/usr";
 
 in
 
@@ -68,7 +68,7 @@ stdenv.mkDerivation rec {
       ''}
     '';
 
-  preBuild = optionalString (!(stdenv ? cc && stdenv.cc.nativeTools))
+  preBuild = optionalString (!(stdenv ? gcc && stdenv.gcc.nativeTools))
     ''
       # Make Cwd work on NixOS (where we don't have a /bin/pwd).
       substituteInPlace dist/PathTools/Cwd.pm --replace "'/bin/pwd'" "'$(type -tP pwd)'"

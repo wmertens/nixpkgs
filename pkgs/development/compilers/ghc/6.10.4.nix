@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   configureFlags=[
     "--with-gmp-libraries=${gmp}/lib"
     "--with-gmp-includes=${gmp}/include"
-    "--with-gcc=${stdenv.cc}/bin/gcc"
+    "--with-gcc=${stdenv.gcc}/bin/gcc"
   ];
 
   NIX_CFLAGS_COMPILE = "-fomit-frame-pointer";

@@ -54,14 +54,14 @@ in stdenv.mkDerivation {
       mkdir -p "$out"
       cp -r bin "$out/bin"
     '' + (if stdenv.isLinux then ''
-      patchelf --interpreter "${stdenv.glibc}/lib/${stdenv.cc.dynamicLinker}" \
-               --set-rpath "${stdenv.cc.gcc}/lib/:${stdenv.cc.gcc}/lib64/" \
+      patchelf --interpreter "${stdenv.glibc}/lib/${stdenv.gcc.dynamicLinker}" \
+               --set-rpath "${stdenv.gcc.gcc}/lib/:${stdenv.gcc.gcc}/lib64/" \
                "$out/bin/rustc"
     '' else "");
   };
 
   configureFlags = [ "--enable-local-rust" "--local-rust-root=$snapshot" ]
-                ++ stdenv.lib.optional (stdenv.cc ? clang) "--enable-clang";
+                ++ stdenv.lib.optional (stdenv.gcc ? clang) "--enable-clang";
 
   # The compiler requires cc, so we patch the source to tell it where to find it
   patches = [ ./hardcode_paths.HEAD.patch ./local_stage0.HEAD.patch ]
@@ -69,9 +69,9 @@ in stdenv.mkDerivation {
 
   postPatch = ''
     substituteInPlace src/librustc_trans/back/link.rs \
-      --subst-var-by "ccPath" "${stdenv.cc}/bin/cc"
+      --subst-var-by "ccPath" "${stdenv.gcc}/bin/cc"
     substituteInPlace src/librustc_back/archive.rs \
-      --subst-var-by "arPath" "${stdenv.cc.binutils}/bin/ar"
+      --subst-var-by "arPath" "${stdenv.gcc.binutils}/bin/ar"
   '';
 
   buildInputs = [ which file perl curl python27 makeWrapper git valgrind ];
