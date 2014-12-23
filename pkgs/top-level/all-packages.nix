@@ -3919,7 +3919,7 @@ let
     inherit stdenv binutils coreutils zlib;
   };
 
-  wrapClang = wrapClangWith (makeOverridable (import ../build-support/clang-wrapper)) libc;
+  wrapClang = wrapClangWith (makeOverridable (import ../build-support/clang-wrapper)) glibc;
 
   wrapGCCWith = gccWrapper: glibc: baseGCC: gccWrapper {
     nativeTools = stdenv.cc.nativeTools or false;
