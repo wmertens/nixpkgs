@@ -2998,8 +2998,7 @@ let
     clang = build;
     stdenv = clangStdenv;
     binutils = binutils;
-    inherit libc coreutils zlib;
-    extraPackages = [ libcxx ];
+    inherit libc libcxx coreutils zlib;
     nativeTools = false;
     nativeLibc = false;
   };
