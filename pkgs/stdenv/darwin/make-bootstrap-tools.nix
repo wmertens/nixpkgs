@@ -143,9 +143,15 @@ rec {
       for i in $out/in-nixpkgs/*; do
         fix_dyld $i
       done
-    '';
 
-    allowedReferences = [];
+      mkdir -p $out/nix-support
+
+      for i in "$out/on-server/"*; do
+        echo "file binary-dist $i" >> $out/nix-support/hydra-build-products
+      done
+
+      echo "darwin-bootstrap-tools-$(date +%Y.%m.%d)" >> $out/nix-support/hydra-release-name
+    '';
   };
 
   unpack = stdenv.mkDerivation {
