@@ -2997,8 +2997,10 @@ let
   clangWrapSelf = build: (import ../build-support/clang-wrapper) {
     clang = build;
     stdenv = clangStdenv;
+    libc = glibc;
     binutils = binutils;
-    inherit libc libcxx coreutils zlib;
+    shell = bash;
+    inherit libcxx coreutils zlib;
     nativeTools = false;
     nativeLibc = false;
   };
