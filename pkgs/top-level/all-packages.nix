@@ -2977,11 +2977,11 @@ let
 
   ccl = callPackage ../development/compilers/ccl { };
 
-  clang = wrapGCC llvmPackages.clang;
+  clang = wrapClang llvmPackages.clang;
 
-  clang_35 = wrapGCC llvmPackages_35.clang;
-  clang_34 = wrapGCC llvmPackages_34.clang;
-  clang_33 = wrapGCC (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
+  clang_35 = wrapClang llvmPackages_35.clang;
+  clang_34 = wrapClang llvmPackages_34.clang;
+  clang_33 = wrapClang (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
 
   clangAnalyzer = callPackage ../development/tools/analysis/clang-analyzer {
     clang = clang_34;
@@ -2994,12 +2994,11 @@ let
 
   clangSelf = clangWrapSelf llvmPackagesSelf.clang;
 
-  clangWrapSelf = build: (import ../build-support/gcc-wrapper) {
-    gcc = build;
+  clangWrapSelf = build: (import ../build-support/clang-wrapper) {
+    clang = build;
     stdenv = clangStdenv;
-    libc = glibc;
     binutils = binutils;
-    inherit coreutils zlib;
+    inherit libc coreutils zlib;
     extraPackages = [ libcxx ];
     nativeTools = false;
     nativeLibc = false;
@@ -3908,6 +3907,19 @@ let
   webdsl = callPackage ../development/compilers/webdsl { };
 
   win32hello = callPackage ../development/compilers/visual-c++/test { };
+
+  wrapClangWith = clangWrapper: libc: baseClang: clangWrapper {
+    nativeTools = stdenv.cc.nativeTools or false;
+    nativeLibc = stdenv.cc.nativeLibc or false;
+    nativePrefix = stdenv.cc.nativePrefix or "";
+    clang = baseClang;
+    libc = libc;
+    libcxx = libcxx;
+    libcxxabi = libcxxabi;
+    inherit stdenv binutils coreutils zlib;
+  };
+
+  wrapClang = wrapClangWith (makeOverridable (import ../build-support/clang-wrapper)) libc;
 
   wrapGCCWith = gccWrapper: glibc: baseGCC: gccWrapper {
     nativeTools = stdenv.cc.nativeTools or false;
