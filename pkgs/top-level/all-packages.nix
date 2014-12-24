@@ -4358,7 +4358,7 @@ let
   bam = callPackage ../development/tools/build-managers/bam {};
 
   binutils = if stdenv.isDarwin
-    then import ../build-support/native-darwin-cctools-wrapper {inherit stdenv;}
+    then darwin.cctools
     else callPackage ../development/tools/misc/binutils {
       inherit noSysDirs;
     };
