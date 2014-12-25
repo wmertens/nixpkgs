@@ -91,15 +91,15 @@ rec {
       nuke-refs $out/bin/*
 
       rpathify() {
-        libs=$(${darwin.cctools}/bin/otool -L "$1" | tail -n +2 | grep -o "$NIX_STORE.*-\S*" | cat)
+        local libs=$(${darwin.cctools}/bin/otool -L "$1" | tail -n +2 | grep -o "$NIX_STORE.*-\S*") || true
         for lib in $libs; do
           ${darwin.cctools}/bin/install_name_tool -change $lib "@rpath/$(basename $lib)" "$1"
         done
       }
 
       fix_dyld() {
-          # This is clearly a hack. Once we have an install_name_tool-alike that can patch dyld, this will be nicer.
-          ${perl}/bin/perl -i -0777 -pe 's/\/nix\/store\/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-dyld-239\.4\/lib\/dyld/\/usr\/lib\/dyld\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/sg' "$1"
+        # This is clearly a hack. Once we have an install_name_tool-alike that can patch dyld, this will be nicer.
+        ${perl}/bin/perl -i -0777 -pe 's/\/nix\/store\/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-dyld-239\.4\/lib\/dyld/\/usr\/lib\/dyld\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/sg' "$1"
       }
 
       # Strip executables even further
@@ -152,6 +152,8 @@ rec {
 
       echo "darwin-bootstrap-tools-$(date +%Y.%m.%d)" >> $out/nix-support/hydra-release-name
     '';
+
+    allowedReferences = [ "out" ];
   };
 
   unpack = stdenv.mkDerivation {
@@ -164,7 +166,7 @@ rec {
       for i in $out/bin/*; do
         if ! test -L $i; then
           echo patching $i
-          libs=$(${darwin.cctools}/bin/otool -L "$i" | tail -n +2 | grep -v libSystem | cat)
+          local libs=$(${darwin.cctools}/bin/otool -L "$i" | tail -n +2 | grep -v libSystem) || true
 
           if [ -n "$libs" ]; then
             $out/bin/install_name_tool -add_rpath $out/lib $i
