@@ -20,9 +20,5 @@ stdenv.mkDerivation rec {
     cp dnsinfo/*.h $out/include/
     mkdir -p $out/System/Library/Frameworks/SystemConfiguration.framework/Headers
     cp SystemConfiguration.fproj/*.h $out/System/Library/Frameworks/SystemConfiguration.framework/Headers/
-    mkdir -p $out/nix-support
-    cat >$out/nix-support/setup-hook <<EOF
-    export NIX_CFLAGS_COMPILE+=" -F$out/System/Library/Frameworks"
-    EOF
   '';
 }

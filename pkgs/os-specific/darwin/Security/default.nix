@@ -15,9 +15,5 @@ stdenv.mkDerivation rec {
     mkdir -p $out/System/Library/Frameworks/Security.framework/Headers
     cp Security/sec/Security/*.h $out/System/Library/Frameworks/Security.framework/Headers/
     cp Security/libsecurity_cssm/lib/*.h $out/System/Library/Frameworks/Security.framework/Headers/
-    mkdir -p $out/nix-support
-    cat >$out/nix-support/setup-hook <<EOF
-    export NIX_CFLAGS_COMPILE+=" -F$out/System/Library/Frameworks"
-    EOF
   '';
 }
