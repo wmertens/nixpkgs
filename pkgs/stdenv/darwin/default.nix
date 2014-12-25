@@ -207,10 +207,11 @@ in rec {
 
     overrides = pkgs: {
       clang = cc;
+      inherit cc;
       inherit (stage3.pkgs)
         gzip bzip2 xz bash binutils coreutils diffutils findutils gawk
         glibc gnumake gnused gnutar gnugrep gnupatch patchelf
-        attr acl paxctl zlib cc;
+        attr acl paxctl zlib;
     };
   };
 
