@@ -17,8 +17,6 @@ stdenv.mkDerivation {
     sha256 = "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i";
   };
 
-  patches = [ ./clang-const-char.patch ];
-
   buildInputs = [ zlib libpng ] ++
     stdenv.lib.optionals enableGUI [x11 motif] ++
     stdenv.lib.optional useT1Lib t1lib ++
