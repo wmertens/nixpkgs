@@ -1641,6 +1641,8 @@ let
 
   liboauth = callPackage ../development/libraries/liboauth { };
 
+  libtidy = callPackage ../development/libraries/libtidy { };
+
   libtirpc = callPackage ../development/libraries/ti-rpc { };
 
   libshout = callPackage ../development/libraries/libshout { };
@@ -1972,6 +1974,8 @@ let
     inherit (pythonPackages) sqlite3;
   };
 
+  openarena = callPackage ../games/openarena { };
+
   opencryptoki = callPackage ../tools/security/opencryptoki { };
 
   onscripter-en = callPackage ../games/onscripter-en { };
@@ -2241,6 +2245,8 @@ let
 
   ranger = callPackage ../applications/misc/ranger { };
 
+  rawdog = callPackage ../applications/networking/feedreaders/rawdog { };
+
   privateer = callPackage ../games/privateer { };
 
   redmine = callPackage ../applications/version-management/redmine { };
@@ -2266,6 +2272,8 @@ let
   remind = callPackage ../tools/misc/remind { };
 
   remmina = callPackage ../applications/networking/remote/remmina {};
+
+  remotebox = callPackage ../applications/virtualization/remotebox {};
 
   renameutils = callPackage ../tools/misc/renameutils { };
 
@@ -5702,6 +5710,8 @@ let
 
   libchardet = callPackage ../development/libraries/libchardet { };
 
+  libuchardet = callPackage ../development/libraries/libuchardet { };
+
   libchop = callPackage ../development/libraries/libchop { };
 
   libcm = callPackage ../development/libraries/libcm { };
@@ -7864,6 +7874,8 @@ let
   xorgReplacements = callPackage ../servers/x11/xorg/replacements.nix { };
 
   xorgVideoUnichrome = callPackage ../servers/x11/xorg/unichrome/default.nix { };
+
+  xwayland = with xorg; callPackage ../servers/x11/xorg/xwayland.nix { };
 
   yaws = callPackage ../servers/http/yaws { };
 
@@ -11093,6 +11105,7 @@ let
     vaapi = null;
     libva = null;
     libwebp = null;
+    xwayland = null;
   };
 
   weston = callPackage ../applications/window-managers/weston {
@@ -12535,6 +12548,8 @@ let
   lazylist = callPackage ../tools/typesetting/tex/lazylist { };
 
   lilypond = callPackage ../misc/lilypond { guile = guile_1_8; };
+
+  mailcore2 = callPackage ../development/libraries/mailcore2 { };
 
   martyr = callPackage ../development/libraries/martyr { };
 

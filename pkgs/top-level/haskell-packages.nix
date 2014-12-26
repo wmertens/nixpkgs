@@ -240,6 +240,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   bencoding = callPackage ../development/libraries/haskell/bencoding {};
 
+  bencode = callPackage ../development/libraries/haskell/bencode {};
+
   bert = callPackage ../development/libraries/haskell/bert {};
 
   bifunctors = callPackage ../development/libraries/haskell/bifunctors {};
@@ -2632,6 +2634,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   timeCompat = callPackage ../development/libraries/haskell/time-compat {};
 
   tls = callPackage ../development/libraries/haskell/tls {};
+
+  torrent = callPackage ../development/libraries/haskell/torrent {};
 
   tostring = callPackage ../development/libraries/haskell/tostring {};
 
