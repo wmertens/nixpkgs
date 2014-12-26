@@ -8018,7 +8018,7 @@ let
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
     libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
     libauto          = callPackage ../os-specific/darwin/libauto {};
-    iokit            = callPackage ../os-specific/darwin/iokit {};
+    iokit            = callPackage ../os-specific/darwin/iokit { inherit xnu; };
     Security         = callPackage ../os-specific/darwin/Security {};
 
     libSystem        = callPackage ../os-specific/darwin/libSystem {
