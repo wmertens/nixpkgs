@@ -28,5 +28,12 @@ stdenv.mkDerivation rec {
     cp sec/Security/*.h                  $dest
     cp libsecurity_authorization/lib/*.h $dest
     cp libsecurity_cssm/lib/*.h          $dest
+
+    # For some reason most of the subincludes are omitted. TODO: add the others
+    cat <<EOF >> $dest/Security.h
+    #include <Security/Authorization.h>
+    #include <Security/AuthorizationTags.h>
+    #include <Security/AuthorizationDB.h>
+    EOF
   '';
 }

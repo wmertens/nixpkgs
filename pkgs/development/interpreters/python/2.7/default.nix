@@ -1,5 +1,6 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2, includeModules ? false
-, sqlite, tcl, tk, x11, openssl, readline, db, ncurses, gdbm, libX11, self, callPackage }:
+, sqlite, tcl, tk, x11, openssl, readline, db, ncurses, gdbm, libX11, self, callPackage
+, configd, corefoundation }:
 
 assert zlibSupport -> zlib != null;
 
@@ -54,7 +55,7 @@ let
   buildInputs =
     optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc ++
     [ bzip2 openssl ] ++ optionals includeModules [ db openssl ncurses gdbm libX11 readline x11 tcl tk sqlite ]
-    ++ optional zlibSupport zlib;
+    ++ optional zlibSupport zlib ++ optionals stdenv.isDarwin [ configd corefoundation ];
 
   # Build the basic Python interpreter without modules that have
   # external dependencies.
