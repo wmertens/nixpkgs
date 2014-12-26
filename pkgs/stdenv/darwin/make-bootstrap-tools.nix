@@ -167,21 +167,14 @@ rec {
   unpack = stdenv.mkDerivation {
     name = "unpack";
 
-    buildCommand = ''
-      ${build}/in-nixpkgs/mkdir $out
-      ${build}/in-nixpkgs/bzip2 -d < ${build}/on-server/bootstrap-tools.cpio.bz2 | (cd $out && ${build}/in-nixpkgs/cpio -v -i)
+    builder = stdenv.shell;
+    args    = [ ./unpack-bootstrap-tools.sh ];
 
-      for i in $out/bin/*; do
-        if ! test -L $i; then
-          echo patching $i
-          local libs=$(${darwin.cctools}/bin/otool -L "$i" | tail -n +2 | grep -v libSystem) || true
+    tarball = "${build}/on-server/bootstrap-tools.cpio.bz2";
 
-          if [ -n "$libs" ]; then
-            $out/bin/install_name_tool -add_rpath $out/lib $i
-          fi
-        fi
-      done
-    '';
+    mkdir = "${build}/in-nixpkgs/mkdir";
+    bzip2 = "${build}/in-nixpkgs/bzip2";
+    cpio  = "${build}/in-nixpkgs/cpio";
 
     allowedReferences = [ "out" ];
   };
