@@ -5976,7 +5976,7 @@ let
   # The logic behind this attribute is broken: libiconvOrNull==null does
   # NOT imply libiconv=glibc! On Darwin, for example, we have a native
   # libiconv library which is not glibc.
-  libiconvOrLibc = if libiconvOrNull == null then cc.libc else libiconv;
+  libiconvOrLibc = if libiconvOrNull == null then stdenv.cc.libc else libiconv;
 
   # On non-GNU systems we need GNU Gettext for libintl.
   libintlOrEmpty = stdenv.lib.optional (!stdenv.isLinux) gettext;
