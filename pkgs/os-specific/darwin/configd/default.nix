@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ launchd ];
 
-  propagatedBuildInputs = [ Security ];
+  propagatedBuildInputs = [ security ];
 
   installPhase = ''
     mkdir -p $out/include
