@@ -5743,11 +5743,11 @@ let
 
   mutag = buildPythonPackage rec {
     disabled = ! isPy3k;
-    name = "mutag-0.0.1-b1b3ff2ad8";
+    name = "mutag-0.0.2-2ffa0258ca";
     src = pkgs.fetchgit {
       url = "https://github.com/aroig/mutag.git";
-      sha256 = "1x9wl789ib62zmrbjy96jhcbjnym6fb1jvdjiw4smapifm2hnyr7";
-      rev = "efc9bc7e1ea345e7bd0568848598de";
+      sha256 = "0azq2sb32mv6wyjlw1hk01c23isl4x1hya52lqnhknak299s5fml";
+      rev = "2ffa0258cadaf79313241f43bf2c1caaf197d9c2";
     };
 
     propagatedBuildInputs = with self; [ pyparsing ];
@@ -12163,7 +12163,16 @@ let
       sha256 = "07fyvwp4rga47ayfsmb79p2784sqrih0sglwnd9c4x6g63xgljvb";
     };
 
-    propagatedBuildInputs = with self; [ pygtk pyyaml pygobject dbus notify pkgs.udisks2 pkgs.gettext ];
+    preConfigure = ''
+      export XDG_RUNTIME_DIR=/tmp
+    '';
+
+    propagatedBuildInputs = with self; [ pkgs.gobjectIntrospection pkgs.gtk3 pyyaml pygobject3 pkgs.libnotify pkgs.udisks2 pkgs.gettext self.docopt ];
+
+    preFixup = ''
+        wrapProgram $out/bin/* \
+          --prefix GI_TYPELIB_PATH : "$GI_TYPELIB_PATH"
+    '';
 
     # tests require dbusmock
     doCheck = false;

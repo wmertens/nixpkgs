@@ -3493,13 +3493,14 @@ let
     liblapack = liblapack.override {shared = true;};
     llvm = llvm_33;
     openblas = openblas_0_2_2;
+    suitesparse = suitesparse_4_2;
   };
 
   julia033 = let
     liblapack = liblapack_3_5_0.override {shared = true;};
   in callPackage ../development/compilers/julia/0.3.3.nix {
     inherit liblapack;
-    suitesparse = suitesparse.override {
+    suitesparse = suitesparse_4_2.override {
       inherit liblapack;
     };
     llvm = llvm_33;
@@ -3703,6 +3704,8 @@ let
 
     macaque = callPackage ../development/ocaml-modules/macaque { };
 
+    magick = callPackage ../development/ocaml-modules/magick { };
+
     menhir = callPackage ../development/ocaml-modules/menhir { };
 
     merlin = callPackage ../development/tools/ocaml/merlin { };
@@ -3766,6 +3769,8 @@ let
 
     ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { };
 
+    ojquery = callPackage ../development/ocaml-modules/ojquery { };
+
     otfm = callPackage ../development/ocaml-modules/otfm { };
 
     ounit = callPackage ../development/ocaml-modules/ounit { };
@@ -3805,6 +3810,8 @@ let
 
     pycaml = callPackage ../development/ocaml-modules/pycaml { };
 
+    safepass = callPackage ../development/ocaml-modules/safepass { };
+
     sqlite3EZ = callPackage ../development/ocaml-modules/sqlite3EZ { };
 
     twt = callPackage ../development/ocaml-modules/twt { };
@@ -3816,6 +3823,7 @@ let
     uucd = callPackage ../development/ocaml-modules/uucd { };
     uucp = callPackage ../development/ocaml-modules/uucp { };
     uunf = callPackage ../development/ocaml-modules/uunf { };
+    uuseg = callPackage ../development/ocaml-modules/uuseg { };
     uutf = callPackage ../development/ocaml-modules/uutf { };
 
     vg = callPackage ../development/ocaml-modules/vg { };
@@ -6938,8 +6946,6 @@ let
 
   suil = callPackage ../development/libraries/audio/suil { };
 
-  suitesparse = callPackage ../development/libraries/suitesparse { };
-
   sutils = callPackage ../tools/misc/sutils { };
 
   sword = callPackage ../development/libraries/sword { };
@@ -7491,6 +7497,8 @@ let
   apacheHttpdPackages = apacheHttpdPackagesFor pkgs.apacheHttpd pkgs.apacheHttpdPackages;
   apacheHttpdPackages_2_2 = apacheHttpdPackagesFor pkgs.apacheHttpd_2_2 pkgs.apacheHttpdPackages_2_2;
   apacheHttpdPackages_2_4 = apacheHttpdPackagesFor pkgs.apacheHttpd_2_4 pkgs.apacheHttpdPackages_2_4;
+
+  cadvisor = callPackage ../servers/monitoring/cadvisor { };
 
   cassandra = callPackage ../servers/nosql/cassandra { };
 
@@ -8130,6 +8138,8 @@ let
 
   iptables = callPackage ../os-specific/linux/iptables { };
 
+  ipset = callPackage ../os-specific/linux/ipset { };
+
   iw = callPackage ../os-specific/linux/iw { };
 
   iwlwifi = callPackage ../os-specific/linux/firmware/iwlwifi { };
@@ -8679,9 +8689,9 @@ let
 
   untie = callPackage ../os-specific/linux/untie { };
 
-  upower = callPackage ../os-specific/linux/upower { };
+  upower-old = callPackage ../os-specific/linux/upower { };
 
-  upower_99 = callPackage ../os-specific/linux/upower/0.99.nix { };
+  upower = callPackage ../os-specific/linux/upower/0.99.nix { };
 
   upstart = callPackage ../os-specific/linux/upstart { };
 
@@ -10496,6 +10506,8 @@ let
   pdftk = callPackage ../tools/typesetting/pdftk { };
   pdfgrep  = callPackage ../tools/typesetting/pdfgrep { };
 
+  photoqt = callPackage ../applications/graphics/photoqt { };
+
   pianobar = callPackage ../applications/audio/pianobar { };
 
   pianobooster = callPackage ../applications/audio/pianobooster { };
@@ -10664,6 +10676,10 @@ let
   };
 
   sbagen = callPackage ../applications/misc/sbagen { };
+
+  scantailor = callPackage ../applications/graphics/scantailor {
+    boost = boost155;
+  };
 
   scite = callPackage ../applications/editors/scite { };
 
@@ -12117,7 +12133,11 @@ let
     # great feature, but it's of limited use with pre-built binaries
     # coming from a central build farm.
     tolerateCpuTimingInaccuracy = true;
+    liblapack = liblapack_3_5_0;
+    withLapack = false;
   };
+
+  atlasWithLapack = atlas.override { withLapack = true; };
 
   blas = callPackage ../development/libraries/science/math/blas { };
 
@@ -12149,6 +12169,9 @@ let
   mathematica9 = callPackage ../applications/science/math/mathematica/9.nix { };
 
   sage = callPackage ../applications/science/math/sage { };
+
+  suitesparse_4_2 = callPackage ../development/libraries/science/math/suitesparse/4.2.nix { };
+  suitesparse_4_4_1 = callPackage ../development/libraries/science/math/suitesparse {};
 
   ipopt = callPackage ../development/libraries/science/math/ipopt { };
 
