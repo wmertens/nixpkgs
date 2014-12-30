@@ -9,40 +9,44 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ cpio ];
 
-  requiredlibs = [ "cache"
-                   "commonCrypto"
-                   "compiler_rt"
-                   "copyfile"
-                   "corecrypto"
-                   "dispatch"
-                   "dyld"
-                   "launch"
-                   "macho"
-                   "removefile"
-                   "system_asl"
-                   "system_blocks"
-                   # "system_c" # special re-export here to hide newer functions
-                   "system_configuration"
-                   "system_dnssd"
-                   "system_info"
-                   # "system_kernel" # special re-export here to hide newer functions
-                   "system_m"
-                   "system_malloc"
-                   "system_network"
-                   "system_notify"
-                   "system_platform"
-                   "system_pthread"
-                   "system_sandbox"
-                   "unwind"
-                   "xpc"
-                 ];
+  systemlibs = [ "cache"
+                 "commonCrypto"
+                 "compiler_rt"
+                 "copyfile"
+                 "corecrypto"
+                 "dispatch"
+                 "dyld"
+                 "keymgr"
+                 "kxld"
+                 "launch"
+                 "macho"
+                 "quarantine"
+                 "removefile"
+                 "system_asl"
+                 "system_blocks"
+                 # "system_c" # special re-export here to hide newer functions
+                 "system_configuration"
+                 "system_coreservices"
+                 "system_coretls"
+                 "system_dnssd"
+                 "system_info"
+                 # "system_kernel" # special re-export here to hide newer functions
+                 "system_m"
+                 "system_malloc"
+                 "system_network"
+                 "system_networkextension"
+                 "system_notify"
+                 "system_platform"
+                 "system_pthread"
+                 "system_sandbox"
+                 "system_secinit"
+                 "system_stats"
+                 "system_trace"
+                 "unc"
+                 "unwind"
+                 "xpc"
+               ];
                  
-  optionallibs = [ "keymgr"
-                   "quarantine"
-                   "system_stats"
-                   "unc"
-                 ];
-
   installPhase = ''
     export NIX_ENFORCE_PURITY=
 
@@ -82,6 +86,8 @@ stdenv.mkDerivation rec {
     ln -s ${libresolv}/lib/libresolv.9.dylib $out/lib/libresolv.9.dylib
     ln -s libresolv.9.dylib $out/lib/libresolv.dylib
 
+    # selectively re-export functions from libsystem_c and libsystem_kernel
+    # to provide a consistent interface across OSX verions
     mkdir -p $out/lib/system
     ld -macosx_version_min 10.7 -arch x86_64 -dylib \
        -o $out/lib/system/libsystem_c.dylib \
@@ -101,12 +107,7 @@ stdenv.mkDerivation rec {
        -reexport_library $out/lib/system/libsystem_c.dylib \
        -reexport_library $out/lib/system/libsystem_kernel.dylib \
        ${stdenv.lib.concatStringsSep " " 
-         (map (l: "-reexport_library /usr/lib/system/lib${l}.dylib") 
-              (stdenv.lib.concat requiredlibs optionallibs))} \
-       
-    # exit 1
-
-    # ln -s /usr/lib/libSystem.dylib $out/lib/libSystem.dylib
+         (map (l: "-reexport_library /usr/lib/system/lib${l}.dylib") systemlibs)}
 
     # Set up links to pretend we work like a conventional unix (Apple's design, not mine!)
     for name in c dbm dl info m mx poll proc pthread rpcsvc gcc_s.10.4 gcc_s.10.5; do
