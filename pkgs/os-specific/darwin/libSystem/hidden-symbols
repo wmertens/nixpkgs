@@ -1,0 +1,12 @@
+_fdopendir
+_fchmodat
+_fchownat
+_fstatat
+_mkdirat
+_openat
+_unlinkat
+_faccessat
+_linkat
+_readlinkat
+_renameat
+_symlinkat

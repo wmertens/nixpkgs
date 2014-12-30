@@ -9,7 +9,43 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ cpio ];
 
+  requiredlibs = [ "cache"
+                   "commonCrypto"
+                   "compiler_rt"
+                   "copyfile"
+                   "corecrypto"
+                   "dispatch"
+                   "dyld"
+                   "launch"
+                   "macho"
+                   "removefile"
+                   "system_asl"
+                   "system_blocks"
+                   "system_c" # special re-export here to hide newer functions
+                   "system_configuration"
+                   "system_dnssd"
+                   "system_info"
+                   "system_kernel" # special re-export here to hide newer functions
+                   "system_m"
+                   "system_malloc"
+                   "system_network"
+                   "system_notify"
+                   "system_platform"
+                   "system_pthread"
+                   "system_sandbox"
+                   "unwind"
+                   "xpc"
+                 ];
+                 
+  optionallibs = [ "keymgr"
+                   "quarantine"
+                   "system_stats"
+                   "unc"
+                 ];
+
   installPhase = ''
+    export NIX_ENFORCE_PURITY=
+
     mkdir -p $out/lib $out/include
 
     # Set up our include directories
@@ -47,7 +83,19 @@ stdenv.mkDerivation rec {
     ln -s libresolv.9.dylib $out/lib/libresolv.dylib
 
     # Set up the actual library link
-    ln -s /usr/lib/libSystem.dylib $out/lib/libSystem.dylib
+    ld -macosx_version_min 10.7 \
+       -arch x86_64 \
+       -dylib \
+       -o $out/lib/libSystem.dylib \
+       ${stdenv.lib.concatStringsSep " " 
+         (map (l: "-reexport_library /usr/lib/system/lib${l}.dylib") 
+              (stdenv.lib.concat requiredlibs optionallibs))} \
+       -unexported_symbols_list ${./hidden-symbols}
+       
+    # ld -arch x86_64 -macosx_version_min 10.7 -r -o $out/lib/libfoo.o -reexport_library /usr/lib/system/libsystem_kernel.dylib # why does this command fail??
+    # exit 1
+
+    # ln -s /usr/lib/libSystem.dylib $out/lib/libSystem.dylib
 
     # Set up links to pretend we work like a conventional unix (Apple's design, not mine!)
     for name in c dbm dl info m mx poll proc pthread rpcsvc gcc_s.10.4 gcc_s.10.5; do
@@ -57,7 +105,7 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "The Mac OS libc/libSystem (impure symlinks to binaries with pure headers)";
-    maintainers = with maintainers; [ copumpkin ];
+    maintainers = with maintainers; [ copumpkin gridaphobe ];
     platforms   = platforms.darwin;
     license     = licenses.apsl20;
   };
