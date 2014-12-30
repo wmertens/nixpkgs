@@ -21,11 +21,11 @@ stdenv.mkDerivation rec {
                    "removefile"
                    "system_asl"
                    "system_blocks"
-                   "system_c" # special re-export here to hide newer functions
+                   # "system_c" # special re-export here to hide newer functions
                    "system_configuration"
                    "system_dnssd"
                    "system_info"
-                   "system_kernel" # special re-export here to hide newer functions
+                   # "system_kernel" # special re-export here to hide newer functions
                    "system_m"
                    "system_malloc"
                    "system_network"
@@ -82,17 +82,28 @@ stdenv.mkDerivation rec {
     ln -s ${libresolv}/lib/libresolv.9.dylib $out/lib/libresolv.9.dylib
     ln -s libresolv.9.dylib $out/lib/libresolv.dylib
 
+    mkdir -p $out/lib/system
+    ld -macosx_version_min 10.7 -arch x86_64 -dylib \
+       -o $out/lib/system/libsystem_c.dylib \
+       /usr/lib/libSystem.dylib \
+       -reexported_symbols_list ${./system_c_symbols}
+
+    ld -macosx_version_min 10.7 -arch x86_64 -dylib \
+       -o $out/lib/system/libsystem_kernel.dylib \
+       /usr/lib/libSystem.dylib \
+       -reexported_symbols_list ${./system_kernel_symbols}
+
     # Set up the actual library link
     ld -macosx_version_min 10.7 \
        -arch x86_64 \
        -dylib \
        -o $out/lib/libSystem.dylib \
+       -reexport_library $out/lib/system/libsystem_c.dylib \
+       -reexport_library $out/lib/system/libsystem_kernel.dylib \
        ${stdenv.lib.concatStringsSep " " 
          (map (l: "-reexport_library /usr/lib/system/lib${l}.dylib") 
               (stdenv.lib.concat requiredlibs optionallibs))} \
-       -unexported_symbols_list ${./hidden-symbols}
        
-    # ld -arch x86_64 -macosx_version_min 10.7 -r -o $out/lib/libfoo.o -reexport_library /usr/lib/system/libsystem_kernel.dylib # why does this command fail??
     # exit 1
 
     # ln -s /usr/lib/libSystem.dylib $out/lib/libSystem.dylib
