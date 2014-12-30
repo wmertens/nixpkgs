@@ -4183,7 +4183,7 @@ let
   };
 
   ruby_1_8_7 = callPackage ../development/interpreters/ruby/ruby-1.8.7.nix { };
-  ruby_1_9_3 = callPackage ../development/interpreters/ruby/ruby-1.9.3.nix { };
+  ruby_1_9_3 = callPackage ../development/interpreters/ruby/ruby-1.9.3.nix { libobjc = darwin.libobjc; };
   ruby_2_0_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.0.0.nix { });
   ruby_2_1_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.0.nix { });
   ruby_2_1_1 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.1.nix { });
@@ -6218,7 +6218,10 @@ let
 
   libusb = callPackage ../development/libraries/libusb { };
 
-  libusb1 = callPackage ../development/libraries/libusb1 { };
+  libusb1 = callPackage ../development/libraries/libusb1 {
+    libobjc = darwin.libobjc;
+    iokit   = darwin.iokit;
+  };
 
   libunwind = if stdenv.isDarwin
     then callPackage ../development/libraries/libunwind/native.nix {}
@@ -8016,6 +8019,7 @@ let
     removefile       = callPackage ../os-specific/darwin/removefile {};
     configd          = callPackage ../os-specific/darwin/configd { inherit launchd security; };
     libnotify        = callPackage ../os-specific/darwin/libnotify {};
+    libobjc          = callPackage ../os-specific/darwin/libobjc {};
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
     libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
     libauto          = callPackage ../os-specific/darwin/libauto {};
