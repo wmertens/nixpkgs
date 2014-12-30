@@ -22,6 +22,7 @@ rec {
       # C standard library stuff
       cp -d ${darwin.libSystem}/lib/*.o $out/lib/
       cp -d ${darwin.libSystem}/lib/*.dylib $out/lib/
+      cp -d ${darwin.libSystem}/lib/system/*.dylib $out/lib/
 
       # Resolv is actually a link to another package, so let's copy it properly
       rm $out/lib/libresolv.9.dylib
