@@ -74,19 +74,6 @@ in rec {
     export NIX_CFLAGS_COMPILE+=" -idirafter ${bootstrapTools}/include-libSystem -F${bootstrapTools}/System/Library/Frameworks"
     export NIX_LDFLAGS_BEFORE+=" -L${bootstrapTools}/lib/"
     export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
-    if [ ! -n "$isAnAncientPoS" ]; then
-      export configureFlags+=" ac_cv_func_fchmodat=no"
-      export configureFlags+=" ac_cv_func_fchownat=no"
-      export configureFlags+=" ac_cv_func_fstatat=no"
-      export configureFlags+=" ac_cv_func_mkdirat=no"
-      export configureFlags+=" ac_cv_func_openat=no"
-      export configureFlags+=" ac_cv_func_unlinkat=no"
-      export configureFlags+=" ac_cv_func_faccessat=no"
-      export configureFlags+=" ac_cv_func_linkat=no"
-      export configureFlags+=" ac_cv_func_readlinkat=no"
-      export configureFlags+=" ac_cv_func_renameat=no"
-      export configureFlags+=" ac_cv_func_symlinkat=no"
-    fi
   '';
 
   stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? ""}:
