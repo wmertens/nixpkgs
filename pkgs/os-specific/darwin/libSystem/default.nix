@@ -106,12 +106,17 @@ stdenv.mkDerivation rec {
        -reexported_symbols_list ${./system_kernel_symbols}
 
     # Set up the actual library link
-    clang -dynamiclib init.c -o $out/lib/libSystem.dylib \
-       -Wl,-reexport_library -Wl,$out/lib/system/libsystem_c.dylib \
-       -Wl,-reexport_library -Wl,$out/lib/system/libsystem_kernel.dylib \
-       ${stdenv.lib.concatStringsSep " " 
-         (map (l: "-Wl,-reexport_library -Wl,/usr/lib/system/lib${l}.dylib")
-              systemlibs)}
+    clang -c -o CompatibilityHacks.o -Os CompatibilityHacks.c
+    clang -c -o init.o -Os init.c
+    ld -macosx_version_min 10.7 \
+       -arch x86_64 \
+       -dylib \
+       -o $out/lib/libSystem.dylib \
+       CompatibilityHacks.o init.o \
+       -reexport_library $out/lib/system/libsystem_c.dylib \
+       -reexport_library $out/lib/system/libsystem_kernel.dylib \
+        ${stdenv.lib.concatStringsSep " "
+          (map (l: "-reexport_library /usr/lib/system/lib${l}.dylib") systemlibs)}
 
     # Set up links to pretend we work like a conventional unix (Apple's design, not mine!)
     for name in c dbm dl info m mx poll proc pthread rpcsvc gcc_s.10.4 gcc_s.10.5; do
