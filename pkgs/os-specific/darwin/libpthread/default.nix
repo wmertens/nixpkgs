@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "09vwwahcvmxvx2xl0890gkp91n61dld29j73y2pa597bqkag2qpg";
   };
 
-  phases = [ "unpackPhase" "installPhase" ];
+  phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
 
   propagatedBuildInputs = [ libdispatch xnu ];
 

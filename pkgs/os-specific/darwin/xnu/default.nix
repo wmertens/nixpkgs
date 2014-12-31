@@ -105,7 +105,9 @@ in stdenv.mkDerivation rec {
 
     # TODO: figure out why I need to do this
     cp libsyscall/wrappers/*.h $out/include
-    cp EXTERNAL_HEADERS/AssertMacros.h    $out/include
+    mkdir -p $out/include/os
+    cp libsyscall/os/tsd.h $out/include/os/tsd.h
+    cp EXTERNAL_HEADERS/AssertMacros.h $out/include
 
     # Build the mach headers we crave
     export MIGCC=cc

@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   phases = [ "unpackPhase" "installPhase" ];
 
-  buildInputs = [ cpio libdispatch libpthread xnu ];
+  buildInputs = [ cpio libpthread ];
 
   systemlibs = [ "cache"
                  "commonCrypto"
@@ -106,7 +106,7 @@ stdenv.mkDerivation rec {
        -reexported_symbols_list ${./system_kernel_symbols}
 
     # Set up the actual library link
-    clang init.c -o $out/lib/libSystem.dylib \
+    clang -dynamiclib init.c -o $out/lib/libSystem.dylib \
        -Wl,-reexport_library -Wl,$out/lib/system/libsystem_c.dylib \
        -Wl,-reexport_library -Wl,$out/lib/system/libsystem_kernel.dylib \
        ${stdenv.lib.concatStringsSep " " 
