@@ -8029,11 +8029,15 @@ let
     libSystem        = callPackage ../os-specific/darwin/libSystem {
       inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
       inherit libclosure carbon-headers commonCrypto copyfile removefile libresolv libnotify;
+      inherit libpthread;
     };
 
     # We only have headers for these for now
     libdispatch      = callPackage ../os-specific/darwin/libdispatch {};
     libclosure       = callPackage ../os-specific/darwin/libclosure {};
+    libpthread       = callPackage ../os-specific/darwin/libpthread {
+      inherit libdispatch xnu;
+    };
     launchd          = callPackage ../os-specific/darwin/launchd {};
 
     dtrace           = callPackage ../os-specific/darwin/dtrace { inherit cctools; };

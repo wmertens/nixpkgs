@@ -104,7 +104,7 @@ in stdenv.mkDerivation rec {
     rmdir $out/usr
 
     # TODO: figure out why I need to do this
-    cp libsyscall/wrappers/gethostuuid*.h $out/include
+    cp libsyscall/wrappers/*.h $out/include
     cp EXTERNAL_HEADERS/AssertMacros.h    $out/include
 
     # Build the mach headers we crave
@@ -114,5 +114,11 @@ in stdenv.mkDerivation rec {
     export DERIVED_SOURCES_DIR=$out/include
     export SDKROOT=$out
     libsyscall/xcodescripts/mach_install_mig.sh
+
+    # Add some symlinks
+    ln -s $out/System/Library/Frameworks/System.framework/Versions/B \
+          $out/System/Library/Frameworks/System.framework/Versions/Current
+    ln -s $out/System/Library/Frameworks/System.framework/Versions/Current/PrivateHeaders \
+          $out/System/Library/Frameworks/System.framework/Headers
   '';
 }
