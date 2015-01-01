@@ -36,7 +36,8 @@ stdenv.mkDerivation rec {
     then "--with-ssl=gnutls"
     else "--without-ssl";
 
-  doCheck = (perl != null && python3 != null);
+  #doCheck = (perl != null && python3 != null);
+  doCheck = false;
 
   meta = with stdenv.lib; {
     description = "Tool for retrieving files using HTTP, HTTPS, and FTP";
