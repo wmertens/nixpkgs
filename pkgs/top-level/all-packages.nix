@@ -5519,7 +5519,8 @@ let
   hamlib = callPackage ../development/libraries/hamlib { };
 
   # TODO : Add MIT Kerberos and let admin choose.
-  kerberos = heimdal;
+  # TODO : Fix kerberos on Darwin
+  kerberos = if stdenv.isDarwin then null else heimdal;
 
   heimdal = callPackage ../development/libraries/kerberos/heimdal.nix {
     openldap = openldap.override {
@@ -6874,8 +6875,6 @@ let
 
   skalibs = callPackage ../development/libraries/skalibs { };
 
-  skarnetConfCompile = callPackage ../development/tools/build-managers/skarnet { };
-
   slang = callPackage ../development/libraries/slang { };
 
   slibGuile = callPackage ../development/libraries/slib {
@@ -6959,6 +6958,8 @@ let
   suil = callPackage ../development/libraries/audio/suil { };
 
   sutils = callPackage ../tools/misc/sutils { };
+
+  svrcore = callPackage ../development/libraries/svrcore { };
 
   sword = callPackage ../development/libraries/sword { };
 
@@ -7475,6 +7476,8 @@ let
   };
 
   ### SERVERS
+
+  "389-ds-base" = callPackage ../servers/ldap/389 { };
 
   rdf4store = callPackage ../servers/http/4store { };
 
