@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   configurePhase = ''
     substituteInPlace ./configure --replace '{toolprefix}gcc' '{toolprefix}cc'
-    ./configure -prefix $out -toolprefix ${stdenv.gcc}/bin/ '' +
+    ./configure -prefix $out -toolprefix ${stdenv.cc}/bin/ '' +
     (if stdenv.isDarwin then "ia32-macosx" else "ia32-linux");
 
   meta = with stdenv.lib; {
