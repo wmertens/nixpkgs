@@ -708,9 +708,7 @@ let
 
   enca = callPackage ../tools/text/enca { };
 
-  fasd = callPackage ../tools/misc/fasd {
-    inherit (haskellPackages) pandoc;
-  };
+  fasd = callPackage ../tools/misc/fasd { };
 
   fop = callPackage ../tools/typesetting/fop { };
 
@@ -795,7 +793,6 @@ let
 
   bup = callPackage ../tools/backup/bup {
     inherit (pythonPackages) pyxattr pylibacl setuptools fuse;
-    inherit (haskellPackages) pandoc;
     par2Support = (config.bup.par2Support or false);
   };
 
@@ -2053,6 +2050,20 @@ let
   p7zip = callPackage ../tools/archivers/p7zip { };
 
   pal = callPackage ../tools/misc/pal { };
+
+  pandoc = with haskellPackages; pandoc.override {
+    cabal = cabal.override {
+      extension = self: super: {
+        configureFlags = super.configureFlags or "" + " -fembed_data_files";
+        buildTools = super.buildTools or [] ++ [hsb2hs];
+        enableSharedExecutables = false;
+        enableSharedLibraries = false;
+        isLibrary = false;
+        noHaddock = true;
+        postFixup = "rm -rf $out/lib $out/nix-support $out/share";
+      };
+    };
+  };
 
   panomatic = callPackage ../tools/graphics/panomatic { };
 
@@ -3368,11 +3379,14 @@ let
   haskellPackages_ghc784_profiling    = recurseIntoAttrs haskell.packages_ghc784.profiling;
   haskellPackages_ghc784              = recurseIntoAttrs haskell.packages_ghc784.highPrio;
   haskellPackages_ghcHEAD = haskell.packages_ghcHEAD;
+  haskellPackages_ghcjs = haskell.packages_ghcjs;
 
   haxe = callPackage ../development/compilers/haxe { };
 
   hhvm = callPackage ../development/compilers/hhvm { };
   hiphopvm = hhvm; /* Compatibility alias */
+
+  hop = callPackage ../development/compilers/hop { };
 
   falcon = callPackage ../development/interpreters/falcon { };
 
@@ -3418,6 +3432,10 @@ let
     jdk = "${icedtea7_jdk}/lib/icedtea";
     xulrunner = firefox;
   };
+
+  icedtea_jdk = icedtea7_jdk;
+  icedtea_jre = icedtea7_jre;
+  icedtea_web = icedtea7_web;
 
   ikarus = callPackage ../development/compilers/ikarus { };
 
@@ -4579,7 +4597,8 @@ let
   gnumake380 = callPackage ../development/tools/build-managers/gnumake/3.80 { };
   gnumake381 = callPackage ../development/tools/build-managers/gnumake/3.81 { };
   gnumake382 = callPackage ../development/tools/build-managers/gnumake/3.82 { };
-  gnumake40  = callPackage ../development/tools/build-managers/gnumake/4.0  { };
+  gnumake40 = callPackage ../development/tools/build-managers/gnumake/4.0 { };
+  gnumake41 = callPackage ../development/tools/build-managers/gnumake/4.1 { };
   gnumake = gnumake382;
 
   gob2 = callPackage ../development/tools/misc/gob2 { };
@@ -7518,7 +7537,7 @@ let
   cassandra = callPackage ../servers/nosql/cassandra { };
 
   apache-jena = callPackage ../servers/nosql/apache-jena/binary.nix {
-    java = icedtea7_jdk;
+    java = icedtea_jdk;
   };
 
   apcupsd = callPackage ../servers/apcupsd { };
@@ -11117,7 +11136,7 @@ let
   vorbisTools = callPackage ../applications/audio/vorbis-tools { };
 
   vue = callPackage ../applications/misc/vue {
-    jre = icedtea7_jre;
+    jre = icedtea_jre;
   };
 
   vwm = callPackage ../applications/window-managers/vwm { };
@@ -11196,7 +11215,7 @@ let
           ++ lib.optional (cfg.enableMPlayer or false) (MPlayerPlugin browser)
           ++ lib.optional (cfg.enableGeckoMediaPlayer or false) gecko_mediaplayer
           ++ lib.optional (supportsJDK && jre && jrePlugin ? mozillaPlugin) jrePlugin
-          ++ lib.optional icedtea icedtea7_web
+          ++ lib.optional icedtea icedtea_web
           ++ lib.optional (cfg.enableGoogleTalkPlugin or false) google_talk_plugin
           ++ lib.optional (cfg.enableFriBIDPlugin or false) fribid
           ++ lib.optional (cfg.enableGnomeExtensions or false) gnome3.gnome_shell
