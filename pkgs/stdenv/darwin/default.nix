@@ -183,5 +183,5 @@ in rec {
     };
   };
 
-  stdenvDarwin = stage2.stdenv;
+  stdenvDarwin = stage4;
 }
