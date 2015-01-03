@@ -41,4 +41,9 @@ stdenv.mkDerivation rec {
 
     export DSTROOT=$out
   '';
+
+  postInstall = ''
+    mv $out/System/* $out
+    rmdir $out/System
+  '';
 }

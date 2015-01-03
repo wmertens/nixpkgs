@@ -1,6 +1,6 @@
 { stdenv, fetchurl, cpio, bootstrap_cmds, xnu, libc, libm, libdispatch, cctools, libinfo,
   dyld, csu, architecture, libclosure, carbon-headers, ncurses, commonCrypto, copyfile,
-  removefile, libresolv, libnotify, libpthread }:
+  removefile, libresolv, libnotify, libpthread, mDNSResponder }:
 
 stdenv.mkDerivation rec {
   version = "1197.1.1";
@@ -32,27 +32,22 @@ stdenv.mkDerivation rec {
                  "system_blocks"
                  # "system_c" # special re-export here to hide newer functions
                  "system_configuration"
-                 "system_coreservices"
-                 "system_coretls"
                  "system_dnssd"
                  "system_info"
                  # "system_kernel" # special re-export here to hide newer functions
                  "system_m"
                  "system_malloc"
                  "system_network"
-                 "system_networkextension"
                  "system_notify"
                  "system_platform"
                  "system_pthread"
                  "system_sandbox"
-                 "system_secinit"
                  "system_stats"
-                 "system_trace"
                  "unc"
                  "unwind"
                  "xpc"
                ];
-                 
+
   installPhase = ''
     export NIX_ENFORCE_PURITY=
 
@@ -60,10 +55,10 @@ stdenv.mkDerivation rec {
 
     # Set up our include directories
     (cd ${xnu}/include && find . -name '*.h' | cpio -pdm $out/include)
-    cp ${xnu}/System/Library/Frameworks/Kernel.framework/Versions/A/Headers/Availability*.h $out/include
-    cp ${xnu}/System/Library/Frameworks/Kernel.framework/Versions/A/Headers/stdarg.h        $out/include
+    cp ${xnu}/Library/Frameworks/Kernel.framework/Versions/A/Headers/Availability*.h $out/include
+    cp ${xnu}/Library/Frameworks/Kernel.framework/Versions/A/Headers/stdarg.h        $out/include
 
-    for dep in ${libc} ${libm} ${libinfo} ${dyld} ${architecture} ${libclosure} ${carbon-headers} ${libdispatch} ${ncurses} ${commonCrypto} ${copyfile} ${removefile} ${libresolv} ${libnotify}; do
+    for dep in ${libc} ${libm} ${libinfo} ${dyld} ${architecture} ${libclosure} ${carbon-headers} ${libdispatch} ${ncurses} ${commonCrypto} ${copyfile} ${removefile} ${libresolv} ${libnotify} ${mDNSResponder}; do
       (cd $dep/include && find . -name '*.h' | cpio -pdm $out/include)
     done
 

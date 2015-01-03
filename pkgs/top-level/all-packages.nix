@@ -8017,7 +8017,7 @@ let
     commonCrypto     = callPackage ../os-specific/darwin/CommonCrypto {};
     copyfile         = callPackage ../os-specific/darwin/copyfile {};
     removefile       = callPackage ../os-specific/darwin/removefile {};
-    configd          = callPackage ../os-specific/darwin/configd { inherit launchd security; };
+    configd          = callPackage ../os-specific/darwin/configd { inherit launchd bootstrap_cmds xnu ppp iokit eap8021x security; };
     libnotify        = callPackage ../os-specific/darwin/libnotify {};
     libobjc          = callPackage ../os-specific/darwin/libobjc {};
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
@@ -8025,11 +8025,13 @@ let
     libauto          = callPackage ../os-specific/darwin/libauto {};
     iokit            = callPackage ../os-specific/darwin/iokit { inherit xnu; };
     security         = callPackage ../os-specific/darwin/Security {};
+    ppp              = callPackage ../os-specific/darwin/ppp {};
+    eap8021x         = callPackage ../os-specific/darwin/eap8021x {};
 
     libSystem        = callPackage ../os-specific/darwin/libSystem {
       inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
       inherit libclosure carbon-headers commonCrypto copyfile removefile libresolv libnotify;
-      inherit libpthread;
+      inherit libpthread mDNSResponder;
     };
 
     # We only have headers for these for now
