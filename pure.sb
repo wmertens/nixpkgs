@@ -45,8 +45,7 @@
        (literal "/etc/nix/nix.conf"))
 
 ; TODO: get rid of this obviously
-(allow file-read*  (subpath "/Users/copumpkin"))
-(allow file-write* (subpath "/Users/copumpkin"))
+(allow file-read* file-write* (subpath (param "_HOME")))
 
 (allow process-fork)
 
