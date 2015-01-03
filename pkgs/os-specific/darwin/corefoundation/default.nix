@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ dyld icu libdispatch launchd libclosure ];
 
-  patches = [ ./add-cf-initialize.patch ];
+  patches = [ ./add-cf-initialize.patch ./add-cfmachport.patch ];
 
   preBuild = ''
     substituteInPlace Makefile \
@@ -38,7 +38,6 @@ stdenv.mkDerivation rec {
       --replace "CFFileSecurityRef" "void *" \
       --replace "CFURLEnumeratorResult" "void *" \
       --replace "CFURLEnumeratorRef" "void *"
-
 
     export DSTROOT=$out
   '';
