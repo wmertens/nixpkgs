@@ -85,7 +85,7 @@ rec {
         cp ${darwin.cctools}/bin/$i $out/bin
       done
 
-      cp -rd ${pkgs.darwin.corefoundation}/System/Library $out
+      cp -rd ${pkgs.darwin.corefoundation}/Library $out
 
       chmod -R u+w $out
 
