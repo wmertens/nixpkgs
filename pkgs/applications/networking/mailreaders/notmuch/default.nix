@@ -1,5 +1,5 @@
 { fetchurl, stdenv, bash, emacs, fixDarwinDylibNames
-, glib, gmime, gnupg
+, gdb, glib, gmime, gnupg
 , pkgconfig, talloc, xapian
 , sphinx, python
 }:
