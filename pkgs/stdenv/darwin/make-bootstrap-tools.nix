@@ -44,7 +44,7 @@ rec {
       cp ${findutils}/bin/xargs $out/bin
       cp -d ${diffutils}/bin/* $out/bin
       cp -d ${gnused}/bin/* $out/bin
-      cp -d ${gnugrep}/bin/* $out/bin
+      cp -d ${gnugrep}/bin/grep $out/bin
       cp ${gawk}/bin/gawk $out/bin
       cp -d ${gawk}/bin/awk $out/bin
       cp ${gnutar}/bin/tar $out/bin
