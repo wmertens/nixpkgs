@@ -115,7 +115,7 @@ stdenv.mkDerivation rec {
 
     # Set up links to pretend we work like a conventional unix (Apple's design, not mine!)
     for name in c dbm dl info m mx poll proc pthread rpcsvc gcc_s.10.4 gcc_s.10.5; do
-      ln -s $out/lib/libSystem.dylib $out/lib/lib$name.dylib
+      ln -s libSystem.dylib $out/lib/lib$name.dylib
     done
   '';
 
