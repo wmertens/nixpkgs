@@ -3,11 +3,11 @@
 }:
 
 stdenv.mkDerivation rec {
-  name = "talloc-2.1.1";
+  name = "ntdb-1.0";
 
   src = fetchurl {
-    url = "http://samba.org/ftp/talloc/${name}.tar.gz";
-    sha256 = "0x31id42b425dbxv5whrqlc6dj14ph7wzs3wsp1ggi537dncwa9y";
+    url = "http://samba.org/ftp/tdb/${name}.tar.gz";
+    sha256 = "0jdzgrz5sr25k83yrw7wqb3r0yj1v04z4s3lhsmnr5z6n5ifhyl1";
   };
 
   buildInputs = [
@@ -19,15 +19,14 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags = [
-    "--enable-talloc-compat1"
     "--bundled-libraries=NONE"
-    "--builtin-libraries=replace"
+    "--builtin-libraries=replace,ccan"
   ];
 
   meta = with stdenv.lib; {
-    description = "Hierarchical pool based memory allocator with destructors";
+    description = "The not-so trivial database";
     homepage = http://tdb.samba.org/;
-    license = licenses.gpl3;
+    license = licenses.lgpl3Plus;
     maintainers = with maintainers; [ wkennington ];
     platforms = platforms.all;
   };

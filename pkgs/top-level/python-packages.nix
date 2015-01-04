@@ -9944,16 +9944,20 @@ let
   });
 
 
-  subunit = buildPythonPackage rec {
+  subunit = stdenv.mkDerivation rec {
     name = "subunit-${version}";
-    version = "0.0.16";
+    version = "1.0.0";
 
     src = pkgs.fetchurl {
-      url = "https://launchpad.net/subunit/trunk/${version}/+download/python-${name}.tar.gz";
-      sha256 = "1ylla1wlmv29vdr76r5kgr7y21bz4ahi3v26mxsys42w90rfkahi";
+      url = "https://launchpad.net/subunit/trunk/${version}/+download/${name}.tar.gz";
+      sha256 = "1fnhrrwww90746an2nz2kn9qdf9pklmaf5lm22gssl6648f2rp2m";
     };
 
-    propagatedBuildInputs = with self; [ testtools ];
+    buildInputs = (with pkgs; [ pkgconfig check cppunit perl ]) ++ [ self.wrapPython ];
+
+    propagatedBuildInputs = with self; [ testtools testscenarios ];
+
+    postFixup = "wrapPythonPrograms";
 
     meta = {
       description = "A streaming protocol for test results";
@@ -10138,6 +10142,25 @@ let
     meta = {
       homepage = http://pythonpaste.org/tempita/;
       description = "A very small text templating language";
+    };
+  };
+
+
+  testscenarios = buildPythonPackage rec {
+    name = "testscenarios-${version}";
+    version = "0.4";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/t/testscenarios/${name}.tar.gz";
+      sha256 = "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg";
+    };
+
+    propagatedBuildInputs = with self; [ testtools ];
+
+    meta = {
+      description = "a pyunit extension for dependency injection";
+      homepage = https://pypi.python.org/pypi/testscenarios;
+      license = licenses.asl20;
     };
   };
 

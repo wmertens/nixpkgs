@@ -13,7 +13,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ bash emacs glib gmime gnupg pkgconfig talloc xapian sphinx python ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ fixDarwinDylibNames ];
+    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ++ stdenv.lib.optional (!stdenv.isDarwin) gdb;
 
   patchPhase = ''
     find test -type f -exec \
