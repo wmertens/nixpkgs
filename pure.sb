@@ -29,6 +29,7 @@
        (literal "/usr/lib/libSystem.dylib")
        (literal "/usr/lib/libSystem.B.dylib")
        (literal "/usr/lib/libobjc.A.dylib")
+       (literal "/usr/lib/libobjc.dylib")
        (literal "/usr/lib/libauto.dylib")
        (literal "/usr/lib/libc++abi.dylib")
        (literal "/usr/lib/libc++.1.dylib")
