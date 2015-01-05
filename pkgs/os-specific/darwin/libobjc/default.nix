@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/include/objc $out/lib
     ln -s /usr/lib/libobjc.dylib $out/lib/libobjc.dylib
     cp runtime/OldClasses.subproj/List.h $out/include/objc/List.h
-    cp runtime/NSObjcRuntime.h $out/include/objc/NSObjcRuntime.h
+    cp runtime/NSObjCRuntime.h $out/include/objc/NSObjCRuntime.h
     cp runtime/NSObject.h $out/include/objc/NSObject.h
     cp runtime/Protocol.h $out/include/objc/Protocol.h
     cp runtime/hashtable.h $out/include/objc/hashtable.h
