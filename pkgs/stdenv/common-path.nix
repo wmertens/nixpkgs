@@ -12,5 +12,4 @@
   pkgs.bash
   pkgs.patch
   pkgs.xz
-  pkgs.unzip
 ]
