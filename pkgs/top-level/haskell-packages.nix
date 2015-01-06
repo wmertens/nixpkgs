@@ -365,7 +365,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   Cabal_1_16_0_3 = callPackage ../development/libraries/haskell/Cabal/1.16.0.3.nix {};
   Cabal_1_18_1_3 = callPackage ../development/libraries/haskell/Cabal/1.18.1.3.nix {};
   Cabal_1_20_0_3 = callPackage ../development/libraries/haskell/Cabal/1.20.0.3.nix {};
-  Cabal_HEAD = callPackage ../development/libraries/haskell/Cabal/head.nix {};
+  Cabal_1_22_0_0 = callPackage ../development/libraries/haskell/Cabal/1.22.0.0.nix {};
   Cabal = null;                 # core package since forever
 
   cabalCargs = callPackage ../development/libraries/haskell/cabal-cargs {};
@@ -449,6 +449,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   classyPrelude = callPackage ../development/libraries/haskell/classy-prelude {};
 
   classyPreludeConduit = callPackage ../development/libraries/haskell/classy-prelude-conduit {};
+
+  classyPreludeYesod = callPackage ../development/libraries/haskell/classy-prelude-yesod {};
 
   clay = callPackage ../development/libraries/haskell/clay {};
 
@@ -661,6 +663,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   dice = callPackage ../development/libraries/haskell/dice {};
 
   diagrams = callPackage ../development/libraries/haskell/diagrams/diagrams.nix {};
+  diagramsBuilder = callPackage ../development/libraries/haskell/diagrams/builder { };
+  diagramsBuilderWrapper = callPackage ../development/libraries/haskell/diagrams/builder/wrapper.nix { };
   diagramsCairo = callPackage ../development/libraries/haskell/diagrams/cairo.nix {};
   diagramsCore = callPackage ../development/libraries/haskell/diagrams/core.nix {};
   diagramsContrib = callPackage ../development/libraries/haskell/diagrams/contrib.nix {};
@@ -955,8 +959,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   ghcid = callPackage ../development/tools/haskell/ghcid {};
 
   ghcjs = callPackage ../development/compilers/ghcjs {
-    Cabal = self.Cabal_HEAD;
-    cabalInstall = self.cabalInstall_HEAD;
+    Cabal = self.Cabal_1_22_0_0;
+    cabalInstall = self.cabalInstall_1_22_0_0;
     haddock = self.haddock.override {
       Cabal = null;
     };
@@ -2153,6 +2157,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   reserve = callPackage ../development/libraries/haskell/reserve {};
 
+  reverse-apply = callPackage ../development/libraries/haskell/reverse-apply {};
+
   rvar = callPackage ../development/libraries/haskell/rvar {};
 
   reactiveBanana = callPackage ../development/libraries/haskell/reactive-banana {};
@@ -2969,6 +2975,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   yesodJson = callPackage ../development/libraries/haskell/yesod-json {};
 
+  yesodNewsfeed = callPackage ../development/libraries/haskell/yesod-newsfeed {};
+
   yesodPersistent = callPackage ../development/libraries/haskell/yesod-persistent {};
 
   yesodRoutes = callPackage ../development/libraries/haskell/yesod-routes {};
@@ -3108,6 +3116,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   xmonadExtras = callPackage ../applications/window-managers/xmonad/xmonad-extras.nix {};
 
+  xmonadScreenshot = callPackage ../development/libraries/haskell/xmonad-screenshot {};
+
   # Yi packages
 
   dynamicState = callPackage ../development/libraries/haskell/dynamic-state {};
@@ -3191,8 +3201,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   cabalInstall_1_16_0_2 = callPackage ../tools/package-management/cabal-install/1.16.0.2.nix { Cabal = self.Cabal_1_16_0_3; };
   cabalInstall_1_18_0_3 = callPackage ../tools/package-management/cabal-install/1.18.0.3.nix { Cabal = self.Cabal_1_18_1_3; };
   cabalInstall_1_20_0_6 = callPackage ../tools/package-management/cabal-install/1.20.0.6.nix { Cabal = self.Cabal_1_20_0_3; };
-  cabalInstall_HEAD = callPackage ../tools/package-management/cabal-install/head.nix { Cabal = self.Cabal_HEAD; };
-  cabalInstall = self.cabalInstall_1_20_0_6;
+  cabalInstall_1_22_0_0 = callPackage ../tools/package-management/cabal-install/1.22.0.0.nix { Cabal = self.Cabal_1_22_0_0; };
+  cabalInstall = self.cabalInstall_1_22_0_0;
 
   codex = callPackage ../development/tools/haskell/codex {};
 
@@ -3219,7 +3229,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   lhs2tex = callPackage ../tools/typesetting/lhs2tex {};
 
-  liquidFixpoint = callPackage ../development/tools/haskell/liquid-fixpoint { ocaml = pkgs.ocaml; };
+  liquidFixpoint = callPackage ../development/tools/haskell/liquid-fixpoint {};
 
   liquidhaskell = callPackage ../development/tools/haskell/liquidhaskell {};
 
