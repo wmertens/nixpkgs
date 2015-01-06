@@ -616,6 +616,8 @@ let
     perl = perl516; # Docs fail to build with newer versions
   };
 
+  bibtool = callPackage ../tools/misc/bibtool { };
+
   bindfs = callPackage ../tools/filesystems/bindfs { };
 
   binwalk = callPackage ../tools/misc/binwalk {
@@ -2493,6 +2495,8 @@ let
   };
 
   ssss = callPackage ../tools/security/ssss { };
+ 
+  stress = callPackage ../tools/system/stress { };
 
   storeBackup = callPackage ../tools/backup/store-backup { };
 
@@ -12769,6 +12773,8 @@ let
   PPSSPP = callPackage ../misc/emulators/ppsspp { };
 
   uae = callPackage ../misc/emulators/uae { };
+
+  fsuae = callPackage ../misc/emulators/fs-uae { };
 
   putty = callPackage ../applications/networking/remote/putty { };
 
