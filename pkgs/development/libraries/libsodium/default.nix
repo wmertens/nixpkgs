@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "0s4iis5h7yh27kamwic3rddyp5ra941bcqcawa37grjvl78zzjjc";
   };
 
-  NIX_LDFLAGS = if !stdenv.isDarwin then "-lssp" else "";
+  NIX_LDFLAGS = stdenv.lib.optionalString (!stdenv.isDarwin) "-lssp";
 
   doCheck = true;
 
