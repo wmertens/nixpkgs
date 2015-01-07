@@ -1,1 +1,1 @@
-export IMAKECPP="@gcc@/bin/cpp"
+export IMAKECPP="@tradcpp@/bin/tradcpp"
