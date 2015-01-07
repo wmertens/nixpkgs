@@ -7,6 +7,7 @@
        (subpath "/usr/share/locale"))
 
 (allow file-read* file-write-data
+       (literal "/dev")
        (literal "/dev/null")
        (literal "/dev/zero")
        (literal "/dev/tty"))

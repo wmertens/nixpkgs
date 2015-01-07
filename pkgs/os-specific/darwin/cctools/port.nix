@@ -21,7 +21,10 @@ let
       autoconf automake libtool llvm clang openssl libuuid
     ];
 
-    patches = [ ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch ];
+    patches = [
+      ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch
+      ./ld-dtrace-optional.patch
+    ];
 
     enableParallelBuilding = true;
 

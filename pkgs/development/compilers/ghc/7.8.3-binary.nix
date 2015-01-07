@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl, ncurses, gmp, makeWrapper}:
+{stdenv, fetchurl, perl, ncurses, gmp, makeWrapper, libiconv}:
 
 stdenv.mkDerivation rec {
   version = "7.8.3";
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
       }
     else throw "cannot bootstrap GHC on this platform";
 
-  buildInputs = [perl makeWrapper];
+  buildInputs = [perl makeWrapper libiconv];
 
   postUnpack =
     # Strip is harmful, see also below. It's important that this happens
@@ -50,7 +50,7 @@ stdenv.mkDerivation rec {
      '' +
     # On Linux, use patchelf to modify the executables so that they can
     # find editline/gmp.
-    (if stdenv.isLinux then ''
+    stdenv.lib.optionalString stdenv.isLinux ''
       find . -type f -perm +100 \
           -exec patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
           --set-rpath "${ncurses}/lib:${gmp}/lib" {} \;
@@ -59,7 +59,28 @@ stdenv.mkDerivation rec {
       for prog in ld ar gcc strip ranlib; do
         find . -name "setup-config" -exec sed -i "s@/usr/bin/$prog@$(type -p $prog)@g" {} \;
       done
-     '' else "");
+     '' +
+
+     stdenv.lib.optionalString stdenv.isDarwin ''
+       fix () {
+         install_name_tool -change \
+           /usr/lib/libiconv.2.dylib \
+           ${libiconv}/lib/libiconv.dylib \
+           $1
+       }
+
+       for library in $(find . -type f -name '*.dylib'); do
+         fix $library
+       done
+
+       # for exe in $(find . -type f -executable); do
+       #   fix $exe
+       # done
+
+       for file in $(find . -name setup-config); do
+         substituteInPlace $file --replace /usr/bin/ranlib $(type -P ranlib)
+       done
+     '';
 
   configurePhase = ''
     ./configure --prefix=$out --with-gmp-libraries=${gmp}/lib \
@@ -85,7 +106,7 @@ stdenv.mkDerivation rec {
         EOF
         echo sanity check
       '' + stdenv.lib.optionalString stdenv.isDarwin ''
-        wrapProgram $out/bin/ghc --set NIX_ENFORCE_PURITY "" --add-flags -optl-L/usr/lib
+        wrapProgram $out/bin/ghc --set LD_IGNORE_DTRACE 1
       '' + ''
         $out/bin/ghc --make main.hs
         echo compilation ok

@@ -29,4 +29,10 @@ preConfigure() {
     done
 }
 
+preInstall () {
+    for i in Makefile.in ./src/Makefile.in ./lib-src/Makefile.in ./leim/Makefile.in; do
+        substituteInPlace $i --replace /bin/pwd pwd
+    done
+}
+
 genericBuild

@@ -1,0 +1,14 @@
+diff --git a/cctools/ld64/src/ld/passes/dtrace_dof.cpp b/cctools/ld64/src/ld/passes/dtrace_dof.cpp
+index 6f8a544..5beb44f 100644
+--- a/cctools/ld64/src/ld/passes/dtrace_dof.cpp
++++ b/cctools/ld64/src/ld/passes/dtrace_dof.cpp
+@@ -128,6 +128,9 @@ void doPass(const Options& opts, ld::Internal& internal)
+ 	if ( ! opts.generateDtraceDOF() )
+ 		return;
+ 
++	if ( getenv("LD_IGNORE_DTRACE") != NULL )
++		return;
++
+ 	// scan all atoms looking for dtrace probes
+ 	std::vector<DTraceProbeInfo>					probeSites;
+ 	std::vector<DTraceProbeInfo>					isEnabledSites;

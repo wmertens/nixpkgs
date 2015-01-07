@@ -3350,7 +3350,15 @@ let
 
   # Import Haskell infrastructure.
 
-  haskell = let pkgs_       = pkgs // { gmp = gmp.override { withStatic = true; }; };
+  haskell = let pkgs_       = pkgs // { gmp = gmp.override { withStatic = true; }; } //
+                                # on Darwin, use Darwin's libiconv symbol naming
+                                # convention. the bootstrap compiler assumes it and
+                                # disentangling Darwin and GNU libiconv during the
+                                # compiler build from source is too difficult for me.
+                                # TODO: remove this someday
+                                stdenv.lib.optionalAttrs stdenv.isDarwin {
+                                  libiconv = pkgs.darwin.libiconv;
+                                };
                 callPackage = newScope pkgs_;
                 newScope    = extra: lib.callPackageWith (pkgs_ // pkgs_.xorg // extra);
             in callPackage ./haskell-defaults.nix { pkgs = pkgs_; inherit callPackage newScope; };
@@ -8114,6 +8122,7 @@ let
     cmdline_tools = cmdline.tools;
 
     csu              = callPackage ../os-specific/darwin/csu {};
+    objconv          = callPackage ../os-specific/darwin/objconv {};
     dyld             = callPackage ../os-specific/darwin/dyld {};
     libc_825_40_1    = callPackage ../os-specific/darwin/libc/825_40_1.nix {};
     libc             = callPackage ../os-specific/darwin/libc { libc_old = libc_825_40_1; };
@@ -8131,6 +8140,7 @@ let
     removefile       = callPackage ../os-specific/darwin/removefile {};
     configd          = callPackage ../os-specific/darwin/configd { inherit launchd bootstrap_cmds xnu ppp iokit eap8021x security; };
     libnotify        = callPackage ../os-specific/darwin/libnotify {};
+    libiconv         = callPackage ../os-specific/darwin/libiconv {};
     libobjc          = callPackage ../os-specific/darwin/libobjc {};
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
     libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
