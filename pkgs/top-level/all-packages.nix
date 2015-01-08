@@ -1342,6 +1342,8 @@ let
 
   goaccess = callPackage ../tools/misc/goaccess { };
 
+  go-mtpfs = callPackage ../tools/filesystems/go-mtpfs { };
+
   googleAuthenticator = callPackage ../os-specific/linux/google-authenticator { };
 
   gource = callPackage ../applications/version-management/gource { };
@@ -1356,9 +1358,7 @@ let
 
   grafx2 = callPackage ../applications/graphics/grafx2 {};
 
-  grails = callPackage ../development/web/grails {
-    jdkPath = "${openjdk}/lib/openjdk";
-  };
+  grails = callPackage ../development/web/grails { jdk = null; };
 
   graphviz = callPackage ../tools/graphics/graphviz { };
 
@@ -2244,6 +2244,10 @@ let
 
   openmpi = callPackage ../development/libraries/openmpi { };
 
+  qastools = callPackage ../tools/audio/qastools {
+    qt = qt4;
+  };
+
   qhull = callPackage ../development/libraries/qhull { };
 
   qjoypad = callPackage ../tools/misc/qjoypad { };
@@ -2405,8 +2409,6 @@ let
   sharutils = callPackage ../tools/archivers/sharutils { };
 
   shotwell = callPackage ../applications/graphics/shotwell { };
-
-  shebangfix = callPackage ../tools/misc/shebangfix { };
 
   shellinabox = callPackage ../servers/shellinabox { };
 
@@ -3379,8 +3381,6 @@ let
     builtins.substring 0 (builtins.stringLength "packages_") name == "packages_"
   ) haskell));
 
-  haskellPackages = haskellPackages_ghc784;
-
   haskellPackages_ghc6104 = haskell.packages_ghc6104;
   haskellPackages_ghc6123 = haskell.packages_ghc6123;
   haskellPackages_ghc704  = haskell.packages_ghc704;
@@ -3392,6 +3392,13 @@ let
   haskellPackages_ghc784              = recurseIntoAttrs haskell.packages_ghc784.highPrio;
   haskellPackages_ghcHEAD = haskell.packages_ghcHEAD;
   haskellPackages_ghcjs = haskell.packages_ghcjs;
+  haskellPackages = haskellPackages_ghc784;
+
+  haskell-ng = callPackage ./haskell-ng.nix { };
+  haskellngPackages = haskell-ng.packages.ghc784.override {
+    overrides = config.haskellPackageOverrides or (self: super: {});
+    provideOldAttributeNames = config.provideOldHaskellAttributeNames or false;
+  };
 
   haxe = callPackage ../development/compilers/haxe { };
 
@@ -3432,7 +3439,6 @@ let
 
   icedtea7_jdk = callPackage ../development/compilers/icedtea rec {
     jdk = openjdk;
-    jdkPath = "${openjdk}/lib/openjdk";
     giflib = giflib_5_0;
   } // { outputs = [ "out" ]; };
 
@@ -3441,7 +3447,7 @@ let
     pkgs.icedtea7_jdk.jre)) // { outputs = [ "jre" ]; };
 
   icedtea7_web = callPackage ../development/compilers/icedtea-web {
-    jdk = "${icedtea7_jdk}/lib/icedtea";
+    jdk = icedtea7_jdk;
     xulrunner = firefox;
   };
 
@@ -3470,12 +3476,17 @@ let
     { description = "The open-source Java Runtime Environment"; }
     pkgs.openjdk.jre)) // { outputs = [ "jre" ]; };
 
-  jdk = if stdenv.isDarwin || stdenv.system == "i686-linux" || stdenv.system == "x86_64-linux"
-    then pkgs.openjdk
-    else pkgs.oraclejdk;
-  jre = if stdenv.isDarwin || stdenv.system == "i686-linux" || stdenv.system == "x86_64-linux"
-    then pkgs.openjre
-    else pkgs.oraclejre;
+  jdk = if stdenv.system == "i686-linux" || stdenv.system == "x86_64-linux"
+    then pkgs.icedtea_jdk
+    else if stdenv.isDarwin
+      then pkgs.openjdk # TODO: Use icedtea for darwin
+      else pkgs.oraclejdk;
+
+  jre = if stdenv.system == "i686-linux" || stdenv.system == "x86_64-linux"
+    then pkgs.icedtea_jre
+    else if stdenv.isDarwin
+      then pkgs.openjre # TODO: Use icedtea for darwin
+      else pkgs.oraclejre;
 
   oraclejdk = pkgs.jdkdistro true false;
 
@@ -3842,6 +3853,8 @@ let
 
     pycaml = callPackage ../development/ocaml-modules/pycaml { };
 
+    re = callPackage ../development/ocaml-modules/re { };
+
     safepass = callPackage ../development/ocaml-modules/safepass { };
 
     sqlite3EZ = callPackage ../development/ocaml-modules/sqlite3EZ { };
@@ -4116,7 +4129,7 @@ let
     hdf5 = null;
     glpk = null;
     suitesparse = null;
-    openjdk = null;
+    jdk = null;
     gnuplot = null;
   };
   octaveFull = (lowPrio (callPackage ../development/interpreters/octave {
@@ -4682,7 +4695,7 @@ let
   lttv = callPackage ../development/tools/misc/lttv { };
 
   maven = maven3;
-  maven3 = callPackage ../development/tools/build-managers/apache-maven { jdk = openjdk; };
+  maven3 = callPackage ../development/tools/build-managers/apache-maven { };
 
   mk = callPackage ../development/tools/build-managers/mk { };
 
@@ -5374,15 +5387,10 @@ let
 
   gmm = callPackage ../development/libraries/gmm { };
 
+  gmp4 = callPackage ../development/libraries/gmp/4.3.2.nix { }; # required by older GHC versions
+  gmp5 = callPackage ../development/libraries/gmp/5.1.x.nix { };
   gmp = gmp5;
-  gmp5 = gmp51;
-
   gmpxx = appendToName "with-cxx" (gmp.override { cxx = true; });
-
-  # The GHC bootstrap binaries link against libgmp.so.3, which is in GMP 4.x.
-  gmp4 = callPackage ../development/libraries/gmp/4.3.2.nix { };
-
-  gmp51 = callPackage ../development/libraries/gmp/5.1.x.nix { };
 
   #GMP ex-satellite, so better keep it near gmp
   mpfr = callPackage ../development/libraries/mpfr/default.nix { };
@@ -6504,6 +6512,8 @@ let
 
   mpich2 = callPackage ../development/libraries/mpich2 { };
 
+  mstpd = callPackage ../os-specific/linux/mstpd { };
+
   mtdev = callPackage ../development/libraries/mtdev { };
 
   mtpfs = callPackage ../tools/filesystems/mtpfs { };
@@ -7554,7 +7564,7 @@ let
   cassandra = callPackage ../servers/nosql/cassandra { };
 
   apache-jena = callPackage ../servers/nosql/apache-jena/binary.nix {
-    java = icedtea_jdk;
+    java = jdk;
   };
 
   apcupsd = callPackage ../servers/apcupsd { };
@@ -7809,9 +7819,7 @@ let
 
   postgresql93 = callPackage ../servers/sql/postgresql/9.3.x.nix { };
 
-  postgresql94beta2 = callPackage ../servers/sql/postgresql/9.4beta2.nix { };
-  postgresql94beta3 = callPackage ../servers/sql/postgresql/9.4beta3.nix { };
-  postgresql94 = postgresql94beta3;
+  postgresql94 = callPackage ../servers/sql/postgresql/9.4.x.nix { };
 
   postgresql_jdbc = callPackage ../servers/sql/postgresql/jdbc { };
 
@@ -10184,7 +10192,6 @@ let
     inherit (perlPackages) ArchiveZip CompressZlib;
     inherit (gnome) GConf ORBit2 gnome_vfs;
     zip = zip.override { enableNLS = false; };
-    jdk = openjdk;
     boost = boost155;
     glm = glm_0954;
     fontsConf = makeFontsConf {
@@ -11204,9 +11211,7 @@ let
 
   vorbisTools = callPackage ../applications/audio/vorbis-tools { };
 
-  vue = callPackage ../applications/misc/vue {
-    jre = icedtea_jre;
-  };
+  vue = callPackage ../applications/misc/vue { };
 
   vwm = callPackage ../applications/window-managers/vwm { };
 
