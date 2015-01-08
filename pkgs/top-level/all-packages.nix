@@ -694,6 +694,8 @@ let
 
   datamash = callPackage ../tools/misc/datamash { };
 
+  ddate = callPackage ../tools/misc/ddate { };
+
   direnv = callPackage ../tools/misc/direnv { };
 
   discount = callPackage ../tools/text/discount { };
@@ -701,6 +703,8 @@ let
   ditaa = callPackage ../tools/graphics/ditaa { };
 
   dlx = callPackage ../misc/emulators/dlx { };
+
+  dtrx = callPackage ../tools/compression/dtrx { };
 
   duperemove = callPackage ../tools/filesystems/duperemove {
     linuxHeaders = linuxHeaders_3_14;
@@ -1220,6 +1224,10 @@ let
   fping = callPackage ../tools/networking/fping {};
 
   fprot = callPackage ../tools/security/fprot { };
+
+  fprintd = callPackage ../tools/security/fprintd { };
+
+  fprint_demo = callPackage ../tools/security/fprint_demo { };
 
   freeipmi = callPackage ../tools/system/freeipmi {};
 
@@ -3859,6 +3867,8 @@ let
 
     sqlite3EZ = callPackage ../development/ocaml-modules/sqlite3EZ { };
 
+    stringext = callPackage ../development/ocaml-modules/stringext { };
+
     twt = callPackage ../development/ocaml-modules/twt { };
 
     utop = callPackage ../development/tools/ocaml/utop { };
@@ -5855,6 +5865,8 @@ let
   libfm-extra = callPackage ../development/libraries/libfm {
     extraOnly = true;
   };
+
+  libfprint = callPackage ../development/libraries/libfprint/master.nix { };
 
   libgadu = callPackage ../development/libraries/libgadu { };
 
@@ -11265,6 +11277,11 @@ let
   };
 
   wordnet = callPackage ../applications/misc/wordnet { };
+
+  workrave = callPackage ../applications/misc/workrave {
+    inherit (gnome) GConf gconfmm;
+    inherit (python27Packages) cheetah;
+  };
 
   wrapFirefox =
     { browser, browserName ? "firefox", desktopName ? "Firefox", nameSuffix ? ""
