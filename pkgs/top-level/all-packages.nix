@@ -652,6 +652,8 @@ let
 
   bootchart = callPackage ../tools/system/bootchart { };
 
+  boxfs = callPackage ../tools/filesystems/boxfs { };
+
   bro = callPackage ../applications/networking/ids/bro { };
 
   bsod = callPackage ../misc/emulators/bsod { };
@@ -723,6 +725,8 @@ let
   mcrl = callPackage ../tools/misc/mcrl { };
 
   mcrl2 = callPackage ../tools/misc/mcrl2 { };
+
+  mp3fs = callPackage ../tools/filesystems/mp3fs { };
 
   mpdcron = callPackage ../tools/audio/mpdcron { };
 
@@ -3878,6 +3882,11 @@ let
     uucd = callPackage ../development/ocaml-modules/uucd { };
     uucp = callPackage ../development/ocaml-modules/uucp { };
     uunf = callPackage ../development/ocaml-modules/uunf { };
+
+    uri = callPackage ../development/ocaml-modules/uri {
+      sexplib = ocaml_sexplib;
+    };
+
     uuseg = callPackage ../development/ocaml-modules/uuseg { };
     uutf = callPackage ../development/ocaml-modules/uutf { };
 
