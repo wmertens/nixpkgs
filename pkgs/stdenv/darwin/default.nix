@@ -33,6 +33,22 @@ in rec {
     export NIX_CFLAGS_COMPILE+=" --sysroot=/var/empty -Wno-multichar -Wno-deprecated-declarations"
   '';
 
+  # libSystem and its transitive dependencies. Get used to this; it's a recurring theme in darwin land
+  libSystemClosure = [
+    "/usr/lib/libSystem.dylib"
+    "/usr/lib/libSystem.B.dylib"
+    "/usr/lib/libobjc.A.dylib"
+    "/usr/lib/libobjc.dylib"
+    "/usr/lib/libauto.dylib"
+    "/usr/lib/libc++abi.dylib"
+    "/usr/lib/libc++.1.dylib"
+    "/usr/lib/libDiagnosticMessagesClient.dylib"
+    "/usr/lib/system"
+  ];
+
+  # The one dependency of /bin/sh :(
+  binShClosure = [ "/usr/lib/libncurses.5.4.dylib" ];
+
   bootstrapTools = derivation {
     name = "bootstrap-tools";
 
@@ -50,6 +66,8 @@ in rec {
 
     langC  = true;
     langCC = true;
+
+    __impureHostDeps = libSystemClosure;
   };
 
   bootstrapPreHook = ''
@@ -58,10 +76,10 @@ in rec {
     export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
   '';
 
-  stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? ""}:
+  stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? "", extraImpureHostDeps ? [], extraBuildInputs ? []}:
     let
       thisStdenv = import ../generic {
-        inherit system config;
+        inherit system config extraBuildInputs;
         name = "stdenv-darwin-boot";
         preHook =
           ''
@@ -78,6 +96,9 @@ in rec {
           curl = bootstrapTools;
         };
         inherit cc;
+
+        __globalImpureHostDeps = binShClosure ++ extraImpureHostDeps;
+
         # Having the proper 'platform' in all the stdenvs allows getting proper
         # linuxHeaders for example.
         extraAttrs = extraAttrs // { inherit platform; };
@@ -92,6 +113,7 @@ in rec {
 
   stage0 = stageFun {
     cc = "/no-such-path";
+    extraImpureHostDeps = libSystemClosure;
   };
 
   stage1 = stageFun {
@@ -109,15 +131,17 @@ in rec {
       };
     } // { libc = bootstrapTools; };
 
-    extraPreHook = bootstrapPreHook;
-    overrides    = pkgs: { binutils = bootstrapTools; };
+    extraPreHook        = bootstrapPreHook;
+    extraImpureHostDeps = libSystemClosure;
+    overrides           = pkgs: { binutils = bootstrapTools; };
   };
 
   stage2 = stageFun {
     inherit (stage1.stdenv) cc;
-    extraPath    = [ stage1.pkgs.xz ];
-    extraPreHook = bootstrapPreHook;
-    overrides    = pkgs: { binutils = stage1.pkgs.binutils; };
+    extraPath           = [ stage1.pkgs.xz ];
+    extraPreHook        = bootstrapPreHook;
+    extraImpureHostDeps = libSystemClosure;
+    overrides           = pkgs: { binutils = stage1.pkgs.binutils; };
   };
 
   stage3 = with stage2; stageFun {
@@ -132,10 +156,9 @@ in rec {
       shell     = "${pkgs.bash}/bin/bash";
     } // { libc = pkgs.darwin.libSystem; };
 
-    extraPath    = [ pkgs.xz ];
+    extraPath        = [ pkgs.xz ];
+    extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
     extraPreHook = ''
-      export NIX_CFLAGS_COMPILE+=" -idirafter ${pkgs.darwin.libSystem}/include -F${pkgs.darwin.corefoundation}/Library/Frameworks"
-      export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
       export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
     '';
     overrides = pkgs: { binutils = stage2.pkgs.binutils; };
@@ -146,10 +169,10 @@ in rec {
 
     preHook = ''
       ${commonPreHook}
-      export NIX_CFLAGS_COMPILE+=" -idirafter ${pkgs.darwin.libSystem}/include -F${pkgs.darwin.corefoundation}/Library/Frameworks"
-      export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
       export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
     '';
+
+    extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
 
     initialPath = import ../common-path.nix { inherit pkgs; };
 
