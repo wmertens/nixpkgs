@@ -156,8 +156,13 @@ in rec {
       shell     = "${pkgs.bash}/bin/bash";
     } // { libc = pkgs.darwin.libSystem; };
 
-    extraPath        = [ pkgs.xz ];
-    extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
+    extraPath = [ pkgs.xz ];
+
+    # This is the only place we need to specify both of these
+    extraImpureHostDeps = libSystemClosure;
+    extraBuildInputs    = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
+
+
     extraPreHook = ''
       export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
     '';
