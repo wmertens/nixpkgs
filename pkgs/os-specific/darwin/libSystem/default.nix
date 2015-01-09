@@ -119,6 +119,18 @@ stdenv.mkDerivation rec {
     done
   '';
 
+  __impureHostDeps = [
+    "/usr/lib/libSystem.dylib"
+    "/usr/lib/libSystem.B.dylib"
+    "/usr/lib/libobjc.A.dylib"
+    "/usr/lib/libobjc.dylib"
+    "/usr/lib/libauto.dylib"
+    "/usr/lib/libc++abi.dylib"
+    "/usr/lib/libc++.1.dylib"
+    "/usr/lib/libDiagnosticMessagesClient.dylib"
+    "/usr/lib/system"
+  ];
+
   meta = with stdenv.lib; {
     description = "The Mac OS libc/libSystem (impure symlinks to binaries with pure headers)";
     maintainers = with maintainers; [ copumpkin gridaphobe ];

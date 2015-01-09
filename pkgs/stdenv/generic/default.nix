@@ -10,6 +10,7 @@ let lib = import ../../../lib; in lib.makeOverridable (
 , setupScript ? ./setup.sh
 
 , extraBuildInputs ? []
+, __globalImpureHostDeps ? []
 }:
 
 let
@@ -83,6 +84,7 @@ let
           propagatedBuildInputs = attrs.propagatedBuildInputs or [];
           propagatedNativeBuildInputs = attrs.propagatedNativeBuildInputs or [];
           crossConfig = attrs.crossConfig or null;
+          __impureHostDeps = attrs.__impureHostDeps or [];
         in
         {
           builder = attrs.realBuilder or shell;
@@ -99,6 +101,13 @@ let
           nativeBuildInputs = nativeBuildInputs ++ (if crossConfig == null then buildInputs else []);
           propagatedNativeBuildInputs = propagatedNativeBuildInputs ++
             (if crossConfig == null then propagatedBuildInputs else []);
+
+          __impureHostDeps = __globalImpureHostDeps ++ __impureHostDeps ++ [
+            "/dev/zero"
+            "/dev/random"
+            "/dev/urandom"
+            "/bin/sh"
+          ];
         }))) (
       {
         # The meta attribute is passed in the resulting attribute set,
@@ -123,6 +132,7 @@ let
     (if isNull allowedRequisites then {} else { allowedRequisites = allowedRequisites ++ defaultNativeBuildInputs; }) //
     {
       inherit system name;
+      __impureHostDeps = __globalImpureHostDeps;
 
       builder = shell;
 
