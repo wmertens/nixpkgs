@@ -33,6 +33,8 @@ build mysql55
 build iperf
 build watch
 
+sandbox-exec -D _HOME=$HOME -f ./pure.sb nix-build --option use-binary-caches false -K -j 4 -A weechat
+
 # Broken builds (for now)
 # sandbox-exec -D _HOME=$HOME -f ./pure.sb nix-build --option use-binary-caches false -K -j 4 -A nodejs (wants CoreServices framework)
 # sandbox-exec -D _HOME=$HOME -f ./pure.sb nix-build --option use-binary-caches false -K -j 4 -A openjdk (binary bootstrap references root)

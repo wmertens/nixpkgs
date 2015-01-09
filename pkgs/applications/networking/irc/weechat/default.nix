@@ -1,6 +1,6 @@
 { stdenv, fetchurl, ncurses, openssl, perl, python, aspell, gnutls
 , zlib, curl , pkgconfig, libgcrypt, ruby, lua5, tcl, guile
-, pythonPackages, cacert, cmake, makeWrapper }:
+, pythonPackages, cacert, cmake, makeWrapper, libobjc }:
 
 stdenv.mkDerivation rec {
   version = "1.0.1";
@@ -11,11 +11,11 @@ stdenv.mkDerivation rec {
     sha256 = "0ly6lih7nvhacjs642v7n9z0x3lbgipiza00n632vrpi2zfvclrz";
   };
 
-  buildInputs = 
+  buildInputs =
     [ ncurses perl python openssl aspell gnutls zlib curl pkgconfig
       libgcrypt ruby lua5 tcl guile pythonPackages.pycrypto makeWrapper
       cacert cmake ]
-    ++ stdenv.lib.optional stdenv.isDarwin pythonPackages.pync;
+    ++ stdenv.lib.optionals stdenv.isDarwin [ pythonPackages.pync libobjc ];
 
   NIX_CFLAGS_COMPILE = "-I${python}/include/${python.libPrefix}";
 
