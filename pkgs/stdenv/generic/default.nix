@@ -11,6 +11,7 @@ let lib = import ../../../lib; in lib.makeOverridable (
 
 , extraBuildInputs ? []
 , __stdenvImpureHostDeps ? []
+, __extraImpureHostDeps ? []
 }:
 
 let
@@ -106,7 +107,7 @@ let
           propagatedNativeBuildInputs = propagatedNativeBuildInputs ++
             (if crossConfig == null then propagatedBuildInputs else []);
 
-          __impureHostDeps = lib.unique (lib.sort (x: y: x < y) (computedImpureHostDeps ++ computedPropagatedImpureHostDeps ++ __propagatedImpureHostDeps ++ __impureHostDeps ++ [
+          __impureHostDeps = lib.unique (lib.sort (x: y: x < y) (computedImpureHostDeps ++ computedPropagatedImpureHostDeps ++ __propagatedImpureHostDeps ++ __impureHostDeps ++ __extraImpureHostDeps ++ [
             "/dev/zero"
             "/dev/random"
             "/dev/urandom"

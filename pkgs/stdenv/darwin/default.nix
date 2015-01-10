@@ -49,16 +49,13 @@ in rec {
   # The one dependency of /bin/sh :(
   binShClosure = [ "/usr/lib/libncurses.5.4.dylib" ];
 
-  bootstrapTools = derivation {
-    name = "bootstrap-tools";
-
-    builder = bootstrapFiles.sh; # Not a filename! Attribute 'sh' on bootstrapFiles
-
-    args = [ ./unpack-bootstrap-tools.sh ];
-
-    tarball = fetch { file = "bootstrap-tools.5.cpio.bz2"; sha256 = "0j06zlhfcphxlz3s7wmcqc7jlaykwqi06caw6fjb479k0ikxhj7l"; };
-
+  bootstrapTools = derivation rec {
     inherit system;
+
+    name    = "bootstrap-tools";
+    builder = bootstrapFiles.sh; # Not a filename! Attribute 'sh' on bootstrapFiles
+    args    = [ ./unpack-bootstrap-tools.sh ];
+    tarball = fetch { file = "bootstrap-tools.5.cpio.bz2"; sha256 = "0j06zlhfcphxlz3s7wmcqc7jlaykwqi06caw6fjb479k0ikxhj7l"; };
 
     mkdir = bootstrapFiles.mkdir;
     bzip2 = bootstrapFiles.bzip2;
@@ -69,7 +66,7 @@ in rec {
     langCC = true;
 
     __impureHostDeps           = libSystemClosure;
-    __propagatedImpureHostDeps = binShClosure ++ libSystemClosure;
+    __propagatedImpureHostDeps = __impureHostDeps;
   };
 
   bootstrapPreHook = "export LD_DYLD_PATH=${bootstrapTools}/lib/dyld";
@@ -78,7 +75,7 @@ in rec {
     let
       thisStdenv = import ../generic {
         inherit system config extraBuildInputs;
-        name = "stdenv-darwin-boot";
+        name    = "stdenv-darwin-boot";
         preHook =
           ''
             # Don't patch #!/interpreter because it leads to retained
@@ -97,6 +94,7 @@ in rec {
 
         # The stdenvs themselves don't use mkDerivation, so I need to specify this here
         __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
+        __extraImpureHostDeps  = binShClosure;
 
         # Do we need this platform inheritance?
         extraAttrs = extraAttrs // { inherit platform; };
@@ -110,7 +108,7 @@ in rec {
     in { stdenv = thisStdenv; pkgs = thisPkgs; };
 
   stage0 = stageFun {
-    cc = "/no-such-path";
+    cc               = "/no-such-path";
     extraBuildInputs = [ bootstrapTools ];
   };
 
@@ -154,22 +152,25 @@ in rec {
     extraPath        = [ pkgs.xz ];
     extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
     extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
-    overrides = pkgs: { binutils = stage2.pkgs.binutils; };
+    overrides        = pkgs: { binutils = stage2.pkgs.binutils; };
   };
 
   stage4 = with stage3; import ../generic rec {
     inherit system config;
+    inherit (stdenv) fetchurlBoot;
 
+    name    = "stdenv-darwin";
     preHook = ''
       ${commonPreHook}
       export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
     '';
 
+    __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
+    __extraImpureHostDeps  = binShClosure;
+
     extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
-
-    initialPath = import ../common-path.nix { inherit pkgs; };
-
-    shell = "${pkgs.bash}/bin/bash";
+    initialPath      = import ../common-path.nix { inherit pkgs; };
+    shell            = "${pkgs.bash}/bin/bash";
 
     cc = import ../../build-support/clang-wrapper {
       inherit stdenv;
@@ -180,8 +181,6 @@ in rec {
       binutils  = pkgs.darwin.cctools;
       shell     = "${pkgs.bash}/bin/bash";
     } // { libc = pkgs.darwin.libSystem; };
-
-    inherit (stdenv) fetchurlBoot;
 
     extraAttrs = {
       inherit platform bootstrapTools;
