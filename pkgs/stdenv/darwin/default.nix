@@ -64,19 +64,17 @@ in rec {
     bzip2 = bootstrapFiles.bzip2;
     cpio  = bootstrapFiles.cpio;
 
+    # What are these doing?
     langC  = true;
     langCC = true;
 
-    __impureHostDeps = libSystemClosure;
+    __impureHostDeps           = libSystemClosure;
+    __propagatedImpureHostDeps = binShClosure ++ libSystemClosure;
   };
 
-  bootstrapPreHook = ''
-    export NIX_CFLAGS_COMPILE+=" -idirafter ${bootstrapTools}/include-libSystem -F${bootstrapTools}/Library/Frameworks"
-    export NIX_LDFLAGS_BEFORE+=" -L${bootstrapTools}/lib/"
-    export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
-  '';
+  bootstrapPreHook = "export LD_DYLD_PATH=${bootstrapTools}/lib/dyld";
 
-  stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? "", extraImpureHostDeps ? [], extraBuildInputs ? []}:
+  stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? "", extraBuildInputs ? []}:
     let
       thisStdenv = import ../generic {
         inherit system config extraBuildInputs;
@@ -89,20 +87,20 @@ in rec {
             ${commonPreHook}
             ${extraPreHook}
           '';
-        shell = "${bootstrapTools}/bin/sh";
-        initialPath = [bootstrapTools] ++ extraPath;
+        shell        = "${bootstrapTools}/bin/sh";
+        initialPath  = [bootstrapTools] ++ extraPath;
         fetchurlBoot = import ../../build-support/fetchurl {
           stdenv = stage0.stdenv;
-          curl = bootstrapTools;
+          curl   = bootstrapTools;
         };
         inherit cc;
 
-        __globalImpureHostDeps = binShClosure ++ extraImpureHostDeps;
+        # The stdenvs themselves don't use mkDerivation, so I need to specify this here
+        __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
 
-        # Having the proper 'platform' in all the stdenvs allows getting proper
-        # linuxHeaders for example.
+        # Do we need this platform inheritance?
         extraAttrs = extraAttrs // { inherit platform; };
-        overrides = pkgs: (overrides pkgs) // { fetchurl = thisStdenv.fetchurlBoot; };
+        overrides  = pkgs: (overrides pkgs) // { fetchurl = thisStdenv.fetchurlBoot; };
       };
 
       thisPkgs = allPackages {
@@ -113,7 +111,7 @@ in rec {
 
   stage0 = stageFun {
     cc = "/no-such-path";
-    extraImpureHostDeps = libSystemClosure;
+    extraBuildInputs = [ bootstrapTools ];
   };
 
   stage1 = stageFun {
@@ -125,23 +123,20 @@ in rec {
       libcxx       = bootstrapTools;
       libcxxabi    = bootstrapTools;
       shell        = "${bootstrapTools}/bin/bash";
-      clang        = {
-        name    = "clang-9.9.9";
-        outPath = bootstrapTools;
-      };
+      clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
     } // { libc = bootstrapTools; };
 
-    extraPreHook        = bootstrapPreHook;
-    extraImpureHostDeps = libSystemClosure;
-    overrides           = pkgs: { binutils = bootstrapTools; };
+    extraPreHook     = bootstrapPreHook;
+    extraBuildInputs = [ bootstrapTools ];
+    overrides        = pkgs: { binutils = bootstrapTools; };
   };
 
   stage2 = stageFun {
     inherit (stage1.stdenv) cc;
-    extraPath           = [ stage1.pkgs.xz ];
-    extraPreHook        = bootstrapPreHook;
-    extraImpureHostDeps = libSystemClosure;
-    overrides           = pkgs: { binutils = stage1.pkgs.binutils; };
+    extraPath        = [ stage1.pkgs.xz ];
+    extraPreHook     = bootstrapPreHook;
+    extraBuildInputs = [ bootstrapTools ];
+    overrides        = pkgs: { binutils = stage1.pkgs.binutils; };
   };
 
   stage3 = with stage2; stageFun {
@@ -156,16 +151,9 @@ in rec {
       shell     = "${pkgs.bash}/bin/bash";
     } // { libc = pkgs.darwin.libSystem; };
 
-    extraPath = [ pkgs.xz ];
-
-    # This is the only place we need to specify both of these
-    extraImpureHostDeps = libSystemClosure;
-    extraBuildInputs    = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
-
-
-    extraPreHook = ''
-      export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
-    '';
+    extraPath        = [ pkgs.xz ];
+    extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
+    extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
     overrides = pkgs: { binutils = stage2.pkgs.binutils; };
   };
 
