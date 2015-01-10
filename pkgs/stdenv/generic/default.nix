@@ -10,7 +10,7 @@ let lib = import ../../../lib; in lib.makeOverridable (
 , setupScript ? ./setup.sh
 
 , extraBuildInputs ? []
-, __globalImpureHostDeps ? []
+, __stdenvImpureHostDeps ? []
 }:
 
 let
@@ -42,14 +42,13 @@ let
   isUnfree = licenses: lib.lists.any (l:
     !l.free or true || l == "unfree" || l == "unfree-redistributable") licenses;
 
-  defaultNativeBuildInputs = extraBuildInputs ++
+  defaultNativeBuildInputs = [ cc ] ++ extraBuildInputs ++
     [ ../../build-support/setup-hooks/move-docs.sh
       ../../build-support/setup-hooks/compress-man-pages.sh
       ../../build-support/setup-hooks/strip.sh
       ../../build-support/setup-hooks/patch-shebangs.sh
       ../../build-support/setup-hooks/move-sbin.sh
       ../../build-support/setup-hooks/move-lib64.sh
-      cc
     ];
 
   # Add a utility function to produce derivations that use this
@@ -84,7 +83,12 @@ let
           propagatedBuildInputs = attrs.propagatedBuildInputs or [];
           propagatedNativeBuildInputs = attrs.propagatedNativeBuildInputs or [];
           crossConfig = attrs.crossConfig or null;
+
           __impureHostDeps = attrs.__impureHostDeps or [];
+          __propagatedImpureHostDeps = attrs.__propagatedImpureHostDeps or [];
+
+          computedImpureHostDeps           = lib.concatMap (input: input.__propagatedImpureHostDeps or []) (extraBuildInputs ++ buildInputs ++ nativeBuildInputs);
+          computedPropagatedImpureHostDeps = lib.concatMap (input: input.__propagatedImpureHostDeps or []) (propagatedBuildInputs ++ propagatedNativeBuildInputs);
         in
         {
           builder = attrs.realBuilder or shell;
@@ -102,12 +106,13 @@ let
           propagatedNativeBuildInputs = propagatedNativeBuildInputs ++
             (if crossConfig == null then propagatedBuildInputs else []);
 
-          __impureHostDeps = __globalImpureHostDeps ++ __impureHostDeps ++ [
+          __impureHostDeps = lib.unique (lib.sort (x: y: x < y) (computedImpureHostDeps ++ computedPropagatedImpureHostDeps ++ __propagatedImpureHostDeps ++ __impureHostDeps ++ [
             "/dev/zero"
             "/dev/random"
             "/dev/urandom"
             "/bin/sh"
-          ];
+          ]));
+          __propagatedImpureHostDeps = lib.unique (lib.sort (x: y: x < y) (computedPropagatedImpureHostDeps ++ __propagatedImpureHostDeps));
         }))) (
       {
         # The meta attribute is passed in the resulting attribute set,
@@ -132,7 +137,7 @@ let
     (if isNull allowedRequisites then {} else { allowedRequisites = allowedRequisites ++ defaultNativeBuildInputs; }) //
     {
       inherit system name;
-      __impureHostDeps = __globalImpureHostDeps;
+      __impureHostDeps = __stdenvImpureHostDeps;
 
       builder = shell;
 
