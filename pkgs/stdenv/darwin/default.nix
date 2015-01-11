@@ -94,7 +94,7 @@ in rec {
 
         # The stdenvs themselves don't use mkDerivation, so I need to specify this here
         __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
-        __extraImpureHostDeps  = binShClosure;
+        __extraImpureHostDeps  = binShClosure ++ libSystemClosure;
 
         # Do we need this platform inheritance?
         extraAttrs = extraAttrs // { inherit platform; };
@@ -142,17 +142,20 @@ in rec {
     cc = import ../../build-support/clang-wrapper {
       inherit stdenv;
       nativeTools  = false;
-      nativeLibc   = true;
+      nativeLibc   = true; # Should be false with libc = libSystem, but that's tricky
       inherit (pkgs) libcxx libcxxabi coreutils;
       inherit (pkgs.llvmPackages) clang;
-      binutils  = pkgs.darwin.cctools;
-      shell     = "${pkgs.bash}/bin/bash";
-    } // { libc = pkgs.darwin.libSystem; };
+      binutils = pkgs.darwin.cctools;
+      shell    = "${pkgs.bash}/bin/bash";
+    };
 
-    extraPath        = [ pkgs.xz ];
-    extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
-    extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
-    overrides        = pkgs: { binutils = stage2.pkgs.binutils; };
+    extraPath    = [ pkgs.xz ];
+    extraPreHook = ''
+      export NIX_CFLAGS_COMPILE+=" -idirafter ${pkgs.darwin.libSystem}/include -F${pkgs.darwin.corefoundation}/Library/Frameworks"
+      export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
+      export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
+    '';
+    overrides    = pkgs: { binutils = stage2.pkgs.binutils; };
   };
 
   stage4 = with stage3; import ../generic rec {
@@ -160,27 +163,33 @@ in rec {
     inherit (stdenv) fetchurlBoot;
 
     name    = "stdenv-darwin";
+
+    # TODO: the cflags and ldflags could be handled by clang-wrapper's setup-hook. However, adding libSystem and CF as regular
+    # buildInputs (which would lead to that) causes subtle problems due to libSystem coming first in the search path. The main
+    # issue I encountered was db.h being in there. Perhaps it shouldn't be, but I didn't want to deal with it right now so I'm
+    # leaving this preHook (and the one above) alone.
     preHook = ''
       ${commonPreHook}
+      export NIX_CFLAGS_COMPILE+=" -idirafter ${pkgs.darwin.libSystem}/include -F${pkgs.darwin.corefoundation}/Library/Frameworks"
+      export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
       export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
     '';
 
     __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
-    __extraImpureHostDeps  = binShClosure;
+    __extraImpureHostDeps  = binShClosure ++ libSystemClosure;
 
-    extraBuildInputs = [ pkgs.darwin.libSystem pkgs.darwin.corefoundation ];
     initialPath      = import ../common-path.nix { inherit pkgs; };
     shell            = "${pkgs.bash}/bin/bash";
 
     cc = import ../../build-support/clang-wrapper {
       inherit stdenv;
       nativeTools  = false;
-      nativeLibc   = true;
+      nativeLibc   = true; # Should be false with libc = libSystem, but that's tricky
       inherit (pkgs) libcxx libcxxabi coreutils;
       inherit (pkgs.llvmPackages) clang;
       binutils  = pkgs.darwin.cctools;
       shell     = "${pkgs.bash}/bin/bash";
-    } // { libc = pkgs.darwin.libSystem; };
+    };
 
     extraAttrs = {
       inherit platform bootstrapTools;
