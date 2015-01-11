@@ -119,7 +119,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  __impureHostDeps = [
+  __propagatedImpureHostDeps = [
     "/usr/lib/libSystem.dylib"
     "/usr/lib/libSystem.B.dylib"
     "/usr/lib/libobjc.A.dylib"
