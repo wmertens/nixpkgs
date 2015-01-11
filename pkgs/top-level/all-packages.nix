@@ -2509,7 +2509,7 @@ let
   };
 
   ssss = callPackage ../tools/security/ssss { };
- 
+
   stress = callPackage ../tools/system/stress { };
 
   storeBackup = callPackage ../tools/backup/store-backup { };
@@ -3551,16 +3551,16 @@ let
     suitesparse = suitesparse_4_2;
   };
 
-  julia033 = let
+  julia035 = let
     liblapack = liblapack_3_5_0.override {shared = true;};
-  in callPackage ../development/compilers/julia/0.3.3.nix {
+  in callPackage ../development/compilers/julia/0.3.5.nix {
     inherit liblapack;
     suitesparse = suitesparse_4_2.override {
       inherit liblapack;
     };
     llvm = llvm_33;
   };
-  julia = julia033;
+  julia = julia035;
 
   lazarus = callPackage ../development/compilers/fpc/lazarus.nix {
     fpc = fpc;
@@ -7544,7 +7544,9 @@ let
 
   ### SERVERS
 
-  "389-ds-base" = callPackage ../servers/ldap/389 { };
+  "389-ds-base" = callPackage ../servers/ldap/389 {
+    kerberos = krb5;
+  };
 
   rdf4store = callPackage ../servers/http/4store { };
 
@@ -9412,15 +9414,11 @@ let
 
   d4x = callPackage ../applications/misc/d4x { };
 
-  darcs = with haskellPackages_ghc784; callPackage ../applications/version-management/darcs {
-    cabal = cabal.override {
-      extension = self : super : {
-        enableSharedExecutables = false;
-        isLibrary = false;
-        configureFlags = "-f-library " + super.configureFlags or "";
-      };
-    };
-  };
+  darcs = haskell-ng.lib.overrideCabal haskellngPackages.darcs (drv: {
+    configureFlags = (stdenv.lib.remove "-flibrary" drv.configureFlags or []) ++ ["-f-library"];
+    enableSharedExecutables = false;
+    isLibrary = false;
+  });
 
   darktable = callPackage ../applications/graphics/darktable {
     inherit (gnome) GConf libglade;
@@ -10453,6 +10451,7 @@ let
     };
     jackSupport = config.mumble.jackSupport or false;
     speechdSupport = config.mumble.speechdSupport or false;
+    pulseSupport = config.pulseaudio or false;
   };
 
   murmur = callPackage ../applications/networking/mumble/murmur.nix {
@@ -12357,6 +12356,8 @@ let
     coqeal = callPackage ../development/coq-modules/coqeal {};
 
     domains = callPackage ../development/coq-modules/domains {};
+
+    fiat = callPackage ../development/coq-modules/fiat {};
 
     flocq = callPackage ../development/coq-modules/flocq {};
 
