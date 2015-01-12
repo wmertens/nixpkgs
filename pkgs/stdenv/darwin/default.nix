@@ -64,12 +64,13 @@ in rec {
     # What are these doing?
     langC  = true;
     langCC = true;
-
-    __impureHostDeps           = libSystemClosure;
-    __propagatedImpureHostDeps = __impureHostDeps;
   };
 
-  bootstrapPreHook = "export LD_DYLD_PATH=${bootstrapTools}/lib/dyld";
+  bootstrapPreHook = ''
+    export NIX_CFLAGS_COMPILE+=" -idirafter ${bootstrapTools}/include-libSystem -F${bootstrapTools}/Library/Frameworks"
+    export NIX_LDFLAGS_BEFORE+=" -L${bootstrapTools}/lib/"
+    export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
+  '';
 
   stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? "", extraBuildInputs ? []}:
     let
@@ -125,7 +126,6 @@ in rec {
     } // { libc = bootstrapTools; };
 
     extraPreHook     = bootstrapPreHook;
-    extraBuildInputs = [ bootstrapTools ];
     overrides        = pkgs: { binutils = bootstrapTools; };
   };
 
@@ -133,7 +133,6 @@ in rec {
     inherit (stage1.stdenv) cc;
     extraPath        = [ stage1.pkgs.xz ];
     extraPreHook     = bootstrapPreHook;
-    extraBuildInputs = [ bootstrapTools ];
     overrides        = pkgs: { binutils = stage1.pkgs.binutils; };
   };
 

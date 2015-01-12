@@ -52,6 +52,3 @@ cat >$out/bin/dsymutil << EOF
 EOF
 
 chmod +x $out/bin/egrep $out/bin/fgrep $out/bin/dsymutil
-
-# TODO: just change the internal structure of the tarball
-mv $out/include-libSystem/* $out/include
