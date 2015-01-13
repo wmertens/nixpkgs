@@ -39,6 +39,7 @@
 , preInstall ? "", postInstall ? ""
 , checkPhase ? "", preCheck ? "", postCheck ? ""
 , preFixup ? "", postFixup ? ""
+, coreSetup ? false # Use core packages to build Setup.hs
 }:
 
 assert pkgconfigDepends != [] -> pkgconfig != null;
@@ -79,6 +80,8 @@ let
                    );
   haskellBuildInputs = stdenv.lib.filter isHaskellPkg allBuildInputs;
   systemBuildInputs = stdenv.lib.filter isSystemPkg allBuildInputs;
+
+  ghcEnv = ghc.withPackages (p: haskellBuildInputs);
 
 in
 stdenv.mkDerivation ({
@@ -153,7 +156,7 @@ stdenv.mkDerivation ({
     for i in Setup.hs Setup.lhs ${defaultSetupHs}; do
       test -f $i && break
     done
-    ghc -package-db=$packageConfDir $setupCompileFlags --make -o Setup -odir $TMPDIR -hidir $TMPDIR $i
+    ghc ${optionalString (! coreSetup) "-package-db=$packageConfDir "}$setupCompileFlags --make -o Setup -odir $TMPDIR -hidir $TMPDIR $i
 
     echo configureFlags: $configureFlags
     unset GHC_PACKAGE_PATH      # Cabal complains if this variable is set during configure.
@@ -213,8 +216,19 @@ stdenv.mkDerivation ({
 
     env = stdenv.mkDerivation {
       name = "interactive-${optionalString hasActiveLibrary "haskell-"}${pname}-${version}-environment";
-      nativeBuildInputs = [ (ghc.withPackages (p: haskellBuildInputs)) systemBuildInputs ];
-      shellHook = "eval $(grep export $(type -p ghc))";
+      nativeBuildInputs = [ ghcEnv systemBuildInputs ];
+      shellHook = ''
+        export NIX_GHC="${ghcEnv}/bin/ghc"
+        export NIX_GHCPKG="${ghcEnv}/bin/ghc"
+        export NIX_GHC_DOCDIR="${ghcEnv}/share/doc/ghc/html"
+        export NIX_GHC_LIBDIR="${ghcEnv}/lib/${ghcEnv.name}"
+      '';
+      buildCommand = ''
+        echo >&2 ""
+        echo >&2 "*** Haskell 'env' attributes are intended for interactive nix-shell sessions, not for building! ***"
+        echo >&2 ""
+        exit 1
+      '';
     };
 
   };

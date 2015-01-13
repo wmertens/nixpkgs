@@ -1210,9 +1210,8 @@ let
   flvtool2 = callPackage ../tools/video/flvtool2 { };
 
   fontforge = lowPrio (callPackage ../tools/misc/fontforge { });
-
-  fontforgeX = callPackage ../tools/misc/fontforge {
-    withX11 = true;
+  fontforge-gtk = callPackage ../tools/misc/fontforge {
+    withGTK = true;
   };
 
   forktty = callPackage ../os-specific/linux/forktty {};
@@ -1546,6 +1545,8 @@ let
 
   ipmiutil = callPackage ../tools/system/ipmiutil {};
 
+  ipv6calc = callPackage ../tools/networking/ipv6calc {};
+
   ipxe = callPackage ../tools/misc/ipxe { };
 
   ised = callPackage ../tools/misc/ised {};
@@ -1632,7 +1633,7 @@ let
   nodejs = callPackage ../development/web/nodejs { };
   nodejs-unstable = callPackage ../development/web/nodejs { unstableVersion = true; };
 
-  nodePackages = recurseIntoAttrs (import ./node-packages.nix {
+  nodePackages = recurseIntoAttrs (callPackage ./node-packages.nix {
     inherit pkgs stdenv nodejs fetchurl fetchgit;
     neededNatives = [python] ++ lib.optional (lib.elem system lib.platforms.linux) utillinux;
     self = pkgs.nodePackages;
@@ -3072,6 +3073,8 @@ let
 
   cmucl_binary = callPackage ../development/compilers/cmucl/binary.nix { };
 
+  coan = callPackage ../development/tools/analysis/coan { };
+
   compcert = callPackage ../development/compilers/compcert {};
 
   cryptol1 = lowPrio (callPackage ../development/compilers/cryptol/1.8.x.nix {});
@@ -3437,7 +3440,9 @@ let
 
   go_1_3 = callPackage ../development/compilers/go/1.3.nix { };
 
-  go = go_1_3;
+  go_1_4 = callPackage ../development/compilers/go/1.4.nix { };
+
+  go = go_1_4;
 
   go-repo-root = callPackage ../development/tools/misc/go-repo-root { };
 
@@ -3939,11 +3944,13 @@ let
   rustc       = callPackage ../development/compilers/rustc/0.12.nix {};
   rustcMaster = callPackage ../development/compilers/rustc/head.nix {};
 
-  rust = rustc;
-
 
   sbclBootstrap = callPackage ../development/compilers/sbcl/bootstrap.nix {};
   sbcl = callPackage ../development/compilers/sbcl {
+    clisp = clisp;
+  };
+  # For StumpWM
+  sbcl_1_2_5 = callPackage ../development/compilers/sbcl/1.2.5.nix {
     clisp = clisp;
   };
   # For ACL2
@@ -4773,7 +4780,7 @@ let
 
   premake = premake4;
 
-  racerRust = callPackage ../development/tools/rust/racer { rust = rustcMaster; };
+  racerRust = callPackage ../development/tools/rust/racer { rustc = rustcMaster; };
 
   radare = callPackage ../development/tools/analysis/radare {
     inherit (gnome) vte;
@@ -6501,13 +6508,18 @@ let
   minmay = callPackage ../development/libraries/minmay { };
 
   miro = callPackage ../applications/video/miro {
-    inherit (pythonPackages) pywebkitgtk pysqlite pycurl mutagen;
+    inherit (pythonPackages) pywebkitgtk pycurl mutagen;
     avahi = avahi.override {
       withLibdnssdCompat = true;
     };
   };
 
   mkvtoolnix = callPackage ../applications/video/mkvtoolnix { };
+
+  mkvtoolnix-cli = mkvtoolnix.override {
+    withGUI = false;
+    wxGTK = null;
+  };
 
   mlt-qt4 = callPackage ../development/libraries/mlt {
     qt = qt4;
@@ -7104,6 +7116,8 @@ let
   usbredir = callPackage ../development/libraries/usbredir {
     libusb = libusb1;
   };
+
+  uthash = callPackage ../development/libraries/uthash { };
 
   ucommon = callPackage ../development/libraries/ucommon { };
 
@@ -7745,9 +7759,11 @@ let
 
   popa3d = callPackage ../servers/mail/popa3d { };
 
-  postfix = callPackage ../servers/mail/postfix { };
+  postfix28 = callPackage ../servers/mail/postfix { };
 
   postfix211 = callPackage ../servers/mail/postfix/2.11.nix { };
+
+  postfix = postfix211;
 
   pulseaudio = callPackage ../servers/pulseaudio {
     gconf = gnome.GConf;
@@ -9542,6 +9558,8 @@ let
 
     cua = callPackage ../applications/editors/emacs-modes/cua { };
 
+    d = callPackage ../applications/editors/emacs-modes/d { };
+
     darcsum = callPackage ../applications/editors/emacs-modes/darcsum { };
 
     dash = callPackage ../applications/editors/emacs-modes/dash { };
@@ -9715,6 +9733,8 @@ let
   fldigi = callPackage ../applications/audio/fldigi { };
 
   fluidsynth = callPackage ../applications/audio/fluidsynth { };
+
+  fmit = callPackage ../applications/audio/fmit { };
 
   focuswriter = callPackage ../applications/editors/focuswriter { };
 
@@ -10931,6 +10951,8 @@ let
 
   stumpwm = callPackage ../applications/window-managers/stumpwm {
     stumpwmContrib = callPackage ../applications/window-managers/stumpwm/contrib.nix { };
+    sbcl = sbcl_1_2_5;
+    lispPackages = lispPackagesFor (wrapLisp sbcl_1_2_5);
   };
 
   sublime = callPackage ../applications/editors/sublime { };
@@ -12027,7 +12049,7 @@ let
 
       bluedevil = callPackage ../tools/bluetooth/bluedevil { };
 
-      calligra = callPackage ../applications/office/calligra { };
+      calligra = callPackage ../applications/office/calligra { eigen = eigen2; };
 
       colord-kde = callPackage ../tools/misc/colord-kde { };
 

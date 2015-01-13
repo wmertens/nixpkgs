@@ -58,6 +58,22 @@ self: super: {
   utf8-string = overrideCabal super.utf8-string (drv: {
     patchPhase = "sed -i -e 's|base >= 3 && < 4.8|base|' utf8-string.cabal";
   });
+  options = overrideCabal super.options (drv: {
+    # edited cabal file simply makes a stricter base bound
+    editedCabalFile = null;
+
+    # See https://github.com/shlevy/haskell-options/tree/AMP. There is no
+    # official upstream bugtracker but I've emailed this patch to the maintainer
+    patches = [ ./patches/options-amp.patch ];
+  });
+  chell = overrideCabal super.chell (drv: {
+    # edited cabal file simply makes a stricter base bound
+    editedCabalFile = null;
+
+    # See https://github.com/shlevy/chell/tree/AMP. There is no
+    # official upstream bugtracker but I've emailed this patch to the maintainer
+    patches = [ ./patches/chell-amp.patch ];
+  });
 
   # bos/attoparsec#92
   attoparsec = dontCheck super.attoparsec;
@@ -69,6 +85,12 @@ self: super: {
   # https://code.google.com/p/scrapyourboilerplate/issues/detail?id=24
   syb = dontCheck super.syb;
 
+  # Test suite has stricter version bounds
+  retry = dontCheck super.retry;
+
+  # Test suite fails with time >= 1.5
+  http-date = dontCheck super.http-date;
+
   # Version 1.19.5 fails its test suite.
   happy = dontCheck super.happy;
 
@@ -76,31 +98,4 @@ self: super: {
   # https://github.com/ndmitchell/extra/issues/4
   extra = dontCheck super.extra;
 
-}
-// {
-  # Not on Hackage yet.
-  doctest = self.mkDerivation {
-    pname = "doctest";
-    version = "0.9.11.1";
-    src = pkgs.fetchgit {
-      url = "git://github.com/sol/doctest.git";
-      sha256 = "a01ced437f5d733f916dc62ea6a67e0e5d275164ba317da33245cf9374f23925";
-      rev = "c85fdaaa92d1f0334d835254d63bdc30f7077387";
-    };
-    isLibrary = true;
-    isExecutable = true;
-    doCheck = false;
-    buildDepends = with self; [
-      base deepseq directory filepath ghc ghc-paths process syb
-      transformers
-    ];
-    testDepends = with self; [
-      base base-compat deepseq directory filepath ghc ghc-paths hspec
-      HUnit process QuickCheck setenv silently stringbuilder syb
-      transformers
-    ];
-    homepage = "https://github.com/sol/doctest#readme";
-    description = "Test interactive Haskell examples";
-    license = pkgs.stdenv.lib.licenses.mit;
-  };
 }
