@@ -1,9 +1,11 @@
 let
   pkgs = import <nixpkgs> {};
+  bootstrap-tools = import ./pkgs/stdenv/darwin/make-bootstrap-tools.nix {};
 in with pkgs; {
   build = buildEnv {
     name = "standard-build";
     paths = [
+      bootstrap-tools.build
       nix-exec
       gitFull
       subversion
