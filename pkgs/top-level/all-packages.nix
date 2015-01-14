@@ -1594,6 +1594,8 @@ let
 
   kismet = callPackage ../applications/networking/sniffers/kismet { };
 
+  kpcli = callPackage ../tools/security/kpcli { };
+
   kst = callPackage ../tools/graphics/kst { };
 
   less = callPackage ../tools/misc/less { };
@@ -1706,6 +1708,8 @@ let
   lzma = xz;
 
   xz = callPackage ../tools/compression/xz { };
+
+  lz4 = callPackage ../tools/compression/lz4 { };
 
   lzop = callPackage ../tools/compression/lzop { };
 
@@ -2512,6 +2516,8 @@ let
   ssss = callPackage ../tools/security/ssss { };
 
   stress = callPackage ../tools/system/stress { };
+
+  stress-ng = callPackage ../tools/system/stress-ng { };
 
   storeBackup = callPackage ../tools/backup/store-backup { };
 
@@ -3405,7 +3411,6 @@ let
   haskellPackages_ghc784_no_profiling = recurseIntoAttrs haskell.packages_ghc784.noProfiling;
   haskellPackages_ghc784_profiling    = recurseIntoAttrs haskell.packages_ghc784.profiling;
   haskellPackages_ghc784              = recurseIntoAttrs haskell.packages_ghc784.highPrio;
-  haskellPackages_ghcHEAD = haskell.packages_ghcHEAD;
   haskellPackages_ghcjs = haskell.packages_ghcjs;
   haskellPackages = haskellPackages_ghc784;
 
@@ -3711,6 +3716,8 @@ let
 
     cmdliner = callPackage ../development/ocaml-modules/cmdliner { };
 
+    config-file = callPackage ../development/ocaml-modules/config-file { };
+
     cppo = callPackage ../development/tools/ocaml/cppo { };
 
     cryptokit = callPackage ../development/ocaml-modules/cryptokit { };
@@ -3745,6 +3752,8 @@ let
 
     gmetadom = callPackage ../development/ocaml-modules/gmetadom { };
 
+    gtktop = callPackage ../development/ocaml-modules/gtktop { };
+
     js_of_ocaml = callPackage ../development/tools/ocaml/js_of_ocaml { };
 
     lablgl = callPackage ../development/ocaml-modules/lablgl { };
@@ -3755,6 +3764,11 @@ let
     lablgtk = callPackage ../development/ocaml-modules/lablgtk {
       inherit (gnome) libgnomecanvas libglade gtksourceview;
     };
+
+    lablgtk-extras =
+      if lib.versionOlder "4.02" ocaml_version
+      then callPackage ../development/ocaml-modules/lablgtk-extras { }
+      else callPackage ../development/ocaml-modules/lablgtk-extras/1.4.nix { };
 
     lablgtkmathview = callPackage ../development/ocaml-modules/lablgtkmathview {
       gtkmathview = callPackage ../development/libraries/gtkmathview { };
@@ -4627,6 +4641,8 @@ let
 
   flow = callPackage ../development/tools/analysis/flow { };
 
+  fswatch = callPackage ../development/tools/misc/fswatch { };
+
   pmd = callPackage ../development/tools/analysis/pmd { };
 
   jdepend = callPackage ../development/tools/analysis/jdepend { };
@@ -5323,6 +5339,7 @@ let
 
   gettext_0_17 = callPackage ../development/libraries/gettext/0.17.nix { };
   gettext_0_18 = callPackage ../development/libraries/gettext { };
+  gettext_0_19 = callPackage ../development/libraries/gettext/0.19.nix { };
 
   gd = callPackage ../development/libraries/gd { };
 
@@ -9690,6 +9707,8 @@ let
 
   inherit (gnome3) empathy;
 
+  enhanced-ctorrent = callPackage ../applications/networking/enhanced-ctorrent { };
+
   epdfview = callPackage ../applications/misc/epdfview { };
 
   inherit (gnome3) epiphany;
@@ -12972,6 +12991,8 @@ let
   thermald = callPackage ../tools/system/thermald { };
 
   thinkfan = callPackage ../tools/system/thinkfan { };
+
+  tup = callPackage ../development/tools/build-managers/tup { };
 
   vice = callPackage ../misc/emulators/vice {
     libX11 = xlibs.libX11;
