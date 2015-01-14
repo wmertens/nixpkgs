@@ -8,8 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "0h38p9rxfpg9vkrbyb120i1diq57qcln82h5fr7hvy82c20jql3c";
   };
 
-  buildInputs = [ pkgconfig ]
-    ++ stdenv.lib.optional stdenv.isDarwin iokit;
+  buildInputs = [ pkgconfig ] ++ stdenv.lib.optional stdenv.isDarwin iokit;
   propagatedBuildInputs = stdenv.lib.optional stdenv.isLinux udev ++
                           stdenv.lib.optionals stdenv.isDarwin [libobjc iokit];
 

@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
 
   checkPhase="GNUPGHOME=`pwd` ./agent/gpg-agent --daemon make check";
 
-  doCheck = true;
+  doCheck = !stdenv.isDarwin;
 
   meta = {
     homepage = "http://gnupg.org/";

@@ -11,6 +11,15 @@ stdenv.mkDerivation rec {
 
   phases = [ "unpackPhase" "installPhase" ];
 
+  # Not strictly necessary, since libSystem depends on it, but it's nice to be explicit so we
+  # can easily find out what's impure.
+  __propagatedImpureHostDeps = [
+    "/usr/lib/libauto.dylib"
+    "/usr/lib/libc++abi.dylib"
+    "/usr/lib/libc++.1.dylib"
+    "/usr/lib/libSystem.B.dylib"
+  ];
+
   installPhase = ''
     mkdir -p $out/include/objc $out/lib
     ln -s /usr/lib/libobjc.dylib $out/lib/libobjc.dylib

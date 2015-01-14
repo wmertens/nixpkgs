@@ -84,6 +84,12 @@ in stdenv.mkDerivation rec {
 
   phases = [ "unpackPhase" "installPhase" ];
 
+  __propagatedImpureHostDeps = [
+    "/System/Library/Frameworks/IOKit.framework/IOKit"
+    "/System/Library/Frameworks/IOKit.framework/Resources"
+    "/System/Library/Frameworks/IOKit.framework/Versions"
+  ];
+
   installPhase = ''
     ###### IMPURITIES
     mkdir -p $out/Library/Frameworks/IOKit.framework
