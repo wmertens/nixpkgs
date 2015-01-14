@@ -3356,7 +3356,7 @@ let
                                 # disentangling Darwin and GNU libiconv during the
                                 # compiler build from source is too difficult for me.
                                 # TODO: remove this someday
-                                stdenv.lib.optionalAttrs stdenv.isDarwin {
+                                lib.optionalAttrs stdenv.isDarwin {
                                   libiconv = pkgs.darwin.libiconv;
                                 };
                 callPackage = newScope pkgs_;

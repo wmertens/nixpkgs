@@ -110,7 +110,6 @@ stdenv.mkDerivation rec {
       '' + stdenv.lib.optionalString stdenv.isDarwin ''
         wrapProgram $out/bin/ghc --set LD_IGNORE_DTRACE 1 \
           --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib"
-        wrapProgram $out/bin/haddock --add-flags
       '' + ''
         $out/bin/ghc --make main.hs
         echo compilation ok
