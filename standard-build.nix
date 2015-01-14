@@ -1,5 +1,5 @@
 let
-  pkgs = import <nixpkgs> {};
+  pkgs = import ./. {};
   bootstrap-tools = import ./pkgs/stdenv/darwin/make-bootstrap-tools.nix {};
 in with pkgs; {
   build = buildEnv {
