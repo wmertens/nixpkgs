@@ -66,16 +66,17 @@ stdenv.mkDerivation rec {
          install_name_tool -change \
            /usr/lib/libiconv.2.dylib \
            ${libiconv}/lib/libiconv.dylib \
-           $1
+           $1 \
+           || exit 1
        }
 
        for library in $(find . -type f -name '*.dylib'); do
          fix $library
        done
 
-       # for exe in $(find . -type f -executable); do
-       #   fix $exe
-       # done
+       for tool in haddock hsc2hs ghc-cabal ghc-pkg ghc-pwd ghc-stage2; do
+         fix $(find . -type f -executable -name $tool)
+       done
 
        for file in $(find . -name setup-config); do
          substituteInPlace $file --replace /usr/bin/ranlib $(type -P ranlib)
@@ -101,12 +102,15 @@ stdenv.mkDerivation rec {
         cd $TMP
         mkdir test-ghc; cd test-ghc
         cat > main.hs << EOF
+          {-# LANGUAGE TemplateHaskell #-}
           module Main where
-          main = putStrLn "yes"
+          main = putStrLn \$([|"yes"|])
         EOF
         echo sanity check
       '' + stdenv.lib.optionalString stdenv.isDarwin ''
-        wrapProgram $out/bin/ghc --set LD_IGNORE_DTRACE 1
+        wrapProgram $out/bin/ghc --set LD_IGNORE_DTRACE 1 \
+          --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib"
+        wrapProgram $out/bin/haddock --add-flags
       '' + ''
         $out/bin/ghc --make main.hs
         echo compilation ok

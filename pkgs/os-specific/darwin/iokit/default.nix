@@ -250,6 +250,10 @@ in stdenv.mkDerivation rec {
     # video: missing altogether
   '';
 
+  __propagatedImpureHostDeps = [
+    "/System/Library/Frameworks/IOKit.framework"
+  ];
+
   meta = with stdenv.lib; {
     maintainers = with maintainers; [ joelteon copumpkin ];
     platforms   = platforms.darwin;
