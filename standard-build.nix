@@ -25,6 +25,7 @@ in with pkgs; {
       iperf
       watch
       weechat
+      vim
     ];
     ignoreCollisions = true;
   };
