@@ -10,7 +10,7 @@ in with pkgs; {
       gitFull
       subversion
       emacs24Macport
-      # texLive
+      texLive
       ocaml
       coq_HEAD
       tmux
