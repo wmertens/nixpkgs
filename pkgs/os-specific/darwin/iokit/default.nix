@@ -87,6 +87,7 @@ in stdenv.mkDerivation rec {
   __propagatedImpureHostDeps = [
     "/System/Library/Frameworks/IOKit.framework/IOKit"
     "/System/Library/Frameworks/IOKit.framework/Resources"
+    "/System/Library/Frameworks/IOKit.framework/Versions"
   ];
 
   installPhase = ''
