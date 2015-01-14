@@ -26,6 +26,8 @@ in with pkgs; {
       watch
       weechat
       vim
+      pass
+      gnupg
     ];
     ignoreCollisions = true;
   };
