@@ -6334,6 +6334,18 @@ let
     };
   };
 
+  ntplib = buildPythonPackage rec {
+    name = "ntplib-0.3.2";
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/n/ntplib/ntplib-0.3.2.tar.gz;
+      md5 = "0f386dc00c0056ac4d77af0b4c21bb8e";
+    };
+
+    meta = {
+      description = "Python NTP library";
+    };
+  };
+
   numexpr = buildPythonPackage rec {
     version = "2.4";
     name = "numexpr-${version}";
@@ -6431,13 +6443,13 @@ let
   };
 
   livestreamer = buildPythonPackage rec {
-    version = "1.10.2";
+    version = "1.11.1";
     name = "livestreamer-${version}";
     disabled = isPyPy;
 
     src = pkgs.fetchurl {
       url = "https://github.com/chrippa/livestreamer/archive/v${version}.tar.gz";
-      sha256 = "0f1m51wax4q17ida4h0ckyakmlchf36kbhfa9qs6bpxc6xqqbry0";
+      sha256 = "1hic3z5any64gn2b0gs1b7m34bzgzv71inr8wgjq59pwf8mbrqk9";
     };
 
     buildInputs = with self; [ pkgs.makeWrapper ];
@@ -6452,7 +6464,7 @@ let
         Livestreamer is CLI program that extracts streams from various
         services and pipes them into a video player of choice.
       '';
-      license = "bsd";
+      license = stdenv.lib.licenses.bsd2;
     };
   };
 
@@ -7430,19 +7442,19 @@ let
 
 
   pycapnp = buildPythonPackage rec {
-    name = "pycapnp-0.4.4";
+    name = "pycapnp-0.5.1";
     disabled = isPyPy || isPy3k;
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/pycapnp/${name}.tar.gz";
-      sha256 = "33b2b79438bb9bf37097966e1c90403c34ab49be1eb647ee251b62f362ee3537";
+      sha256 = "1kp97il34419gcrhn866n6a10lvh8qr13bnllnnh9473n4cq0cvk";
     };
 
     buildInputs = with pkgs; [ capnproto self.cython ];
 
     # import setuptools as soon as possible, to minimize monkeypatching mayhem.
     postConfigure = ''
-      sed -i '2iimport setuptools' setup.py
+      sed -i '3iimport setuptools' setup.py
     '';
 
     meta = with stdenv.lib; {
