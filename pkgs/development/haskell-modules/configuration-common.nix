@@ -5,8 +5,8 @@ with import ./lib.nix { inherit pkgs; };
 self: super: {
 
   # Some packages need a non-core version of Cabal.
-  Cabal_1_18_1_6 = doJailbreak (dontCheck super.Cabal_1_18_1_6);
-  Cabal_1_20_0_3 = doJailbreak (dontCheck super.Cabal_1_20_0_3);
+  Cabal_1_18_1_6 = dontCheck super.Cabal_1_18_1_6;
+  Cabal_1_20_0_3 = dontCheck super.Cabal_1_20_0_3;
   Cabal_1_22_0_0 = dontCheck super.Cabal_1_22_0_0;
   cabal-install = dontCheck (super.cabal-install.override { Cabal = self.Cabal_1_22_0_0; });
 
@@ -30,10 +30,6 @@ self: super: {
   # cabal2nix/hackage2nix.hs when removing the following.
   elm-make = super.elm-make.override { optparse-applicative = self.optparse-applicative_0_10_0; };
   elm-package = super.elm-package.override { optparse-applicative = self.optparse-applicative_0_10_0; };
-
-  # elm-compiler jail-break can be removed after next elm-compiler
-  # release: bumped language-ecmascript's limit in git already.
-  elm-compiler = doJailbreak super.elm-compiler;
 
   # https://github.com/acid-state/safecopy/issues/17
   safecopy = dontCheck super.safecopy;
@@ -62,26 +58,11 @@ self: super: {
   # https://github.com/haskell/time/issues/23
   time_1_5_0_1 = dontCheck super.time_1_5_0_1;
 
-  # Won't accept recent random: https://bitbucket.org/dafis/arithmoi/issue/14/outdated-dependency-on-random.
-  arithmoi = doJailbreak super.arithmoi;
-
   # Doesn't accept modern versions of hashtable.
-  Agda = dontHaddock (doJailbreak super.Agda);
+  Agda = dontHaddock super.Agda;
 
   # Cannot compile its own test suite: https://github.com/haskell/network-uri/issues/10.
   network-uri = dontCheck super.network-uri;
-
-  # 0.7.0.2 doesn't accept recent versions of HaXml.
-  encoding = doJailbreak super.encoding;
-
-  # Doesn't accept recent versions of vector-space.
-  active = doJailbreak super.active;
-  diagrams-core = doJailbreak super.diagrams-core; # https://github.com/diagrams/diagrams-core/issues/78
-  diagrams-contrib = doJailbreak super.diagrams-contrib;
-  diagrams-lib = doJailbreak super.diagrams-lib;
-  diagrams-svg = doJailbreak super.diagrams-svg;
-  force-layout = doJailbreak super.force-layout;
-  vector-space-points = doJailbreak super.vector-space-points;
 
   # The Haddock phase fails for one reason or another.
   attoparsec-conduit = dontHaddock super.attoparsec-conduit;
@@ -118,9 +99,6 @@ self: super: {
   # https://github.com/techtangents/ablist/issues/1
   ABList = dontCheck super.ABList;
 
-  # https://github.com/gcross/AbortT-transformers/issues/1
-  AbortT-transformers = doJailbreak super.AbortT-transformers;
-
   # Depends on broken NewBinary package.
   ASN1 = markBroken super.ASN1;
 
@@ -136,27 +114,18 @@ self: super: {
   # depends on broken hbro package.
   hbro-contrib = markBroken super.hbro-contrib;
 
-  # https://github.com/goldfirere/th-desugar/issues/21
-  th-desugar = dontCheck super.th-desugar;
-
-  # https://github.com/dzhus/snaplet-redis/pull/11
-  snaplet-redis = doJailbreak super.snaplet-redis;
-
-  # https://github.com/michaelschade/hs-stripe/pull/37
-  stripe = doJailbreak super.stripe;
-
-  # https://github.com/LukeHoersten/snaplet-stripe/pull/4
-  snaplet-stripe = doJailbreak super.snaplet-stripe;
-
   # https://github.com/prowdsponsor/fb/pull/33
-  fb = doJailbreak (overrideCabal super.fb (drv: {
+  fb = overrideCabal super.fb (drv: {
     patches = [
       (pkgs.fetchpatch {
-        url = https://github.com/prowdsponsor/fb/pull/33.patch;
-        sha256 = "0xfbfyg86lrimwhfd2s41xy5axcsnw0rqvic8ak72rq2sssyljpg";
+        url = https://github.com/prowdsponsor/fb/pull/31.patch;
+        sha256 = "0ip8mhpbbvlp4pz7d27d6cg39gm6ypfsf4rdmfrmdh3pkig0axls";
       })
     ];
-  }));
+  });
+
+  # https://github.com/haskell/vector/issues/47
+  vector = if pkgs.stdenv.isi686 then appendConfigureFlag super.vector "--ghc-options=-msse2" else super.vector;
 
 }
 // {
@@ -166,8 +135,8 @@ self: super: {
     version = "2.0";
     src = pkgs.fetchgit {
       url = "git://github.com/NixOS/cabal2nix.git";
-      sha256 = "b9dde970f8e64fd5faff9402f5788ee832874d7584a67210f59f2c5e504ce631";
-      rev = "6398667f4ad670eb3aa3334044a65a06971494d0";
+      rev = "2a1a10f38f21f27e6555b399db131380af1cf7ff";
+      sha256 = "51c96e5a089396c34bfa27e76778743161504e04d6220b2bb7e0fbcde80430fa";
     };
     isLibrary = false;
     isExecutable = true;
