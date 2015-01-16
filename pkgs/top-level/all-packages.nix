@@ -357,8 +357,8 @@ let
 
   fetchzip = import ../build-support/fetchzip { inherit lib fetchurl unzip; };
 
-  fetchFromGitHub = { owner, repo, rev, sha256 }: fetchzip {
-    name = "${repo}-${rev}-src";
+  fetchFromGitHub = { owner, repo, rev, sha256, name ? "${repo}-${rev}-src" }: fetchzip {
+    inherit name;
     url = "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
     inherit sha256;
   };
@@ -7788,6 +7788,8 @@ let
 
   postfix = postfix211;
 
+  pshs = callPackage ../servers/http/pshs { };
+
   pulseaudio = callPackage ../servers/pulseaudio {
     gconf = gnome.GConf;
     # The following are disabled in the default build, because if this
@@ -8350,6 +8352,8 @@ let
 
   iwlegacy = callPackage ../os-specific/linux/firmware/iwlegacy { };
 
+  jfbview = callPackage ../os-specific/linux/jfbview { };
+
   jujuutils = callPackage ../os-specific/linux/jujuutils { };
 
   kbd = callPackage ../os-specific/linux/kbd { };
@@ -8400,12 +8404,13 @@ let
 
   linux_3_2 = makeOverridable (import ../os-specific/linux/kernel/linux-3.2.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = [];
+    kernelPatches = [ kernelPatches.bridge_stp_helper ];
   };
 
   linux_3_4 = makeOverridable (import ../os-specific/linux/kernel/linux-3.4.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+     ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
       ];
@@ -8413,11 +8418,13 @@ let
 
   linux_3_6_rpi = makeOverridable (import ../os-specific/linux/kernel/linux-rpi-3.6.nix) {
     inherit fetchurl stdenv perl buildLinux;
+    kernelPatches = [ kernelPatches.bridge_stp_helper ];
   };
 
   linux_3_10 = makeOverridable (import ../os-specific/linux/kernel/linux-3.10.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
         kernelPatches.mips_ext3_n32
@@ -8426,7 +8433,8 @@ let
 
   linux_3_12 = makeOverridable (import ../os-specific/linux/kernel/linux-3.12.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
         kernelPatches.mips_ext3_n32
@@ -8435,7 +8443,8 @@ let
 
   linux_3_14 = makeOverridable (import ../os-specific/linux/kernel/linux-3.14.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
         kernelPatches.mips_ext3_n32
@@ -8444,7 +8453,8 @@ let
 
   linux_3_17 = makeOverridable (import ../os-specific/linux/kernel/linux-3.17.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
         kernelPatches.mips_ext3_n32
@@ -8453,7 +8463,8 @@ let
 
   linux_3_18 = makeOverridable (import ../os-specific/linux/kernel/linux-3.18.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
         kernelPatches.mips_ext3_n32
@@ -8462,7 +8473,8 @@ let
 
   linux_testing = makeOverridable (import ../os-specific/linux/kernel/linux-testing.nix) {
     inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
+    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
         kernelPatches.mips_ext3_n32
@@ -9173,10 +9185,11 @@ let
 
   source-serif-pro = callPackage ../data/fonts/source-serif-pro { };
 
-  source-han-sans-japanese = callPackage ../data/fonts/source-han-sans/japanese.nix {};
-  source-han-sans-korean = callPackage ../data/fonts/source-han-sans/korean.nix {};
-  source-han-sans-simplified-chinese = callPackage ../data/fonts/source-han-sans/simplified-chinese.nix {};
-  source-han-sans-traditional-chinese = callPackage ../data/fonts/source-han-sans/traditional-chinese.nix {};
+  sourceHanSansPackages = callPackage ../data/fonts/source-han-sans { };
+  source-han-sans-japanese = sourceHanSansPackages.japanese;
+  source-han-sans-korean = sourceHanSansPackages.korean;
+  source-han-sans-simplified-chinese = sourceHanSansPackages.simplified-chinese;
+  source-han-sans-traditional-chinese = sourceHanSansPackages.traditional-chinese;
 
   tango-icon-theme = callPackage ../data/icons/tango-icon-theme { };
 
@@ -9454,6 +9467,8 @@ let
   coriander = callPackage ../applications/video/coriander {
     inherit (gnome) libgnomeui GConf;
   };
+
+  cortex = callPackage ../applications/misc/cortex { };
 
   csound = callPackage ../applications/audio/csound { };
 
