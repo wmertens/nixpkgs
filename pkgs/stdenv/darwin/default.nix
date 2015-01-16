@@ -64,6 +64,8 @@ in rec {
     # What are these doing?
     langC  = true;
     langCC = true;
+
+    __impureHostDeps  = binShClosure ++ libSystemClosure;
   };
 
   bootstrapPreHook = ''

@@ -2157,6 +2157,7 @@ let self = _self // overrides; _self = with self; {
       sha256 = "14yvbgy9n8icwlm5zi86lskvxd6nsl42i1g9f5dwdaw9my463diy";
     };
     propagatedBuildInputs = [CarpClan BitVector];
+    doCheck = false; # some of the checks rely on the year being <2015
     meta = {
       maintainers = with maintainers; [ ocharles ];
       platforms   = stdenv.lib.platforms.unix;
@@ -3739,6 +3740,15 @@ let self = _self // overrides; _self = with self; {
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
     };
     preCheck = "export HOME=$TMPDIR";
+  };
+
+  FileKeePass = buildPerlPackage rec {
+    name = "File-KeePass-2.03";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/R/RH/RHANDOM/${name}.tar.gz";
+      sha256 = "c30c688027a52ff4f58cd69d6d8ef35472a7cf106d4ce94eb73a796ba7c7ffa7";
+    };
+    propagatedBuildInputs = [ CryptRijndael ];
   };
 
   FileListing = buildPerlPackage rec {
@@ -6618,6 +6628,20 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
+  MozillaLdap = buildPerlPackage {
+    name = "Mozilla-Ldap-1.5.3";
+    USE_OPENLDAP=1;
+    LDAPSDKDIR=pkgs.openldap;
+    src = fetchurl {
+      url = "ftp://ftp.mozilla.org/pub/mozilla.org/directory/perldap/releases/1.5.3/src/perl-mozldap-1.5.3.tar.gz";
+      sha256 = "0s0albdw0zvg3w37s7is7gddr4mqwicjxxsy400n1p96l7ipnw4x";
+    };
+    meta = {
+      description = "Mozilla's ldap client library.";
+      license = "unknown";
+    };
+  };
+
   MROCompat = buildPerlPackage {
     name = "MRO-Compat-0.12";
     src = fetchurl {
@@ -6684,10 +6708,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetAddrIP = buildPerlPackage rec {
-    name = "NetAddr-IP-4.072";
+    name = "NetAddr-IP-4.075";
     src = fetchurl {
       url = "mirror://cpan/authors/id/M/MI/MIKER/${name}.tar.gz";
-      sha256 = "17gwhhbz25021w5k4ggp8j3plix5yixgb2vr1mj39fa0p3gafm09";
+      sha256 = "0fc8jvrcp42szscnn41sxz8z8qa4fr4dr9i9s067hvrhiyxpb0mb";
     };
   };
 
@@ -8114,6 +8138,13 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
+  SortNaturally = buildPerlPackage rec {
+    name = "Sort-Naturally-1.03";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BI/BINGOS/${name}.tar.gz";
+      sha256 = "eaab1c5c87575a7826089304ab1f8ffa7f18e6cd8b3937623e998e865ec1e746";
+    };
+  };
 
   Starman = buildPerlModule {
     name = "Starman-0.4010";
@@ -8817,6 +8848,14 @@ let self = _self // overrides; _self = with self; {
 
     # Tests don't work because they require /dev/tty.
     doCheck = false;
+  };
+
+  TermShellUI = buildPerlPackage rec {
+    name = "Term-ShellUI-0.92";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BR/BRONSON/${name}.tar.gz";
+      sha256 = "3279c01c76227335eeff09032a40f4b02b285151b3576c04cacd15be05942bdb";
+    };
   };
 
   TermSizeAny = buildPerlPackage {

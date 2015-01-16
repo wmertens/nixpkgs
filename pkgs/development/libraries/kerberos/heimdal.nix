@@ -19,6 +19,7 @@ stdenv.mkDerivation rec {
     "--with-capng"
     "--with-openldap=${openldap}"
     "--with-sqlite3=${sqlite}"
+    "--with-openssl-lib=${openssl}/lib"
     "--without-x"
   ];
 
@@ -40,7 +41,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     pkgconfig flex yacc readline openldap libcap_ng sqlite db ncurses
-    openssl cyrus_sasl
+    cyrus_sasl openssl
   ];
 
   meta = with stdenv.lib; {
