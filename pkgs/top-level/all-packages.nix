@@ -9290,9 +9290,9 @@ let
 
   backintime-common = callPackage ../applications/networking/sync/backintime/common.nix { };
 
-  backintime-gnome = callPackage ../applications/networking/sync/backintime/gnome.nix { };
+  backintime-qt4 = callPackage ../applications/networking/sync/backintime/qt4.nix { };
 
-  backintime = backintime-gnome;
+  backintime = backintime-qt4;
 
   bar = callPackage ../applications/window-managers/bar { };
 
@@ -12783,13 +12783,10 @@ let
     stateDir = config.nix.stateDir or "/nix/var";
   };
 
-  /*
   nixUnstable = callPackage ../tools/package-management/nix/unstable.nix {
     storeDir = config.nix.storeDir or "/nix/store";
     stateDir = config.nix.stateDir or "/nix/var";
   };
-  */
-  nixUnstable = nixStable;
 
   nixops = callPackage ../tools/package-management/nixops { };
 
