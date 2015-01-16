@@ -17,6 +17,7 @@ let
     mkdir = fetch { file = "mkdir"; sha256 = "0x9jqf4rmkykbpkybp40x4d0v0dq99i0r5yk8096mjn1m7s7xa0p"; };
     cpio  = fetch { file = "cpio";  sha256 = "1a5s8bs14jhhmgrf4cwn92iq8sbz40qhjzj7y35ri84prp9clkc3"; };
   };
+  tarball = fetch { file = "bootstrap-tools.7.cpio.bz2"; sha256 = "0yxn6bjiasw28qll6wnsjy3cx5ci069ryrx6mws9zabs6yvv605h"; };
 in rec {
   allPackages = import ../../top-level/all-packages.nix;
 
@@ -50,12 +51,11 @@ in rec {
   binShClosure = [ "/usr/lib/libncurses.5.4.dylib" ];
 
   bootstrapTools = derivation rec {
-    inherit system;
+    inherit system tarball;
 
     name    = "bootstrap-tools";
     builder = bootstrapFiles.sh; # Not a filename! Attribute 'sh' on bootstrapFiles
     args    = [ ./unpack-bootstrap-tools.sh ];
-    tarball = fetch { file = "bootstrap-tools.5.cpio.bz2"; sha256 = "0j06zlhfcphxlz3s7wmcqc7jlaykwqi06caw6fjb479k0ikxhj7l"; };
 
     mkdir = bootstrapFiles.mkdir;
     bzip2 = bootstrapFiles.bzip2;
