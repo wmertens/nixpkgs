@@ -114,16 +114,6 @@ self: super: {
   # depends on broken hbro package.
   hbro-contrib = markBroken super.hbro-contrib;
 
-  # https://github.com/prowdsponsor/fb/pull/33
-  fb = overrideCabal super.fb (drv: {
-    patches = [
-      (pkgs.fetchpatch {
-        url = https://github.com/prowdsponsor/fb/pull/31.patch;
-        sha256 = "0ip8mhpbbvlp4pz7d27d6cg39gm6ypfsf4rdmfrmdh3pkig0axls";
-      })
-    ];
-  });
-
   # https://github.com/haskell/vector/issues/47
   vector = if pkgs.stdenv.isi686 then appendConfigureFlag super.vector "--ghc-options=-msse2" else super.vector;
 
@@ -141,9 +131,10 @@ self: super: {
     isLibrary = false;
     isExecutable = true;
     buildDepends = with self; [
-      aeson base bytestring Cabal containers deepseq directory filepath
-      hackage-db monad-par monad-par-extras mtl pretty process
-      regex-posix SHA split transformers utf8-string
+      aeson base bytestring Cabal containers deepseq deepseq-generics
+      directory filepath hackage-db hspec monad-par monad-par-extras
+      mtl pretty process regex-posix SHA split transformers
+      utf8-string QuickCheck
     ];
     testDepends = with self; [ base doctest ];
     homepage = "http://github.com/NixOS/cabal2nix";
