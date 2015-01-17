@@ -1630,6 +1630,8 @@ let
 
   netperf = callPackage ../applications/networking/netperf { };
 
+  netsniff-ng = callPackage ../tools/networking/netsniff-ng { };
+
   ninka = callPackage ../development/tools/misc/ninka { };
 
   nodejs = callPackage ../development/web/nodejs { };
@@ -2802,6 +2804,8 @@ let
   xarchive = callPackage ../tools/archivers/xarchive { };
 
   xarchiver = callPackage ../tools/archivers/xarchiver { };
+
+  xbrightness = callPackage ../tools/X11/xbrightness { };
 
   xcruiser = callPackage ../applications/misc/xcruiser { };
 
@@ -4541,6 +4545,8 @@ let
   ctagsWrapped = import ../development/tools/misc/ctags/wrapped.nix {
     inherit pkgs ctags writeScriptBin;
   };
+
+  ctodo = callPackage ../applications/misc/ctodo { };
 
   cmake = callPackage ../development/tools/build-managers/cmake {
     wantPS = stdenv.isDarwin;
@@ -6633,6 +6639,8 @@ let
   openalSoft = callPackage ../development/libraries/openal-soft { };
 
   openbabel = callPackage ../development/libraries/openbabel { };
+
+  openbr = callPackage ../development/libraries/openbr { };
 
   opencascade = callPackage ../development/libraries/opencascade { };
 
@@ -9099,6 +9107,8 @@ let
 
   oldstandard = callPackage ../data/fonts/oldstandard { };
 
+  open-dyslexic = callPackage ../data/fonts/open-dyslexic { };
+
   opensans-ttf = callPackage ../data/fonts/opensans-ttf { };
 
   poly = callPackage ../data/fonts/poly { };
@@ -10903,6 +10913,10 @@ let
 
   st = callPackage ../applications/misc/st {
     conf = config.st.conf or null;
+  };
+
+  stag = callPackage ../applications/misc/stag {
+    curses = ncurses;
   };
 
   stella = callPackage ../misc/emulators/stella { };

@@ -3973,22 +3973,17 @@ let
     };
   };
 
-
   eventlet = buildPythonPackage rec {
-    name = "eventlet-0.15.1";
+    name = "eventlet-0.16.1";
 
     src = pkgs.fetchurl {
       url = "http://pypi.python.org/packages/source/e/eventlet/${name}.tar.gz";
-      md5 = "7155780824bb6344651a573838416f21";
+      md5 = "58f6e5cd1bcd8ab78e32a2594aa0abad";
     };
 
-    buildInputs = with self; [ nose httplib2  ];
+    buildInputs = with self; [ nose httplib2 pyopenssl  ];
 
     propagatedBuildInputs = optionals (!isPyPy) [ self.greenlet ];
-
-    PYTHON_EGG_CACHE = "`pwd`/.egg-cache";
-
-    doCheck = false; # !!! fix; tests access the network
 
     meta = {
       homepage = http://pypi.python.org/pypi/eventlet/;
@@ -4326,7 +4321,7 @@ let
       sha256 = "16cddyk5is0gjfn0ia5n2l4lhdzvbjzlx6sfpy7ddjd3d3fq7ckl";
     };
 
-    propagatedBuildInputs = with self; [ twisted self.pyopenssl ];
+    propagatedBuildInputs = [ self.twisted self.pyopenssl ];
 
     meta = {
       homepage = http://foolscap.lothar.com/;
@@ -4484,6 +4479,8 @@ let
       url = "https://pypi.python.org/packages/source/g/gevent/${name}.tar.gz";
       sha256 = "0hyzfb0gcx9pm5c2igan8y57hqy2wixrwvdjwsaivxsqs0ay49s6";
     };
+ 
+    patches = [ ../development/python-modules/gevent_sslwrap.patch ];
 
     buildInputs = with self; [ pkgs.libev ];
     propagatedBuildInputs = optionals (!isPyPy) [ self.greenlet ];
@@ -5503,28 +5500,9 @@ let
   };
 
 
-  matplotlib = buildPythonPackage rec {
-    name = "matplotlib-1.4.2";
-
-    src = pkgs.fetchurl {
-      url = "mirror://sourceforge/matplotlib/${name}.tar.gz";
-      sha256 = "0m6v9nwdldlwk22gcd339zg6mny5m301fxgks7z8sb8m9wawg8qp";
-    };
-
-    buildInputs = with self; [ python pkgs.which pkgs.ghostscript ] ++
-        (if stdenv.isDarwin then [ pkgs.clangStdenv ] else [ pkgs.stdenv ]);
-
-    propagatedBuildInputs = with self;
-      [ dateutil nose numpy pyparsing tornado pkgs.freetype pkgs.libpng pkgs.pkgconfig
-        mock pytz
-      ];
-
-    meta = with stdenv.lib; {
-      description = "python plotting library, making publication quality plots";
-      homepage    = "http://matplotlib.sourceforge.net/";
-      maintainers = with maintainers; [ lovek323 ];
-      platforms   = platforms.unix;
-    };
+  matplotlib = callPackage ../development/python-modules/matplotlib/default.nix {
+    stdenv = if stdenv.isDarwin then pkgs.clangStdenv else pkgs.stdenv;
+    enableGhostscript = true;
   };
 
 
