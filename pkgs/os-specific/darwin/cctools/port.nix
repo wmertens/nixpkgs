@@ -17,15 +17,15 @@ let
       sha256 = "0qka91xp7h16g3m20q3iraf5nnps8kq56qs5478j5zdx9ajjl5zq";
     };
 
-    buildInputs = [
-      autoconf automake libtool llvm clang openssl libuuid
-    ];
+    buildInputs = [ autoconf automake libtool openssl libuuid ] ++
+      # Only need llvm and clang if the stdenv isn't already clang-based (TODO: just make a stdenv.cc.isClang)
+      stdenv.lib.optionals (!stdenv.isDarwin) [ llvm clang ];
 
     patches = [ ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch ];
 
     enableParallelBuilding = true;
 
-    configureFlags = [ "CXXFLAGS=-I${libcxx}/include/c++/v1" ];
+    configureFlags = stdenv.lib.optionals (!stdenv.isDarwin) [ "CXXFLAGS=-I${libcxx}/include/c++/v1" ];
 
     postPatch = ''
       # FIXME: there are far more absolute path references that I don't want to fix right now
@@ -38,7 +38,6 @@ let
 
       patchShebangs tools
       sed -i -e 's/which/type -P/' tools/*.sh
-      sed -i -e 's|clang++|& -I${libcxx}/include/c++/v1|' cctools/autogen.sh
 
       # Workaround for https://www.sourceware.org/bugzilla/show_bug.cgi?id=11157
       cat > cctools/include/unistd.h <<EOF
@@ -57,6 +56,8 @@ let
       substituteInPlace cctools/otool/print_objc.c \
         --replace "objc_getClass(objc_class.name)" "0" \
         --replace "objc_getMetaClass(objc_class.name)" "0"
+    '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
+      sed -i -e 's|clang++|& -I${libcxx}/include/c++/v1|' cctools/autogen.sh
     '';
 
     preConfigure = ''
