@@ -74,10 +74,10 @@ in rec {
     export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
   '';
 
-  stageFun = {cc, extraAttrs ? {}, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? "", extraBuildInputs ? []}:
+  stageFun = {cc, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? ""}:
     let
       thisStdenv = import ../generic {
-        inherit system config extraBuildInputs;
+        inherit system config cc;
         name    = "stdenv-darwin-boot";
         preHook =
           ''
@@ -93,14 +93,12 @@ in rec {
           stdenv = stage0.stdenv;
           curl   = bootstrapTools;
         };
-        inherit cc;
 
         # The stdenvs themselves don't use mkDerivation, so I need to specify this here
         __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
         __extraImpureHostDeps  = binShClosure ++ libSystemClosure;
 
-        # Do we need this platform inheritance?
-        extraAttrs = extraAttrs // { inherit platform; };
+        extraAttrs = { inherit platform; };
         overrides  = pkgs: (overrides pkgs) // { fetchurl = thisStdenv.fetchurlBoot; };
       };
 
@@ -111,8 +109,7 @@ in rec {
     in { stdenv = thisStdenv; pkgs = thisPkgs; };
 
   stage0 = stageFun {
-    cc               = "/no-such-path";
-    extraBuildInputs = [ bootstrapTools ];
+    cc = "/no-such-path";
   };
 
   stage1 = stageFun {
@@ -135,7 +132,6 @@ in rec {
     inherit (stage1.stdenv) cc;
     extraPath        = [ stage1.pkgs.xz ];
     extraPreHook     = bootstrapPreHook;
-    overrides        = pkgs: { binutils = stage1.pkgs.binutils; };
   };
 
   stage3 = with stage2; stageFun {
@@ -156,7 +152,6 @@ in rec {
       export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
       export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
     '';
-    overrides    = pkgs: { binutils = stage2.pkgs.binutils; };
   };
 
   stage4 = with stage3; import ../generic rec {
