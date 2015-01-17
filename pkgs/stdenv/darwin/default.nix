@@ -88,7 +88,7 @@ in rec {
             ${extraPreHook}
           '';
         shell        = "${bootstrapTools}/bin/sh";
-        initialPath  = [bootstrapTools] ++ extraPath;
+        initialPath  = [ bootstrapTools ] ++ extraPath;
         fetchurlBoot = import ../../build-support/fetchurl {
           stdenv = stage0.stdenv;
           curl   = bootstrapTools;
@@ -140,10 +140,9 @@ in rec {
       inherit stdenv;
       nativeTools  = false;
       nativeLibc   = true; # Should be false with libc = libSystem, but that's tricky
-      inherit (pkgs) libcxx libcxxabi coreutils;
+      inherit (pkgs) libcxx libcxxabi coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
-      binutils = pkgs.darwin.cctools;
-      shell    = "${pkgs.bash}/bin/bash";
+      shell = "${pkgs.bash}/bin/bash";
     };
 
     extraPath    = [ pkgs.xz ];
@@ -158,7 +157,7 @@ in rec {
     inherit system config;
     inherit (stdenv) fetchurlBoot;
 
-    name    = "stdenv-darwin";
+    name = "stdenv-darwin";
 
     # TODO: the cflags and ldflags could be handled by clang-wrapper's setup-hook. However, adding libSystem and CF as regular
     # buildInputs (which would lead to that) causes subtle problems due to libSystem coming first in the search path. The main
@@ -181,10 +180,9 @@ in rec {
       inherit stdenv;
       nativeTools  = false;
       nativeLibc   = true; # Should be false with libc = libSystem, but that's tricky
-      inherit (pkgs) libcxx libcxxabi coreutils;
+      inherit (pkgs) libcxx libcxxabi coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
-      binutils  = pkgs.darwin.cctools;
-      shell     = "${pkgs.bash}/bin/bash";
+      shell = "${pkgs.bash}/bin/bash";
     };
 
     extraAttrs = {
