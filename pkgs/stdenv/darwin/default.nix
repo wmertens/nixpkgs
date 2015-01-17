@@ -138,8 +138,8 @@ in rec {
     # TODO: just make pkgs.clang do this right
     cc = import ../../build-support/clang-wrapper {
       inherit stdenv;
-      nativeTools  = false;
-      nativeLibc   = true; # Should be false with libc = libSystem, but that's tricky
+      nativeTools = false;
+      nativeLibc  = true; # Should be false with libc = libSystem, but that's tricky
       inherit (pkgs) libcxx libcxxabi coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
       shell = "${pkgs.bash}/bin/bash";
