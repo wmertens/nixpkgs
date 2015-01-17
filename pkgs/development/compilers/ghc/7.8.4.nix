@@ -9,8 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3";
   };
 
-  buildInputs = [ ghc perl makeWrapper ];
-  propagatedBuildInputs = [ gmp ncurses libiconv ];
+  buildInputs = [ ghc perl gmp ncurses libiconv ];
 
   enableParallelBuilding = true;
 

@@ -40,7 +40,7 @@
 , checkPhase ? "", preCheck ? "", postCheck ? ""
 , preFixup ? "", postFixup ? ""
 , coreSetup ? false # Use only core packages to build Setup.hs.
-, useCpphs ? stdenv.isDarwin
+, useCpphs ? false
 }:
 
 assert pkgconfigDepends != [] -> pkgconfig != null;
@@ -129,7 +129,7 @@ stdenv.mkDerivation ({
     mkdir -p $packageConfDir
 
     local inputClosure=""
-    for i in $propagatedNativeBuildInputs $nativeBuildInputs ${ghc}; do
+    for i in $propagatedNativeBuildInputs $nativeBuildInputs; do
       findInputs $i inputClosure propagated-native-build-inputs
     done
     for p in $inputClosure; do
