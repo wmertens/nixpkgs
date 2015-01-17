@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
          fix $library
        done
 
-       for tool in haddock hsc2hs ghc-cabal ghc-pkg ghc-pwd ghc-stage2; do
+       for tool in haddock hsc2hs hpc ghc-cabal ghc-pkg ghc-pwd ghc-stage2; do
          fix $(find . -type f -executable -name $tool)
        done
 
@@ -93,7 +93,8 @@ stdenv.mkDerivation rec {
         EOF
         echo sanity check
       '' + stdenv.lib.optionalString stdenv.isDarwin ''
-        wrapProgram $out/bin/ghc --set LD_IGNORE_DTRACE 1 \
+        wrapProgram $out/bin/ghc \
+          --add-flags "-optl -Wl,-no_dtrace_dof" \
           --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib"
       '' + ''
         $out/bin/ghc --make main.hs

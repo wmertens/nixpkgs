@@ -23,7 +23,6 @@ let
 
     patches = [
       ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch
-      ./ld-dtrace-optional.patch
     ];
 
     enableParallelBuilding = true;

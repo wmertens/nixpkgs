@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, ghc, perl, gmp, ncurses, libiconv }:
+{ stdenv, fetchurl, ghc, perl, gmp, ncurses, libiconv, makeWrapper }:
 
 stdenv.mkDerivation rec {
   version = "7.8.4";
@@ -9,10 +9,15 @@ stdenv.mkDerivation rec {
     sha256 = "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3";
   };
 
-  buildInputs = [ ghc perl ];
+  buildInputs = [ ghc perl makeWrapper ];
   propagatedBuildInputs = [ gmp ncurses libiconv ];
 
   enableParallelBuilding = true;
+
+  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
+    wrapProgram $out/bin/haddock \
+      --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib:${stdenv.libc}/lib"
+  '';
 
   buildMK = ''
     libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries="${gmp}/lib"
