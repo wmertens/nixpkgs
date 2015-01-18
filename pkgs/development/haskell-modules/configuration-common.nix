@@ -117,6 +117,21 @@ self: super: {
   # https://github.com/haskell/vector/issues/47
   vector = if pkgs.stdenv.isi686 then appendConfigureFlag super.vector "--ghc-options=-msse2" else super.vector;
 
+  # https://github.com/haskell/pretty/issues/17
+  pretty_1_1_2_0 = dontCheck super.pretty_1_1_2_0;
+
+  # Does not compile: <http://hydra.cryp.to/build/469842/nixlog/1/raw>.
+  base_4_7_0_2 = markBroken super.base_4_7_0_2;
+
+  # Obsolete: https://github.com/massysett/prednote/issues/1.
+  prednote-test = markBroken super.prednote-test;
+
+  # Doesn't compile: <http://hydra.cryp.to/build/465891/nixlog/1/raw>.
+  integer-gmp_0_5_1_0 = markBroken super.integer-gmp_0_5_1_0;
+
+  # https://github.com/haskell/bytestring/issues/41
+  bytestring_0_10_4_1 = dontCheck super.bytestring_0_10_4_1;
+
 }
 // {
   # Not on Hackage yet.
@@ -124,21 +139,27 @@ self: super: {
     pname = "cabal2nix";
     version = "2.0";
     src = pkgs.fetchgit {
-      url = "git://github.com/NixOS/cabal2nix.git";
-      rev = "2a1a10f38f21f27e6555b399db131380af1cf7ff";
-      sha256 = "51c96e5a089396c34bfa27e76778743161504e04d6220b2bb7e0fbcde80430fa";
+      url = "http://github.com/NixOS/cabal2nix.git";
+      sha256 = "c1927f7441a057f02d25cbca855f533fc8073e7680083caa86d48e3d69ab69fd";
+      rev = "0c4c1f2529a7e4b83ec21922d77c792a9bd1d662";
     };
     isLibrary = false;
     isExecutable = true;
     buildDepends = with self; [
       aeson base bytestring Cabal containers deepseq deepseq-generics
-      directory filepath hackage-db hspec monad-par monad-par-extras
-      mtl pretty process regex-posix SHA split transformers
-      utf8-string QuickCheck
+      directory filepath hackage-db monad-par monad-par-extras mtl pretty
+      prettyclass process QuickCheck regex-posix SHA split transformers
+      utf8-string
     ];
-    testDepends = with self; [ base doctest ];
+    testDepends = with self; [
+      aeson base bytestring Cabal containers deepseq deepseq-generics
+      directory doctest filepath hackage-db hspec monad-par
+      monad-par-extras mtl pretty prettyclass process QuickCheck
+      regex-posix SHA split transformers utf8-string
+    ];
     homepage = "http://github.com/NixOS/cabal2nix";
     description = "Convert Cabal files into Nix build instructions";
     license = pkgs.stdenv.lib.licenses.bsd3;
   };
+
 }

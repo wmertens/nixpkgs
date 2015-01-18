@@ -9,7 +9,6 @@ rec {
     ghc6102Binary = callPackage ../development/compilers/ghc/6.10.2-binary.nix { gmp = pkgs.gmp4; };
     ghc704Binary = callPackage ../development/compilers/ghc/7.0.4-binary.nix { gmp = pkgs.gmp4; };
     ghc742Binary = callPackage ../development/compilers/ghc/7.4.2-binary.nix { gmp = pkgs.gmp4; };
-    ghc783Binary = callPackage ../development/compilers/ghc/7.8.3-binary.nix { gmp = pkgs.gmp4; };
 
     ghc6104 = callPackage ../development/compilers/ghc/6.10.4.nix { ghc = compiler.ghc6102Binary; gmp = pkgs.gmp.override { withStatic = true; }; };
     ghc6123 = callPackage ../development/compilers/ghc/6.12.3.nix { ghc = compiler.ghc6102Binary; gmp = pkgs.gmp.override { withStatic = true; }; };
@@ -26,10 +25,22 @@ rec {
   packages = {
 
     ghc6104 = callPackage ../development/haskell-modules { ghc = compiler.ghc6104; };
-    ghc6123 = callPackage ../development/haskell-modules { ghc = compiler.ghc6123; };
-    ghc704 = callPackage ../development/haskell-modules { ghc = compiler.ghc704; };
-    ghc722 = callPackage ../development/haskell-modules { ghc = compiler.ghc722; };
-    ghc742 = callPackage ../development/haskell-modules { ghc = compiler.ghc742; };
+    ghc6123 = callPackage ../development/haskell-modules {
+      ghc = compiler.ghc6123;
+      packageSetConfig = callPackage ../development/haskell-modules/configuration-ghc-6.12.x.nix { };
+    };
+    ghc704 = callPackage ../development/haskell-modules {
+      ghc = compiler.ghc704;
+      packageSetConfig = callPackage ../development/haskell-modules/configuration-ghc-7.0.x.nix { };
+    };
+    ghc722 = callPackage ../development/haskell-modules {
+      ghc = compiler.ghc722;
+      packageSetConfig = callPackage ../development/haskell-modules/configuration-ghc-7.2.x.nix { };
+    };
+    ghc742 = callPackage ../development/haskell-modules {
+      ghc = compiler.ghc742;
+      packageSetConfig = callPackage ../development/haskell-modules/configuration-ghc-7.4.x.nix { };
+    };
     ghc763 = callPackage ../development/haskell-modules {
       ghc = compiler.ghc763;
       packageSetConfig = callPackage ../development/haskell-modules/configuration-ghc-7.6.x.nix { };

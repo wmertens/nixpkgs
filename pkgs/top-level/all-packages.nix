@@ -5822,6 +5822,8 @@ let
 
   libchop = callPackage ../development/libraries/libchop { };
 
+  libcli = callPackage ../development/libraries/libcli { };
+
   libcm = callPackage ../development/libraries/libcm { };
 
   inherit (gnome3) libcroco;
@@ -8080,6 +8082,8 @@ let
   acpid = callPackage ../os-specific/linux/acpid { };
 
   acpitool = callPackage ../os-specific/linux/acpitool { };
+
+  alfred = callPackage ../os-specific/linux/batman-adv/alfred.nix { };
 
   alienfx = callPackage ../os-specific/linux/alienfx { };
 
