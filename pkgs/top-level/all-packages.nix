@@ -8229,6 +8229,9 @@ let
     configd          = callPackage ../os-specific/darwin/configd { inherit launchd bootstrap_cmds xnu ppp iokit eap8021x security; };
     libnotify        = callPackage ../os-specific/darwin/libnotify {};
     libobjc          = callPackage ../os-specific/darwin/libobjc {};
+
+    # Has global state that conflicts with the system libobjc that we get through libSystem, so we can't use it yet...
+    libobjcPure      = callPackage ../os-specific/darwin/libobjc/pure.nix { inherit libauto launchd libunwind; libc_old = libc_825_40_1; };
     mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
     libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
     libauto          = callPackage ../os-specific/darwin/libauto {};
