@@ -972,6 +972,8 @@ let
 
   dar = callPackage ../tools/archivers/dar { };
 
+  darkstat = callPackage ../tools/networking/darkstat { };
+
   davfs2 = callPackage ../tools/filesystems/davfs2 { };
 
   dbench = callPackage ../development/tools/misc/dbench { };
@@ -4860,6 +4862,8 @@ let
 
   sloccount = callPackage ../development/tools/misc/sloccount { };
 
+  sloc = callPackage ../development/tools/sloc { };
+
   smatch = callPackage ../development/tools/analysis/smatch {
     buildllvmsparse = false;
     buildc2xml = false;
@@ -6891,6 +6895,8 @@ let
 
   readline63 = callPackage ../development/libraries/readline/6.3.nix { };
 
+  readosm = callPackage ../development/libraries/readosm { };
+
   librdf_raptor = callPackage ../development/libraries/librdf/raptor.nix { };
 
   librdf_raptor2 = callPackage ../development/libraries/librdf/raptor2.nix { };
@@ -7009,6 +7015,8 @@ let
   soundtouch = callPackage ../development/libraries/soundtouch {};
 
   spandsp = callPackage ../development/libraries/spandsp {};
+
+  spatialite_tools = callPackage ../development/libraries/spatialite-tools { };
 
   speechd = callPackage ../development/libraries/speechd { };
 
@@ -10218,6 +10226,11 @@ let
     inherit (pythonPackages) lxml;
   };
 
+  jumanji = callPackage ../applications/networking/browsers/jumanji {
+    webkitgtk = webkitgtk24x;
+    gtk = gtk3;
+  };
+
   jwm = callPackage ../applications/window-managers/jwm { };
 
   k3d = callPackage ../applications/graphics/k3d {
@@ -11775,6 +11788,8 @@ let
   };
 
   gltron = callPackage ../games/gltron { };
+
+  gnubg = callPackage ../games/gnubg { };
 
   gnuchess = callPackage ../games/gnuchess { };
 
