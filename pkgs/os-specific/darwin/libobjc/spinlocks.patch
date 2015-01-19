@@ -1,6 +1,6 @@
 --- objc4-551.1/runtime/objc-os.h	2013-06-10 21:16:15.000000000 -0400
-+++ ../objc4-551.1/runtime/objc-os.h	2015-01-18 22:58:30.000000000 -0500
-@@ -77,10 +77,8 @@
++++ ../objc4-551.1/runtime/objc-os.h	2015-01-19 01:01:36.000000000 -0500
+@@ -77,27 +77,72 @@
  #   include <mach-o/getsect.h>
  #   include <mach-o/dyld_priv.h>
  #   include <malloc/malloc.h>
@@ -10,18 +10,21 @@
 -#   include <System/pthread_machdep.h>
  #   include "objc-probes.h"  // generated dtrace probe definitions.
  
++#define __PTK_FRAMEWORK_OBJC_KEY5 45
++#define __PTK_FRAMEWORK_OBJC_KEY6 46
++#define __PTK_FRAMEWORK_OBJC_KEY7 47
++#define __PTK_FRAMEWORK_OBJC_KEY8 48
++#define __PTK_FRAMEWORK_OBJC_KEY9 49
++
++extern "C" int pthread_key_init_np(int, void (*)(void *));
++
  // Some libc functions call objc_msgSend() 
-@@ -88,16 +86,55 @@
+ // so we can't use them without deadlocks.
  void syslog(int, const char *, ...) UNAVAILABLE_ATTRIBUTE;
  void vsyslog(int, const char *, va_list) UNAVAILABLE_ATTRIBUTE;
  
 +#if defined(__i386__) || defined(__x86_64__)
- 
--#define spinlock_t os_lock_handoff_s
--#define spinlock_trylock(l) os_lock_trylock(l)
--#define spinlock_lock(l) os_lock_lock(l)
--#define spinlock_unlock(l) os_lock_unlock(l)
--#define SPINLOCK_INITIALIZER OS_LOCK_HANDOFF_INIT
++
 +// Inlined spinlock.
 +// Not for arm on iOS because it hurts uniprocessor performance.
 +
@@ -61,7 +64,12 @@
 +#define spinlock_lock(l) ARRSpinLockLock(l)
 +#define spinlock_unlock(l) ARRSpinLockUnlock(l)
 +#define SPINLOCK_INITIALIZER ARR_SPINLOCK_INIT 
-+
+ 
+-#define spinlock_t os_lock_handoff_s
+-#define spinlock_trylock(l) os_lock_trylock(l)
+-#define spinlock_lock(l) os_lock_lock(l)
+-#define spinlock_unlock(l) os_lock_unlock(l)
+-#define SPINLOCK_INITIALIZER OS_LOCK_HANDOFF_INIT
 +#endif
  
  
@@ -73,3 +81,27 @@
  #else
      // CrashReporterClient not yet available on iOS
      __BEGIN_DECLS
+@@ -594,21 +639,13 @@
+ { 
+     assert(is_valid_direct_key(k));
+ 
+-    if (_pthread_has_direct_tsd()) {
+-        return _pthread_getspecific_direct(k);
+-    } else {
+-        return pthread_getspecific(k);
+-    }
++    return pthread_getspecific(k);
+ }
+ static inline void tls_set_direct(tls_key_t k, void *value) 
+ { 
+     assert(is_valid_direct_key(k));
+ 
+-    if (_pthread_has_direct_tsd()) {
+-        _pthread_setspecific_direct(k, value);
+-    } else {
+-        pthread_setspecific(k, value);
+-    }
++    pthread_setspecific(k, value);
+ }
+ 
+ // not arm
