@@ -4555,8 +4555,7 @@ let
   };
 
   cmake = callPackage ../development/tools/build-managers/cmake {
-    wantPS = stdenv.isDarwin;
-    ps     = if stdenv.isDarwin then darwin.ps else null;
+    inherit (darwin) ps; # This only gets forced if isDarwin
   };
 
   cmake-3_0 = callPackage ../development/tools/build-managers/cmake/3.0.nix { };

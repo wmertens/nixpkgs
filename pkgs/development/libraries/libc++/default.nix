@@ -32,6 +32,19 @@ stdenv.mkDerivation rec {
       "-DLIBCXX_CXX_ABI=libcxxabi"
     ];
 
+  # Through some mysterious cmake voodoo, the build decides to pass in both -lc++abi and
+  # a straight reference to our libc++abi.dylib, which happen to actually be different
+  # during the pure-darwin stdenv bootstrap, and thus lead to our generated libc++ being
+  # linked to two separate libc++abi libraries! This kills it, but there's probably a
+  # cleaner way...
+  preBuild = stdenv.lib.optionalString stdenv.isDarwin ''
+    substituteInPlace lib/CMakeFiles/cxx.dir/link.txt \
+      --replace "-lc++abi" ""
+  '';
+
+  # We also need this to prevent more spurious libc++abi linkage...
+  NIX_SKIP_CXXABI = "true";
+
   enableParallelBuilding = true;
 
   inherit libcxxabi;

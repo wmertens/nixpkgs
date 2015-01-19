@@ -1,10 +1,8 @@
 { stdenv, fetchurl, fetchpatch, replace, curl, expat, zlib, bzip2, libarchive
-, useNcurses ? false, ncurses, useQt4 ? false, qt4, wantPS ? false, ps ? null
+, useNcurses ? false, ncurses, useQt4 ? false, qt4, ps
 }:
 
 with stdenv.lib;
-
-assert wantPS -> (ps != null);
 
 let
   os = stdenv.lib.optionalString;
@@ -50,10 +48,10 @@ stdenv.mkDerivation rec {
     ++ optional useNcurses ncurses
     ++ optional useQt4 qt4;
 
-  propagatedBuildInputs = optional wantPS ps;
+  propagatedBuildInputs = optional stdenv.isDarwin ps;
 
   CMAKE_PREFIX_PATH = stdenv.lib.concatStringsSep ":" buildInputs;
-  
+
   configureFlags =
     "--docdir=/share/doc/${name} --mandir=/share/man --system-libs"
     + stdenv.lib.optionalString useQt4 " --qt-gui";

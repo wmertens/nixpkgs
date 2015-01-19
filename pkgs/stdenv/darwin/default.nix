@@ -68,17 +68,13 @@ in rec {
     __impureHostDeps  = binShClosure ++ libSystemClosure;
   };
 
-  bootstrapPreHook = ''
-    export NIX_CFLAGS_COMPILE+=" -idirafter ${bootstrapTools}/include-libSystem -F${bootstrapTools}/Library/Frameworks"
-    export NIX_LDFLAGS_BEFORE+=" -L${bootstrapTools}/lib/"
-    export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
-  '';
+  bootstrapPreHook = "export LD_DYLD_PATH=${bootstrapTools}/lib/dyld";
 
-  stageFun = {cc, overrides ? (pkgs: {}), extraPath ? [], extraPreHook ? ""}:
+  stageFun = step: {cc, shell ? "${bootstrapTools}/bin/sh", overrides ? (pkgs: {}), extraPreHook ? "", extraBuildInputs ? [], allowedRequisites ? null}:
     let
       thisStdenv = import ../generic {
-        inherit system config cc;
-        name    = "stdenv-darwin-boot";
+        inherit system config cc shell extraBuildInputs allowedRequisites;
+        name    = "stdenv-darwin-boot-${toString step}";
         preHook =
           ''
             # Don't patch #!/interpreter because it leads to retained
@@ -87,8 +83,7 @@ in rec {
             ${commonPreHook}
             ${extraPreHook}
           '';
-        shell        = "${bootstrapTools}/bin/sh";
-        initialPath  = [ bootstrapTools ] ++ extraPath;
+        initialPath  = [ bootstrapTools ];
         fetchurlBoot = import ../../build-support/fetchurl {
           stdenv = stage0.stdenv;
           curl   = bootstrapTools;
@@ -108,98 +103,166 @@ in rec {
       };
     in { stdenv = thisStdenv; pkgs = thisPkgs; };
 
-  stage0 = stageFun {
+  stage0 = stageFun 0 {
     cc = "/no-such-path";
+
+    # TODO: just make better bootstrap tools next time around!
+    overrides = pkgs: with stage0; {
+      libSystemBoot = stdenv.mkDerivation {
+        name = "bootstrap-libSystem";
+        buildCommand = ''
+          mkdir -p $out
+          ln -s ${bootstrapTools}/lib $out/lib
+          ln -s ${bootstrapTools}/include-libSystem $out/include
+        '';
+      };
+
+      libcxxBoot = stdenv.mkDerivation {
+        name = "bootstrap-libcxx";
+        buildCommand = ''
+          mkdir -p $out/lib $out/include
+          ln -s ${bootstrapTools}/lib/libc++.dylib $out/lib/libc++.dylib
+          ln -s ${bootstrapTools}/include/c++      $out/include/c++
+        '';
+      };
+
+      libcxxabiBoot = stdenv.mkDerivation {
+        name = "bootstrap-libcxxabi";
+        buildCommand = ''
+          mkdir -p $out/lib
+          ln -s ${bootstrapTools}/lib/libc++abi.dylib $out/lib/libc++abi.dylib
+        '';
+      };
+    };
   };
 
-  stage1 = stageFun {
+  stage1 = with stage0; stageFun 1 {
     cc = import ../../build-support/clang-wrapper {
       nativeTools  = true;
       nativePrefix = bootstrapTools;
-      nativeLibc   = true;
-      stdenv       = stage0.stdenv;
-      libcxx       = bootstrapTools;
-      libcxxabi    = bootstrapTools;
+      nativeLibc   = false;
+      libc         = pkgs.libSystemBoot;
+      stdenv       = stdenv;
+      libcxx       = pkgs.libcxxBoot;
+      libcxxabi    = pkgs.libcxxabiBoot;
       shell        = "${bootstrapTools}/bin/bash";
       clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
-    } // { libc = bootstrapTools; };
-
-    extraPreHook     = bootstrapPreHook;
-    overrides        = pkgs: { binutils = bootstrapTools; };
-  };
-
-  stage2 = stageFun {
-    inherit (stage1.stdenv) cc;
-    extraPath        = [ stage1.pkgs.xz ];
-    extraPreHook     = bootstrapPreHook;
-  };
-
-  stage3 = with stage2; stageFun {
-    # TODO: just make pkgs.clang do this right
-    cc = import ../../build-support/clang-wrapper {
-      inherit stdenv;
-      nativeTools = false;
-      nativeLibc  = true; # Should be false with libc = libSystem, but that's tricky
-      inherit (pkgs) libcxx libcxxabi coreutils binutils;
-      inherit (pkgs.llvmPackages) clang;
-      shell = "${pkgs.bash}/bin/bash";
     };
 
-    extraPath    = [ pkgs.xz ];
-    extraPreHook = ''
-      export NIX_CFLAGS_COMPILE+=" -idirafter ${pkgs.darwin.libSystem}/include -F${pkgs.darwin.corefoundation}/Library/Frameworks"
-      export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
-      export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
-    '';
+    extraPreHook = bootstrapPreHook;
+
+    allowedRequisites = [ bootstrapTools pkgs.libSystemBoot pkgs.libcxxBoot pkgs.libcxxabiBoot ];
   };
 
-  stage4 = with stage3; import ../generic rec {
+  # Add xz to bootstrap tools
+  # TODO: just bundle xz in the bootstrap tools next time around
+  stage2 = with stage1; stageFun 2 {
+    inherit (stdenv) cc;
+    extraBuildInputs = [ pkgs.xz pkgs.darwin.corefoundation ];
+    extraPreHook     = bootstrapPreHook;
+
+    allowedRequisites =
+      [ bootstrapTools ] ++
+      (with stage0.pkgs; [ libSystemBoot libcxxBoot libcxxabiBoot ]) ++
+      (with stage1.pkgs; [ xz darwin.corefoundation icu ]);
+  };
+
+  # Add a new libSystem
+  stage3 = with stage2; stageFun 3 {
+    cc = import ../../build-support/clang-wrapper {
+      inherit stdenv;
+      inherit (pkgs) libcxx libcxxabi;
+
+      nativeTools  = true;
+      nativePrefix = bootstrapTools;
+      nativeLibc   = false;
+      libc         = pkgs.darwin.libSystem;
+      shell        = "${bootstrapTools}/bin/bash";
+      clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
+    };
+
+    extraBuildInputs = [ stage1.pkgs.xz pkgs.darwin.corefoundation ];
+    extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
+
+    allowedRequisites =
+      [ bootstrapTools ] ++
+      (with stage1.pkgs; [ xz ]) ++
+      (with stage2.pkgs; [ darwin.libSystem libcxx libcxxabi darwin.dyld darwin.corefoundation icu ]);
+  };
+
+  #########################
+
+  stage4 = with stage3; stageFun 4 rec {
+    cc = import ../../build-support/clang-wrapper {
+      inherit stdenv shell;
+      inherit (pkgs) libcxx libcxxabi;
+
+      nativeTools  = true;
+      nativePrefix = bootstrapTools;
+      nativeLibc   = false;
+      libc         = stage2.pkgs.darwin.libSystem; # N.B: stage2, so we don't end up with duplicate libSystems floating around
+      clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
+    };
+
+    shell            = "${pkgs.bash}/bin/bash";
+    extraBuildInputs = [ stage1.pkgs.xz pkgs.darwin.corefoundation ];
+    extraPreHook     = "export LD_DYLD_PATH=${stage2.pkgs.darwin.dyld}/lib/dyld";
+
+    allowedRequisites =
+      [ bootstrapTools ] ++
+      (with stage1.pkgs; [ xz ]) ++
+      (with stage2.pkgs; [ darwin.libSystem darwin.dyld libcxx libcxxabi ]) ++
+      (with stage3.pkgs; [ libcxx libcxxabi darwin.dyld darwin.corefoundation icu bash ]);
+  };
+
+
+  stage5 = with stage4; import ../generic rec {
     inherit system config;
     inherit (stdenv) fetchurlBoot;
 
     name = "stdenv-darwin";
 
-    # TODO: the cflags and ldflags could be handled by clang-wrapper's setup-hook. However, adding libSystem and CF as regular
-    # buildInputs (which would lead to that) causes subtle problems due to libSystem coming first in the search path. The main
-    # issue I encountered was db.h being in there. Perhaps it shouldn't be, but I didn't want to deal with it right now so I'm
-    # leaving this preHook (and the one above) alone.
     preHook = ''
       ${commonPreHook}
-      export NIX_CFLAGS_COMPILE+=" -idirafter ${pkgs.darwin.libSystem}/include -F${pkgs.darwin.corefoundation}/Library/Frameworks"
-      export NIX_LDFLAGS_BEFORE+=" -L${pkgs.darwin.libSystem}/lib/"
-      export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld
+      export LD_DYLD_PATH=${stage2.pkgs.darwin.dyld}/lib/dyld
     '';
 
     __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
     __extraImpureHostDeps  = binShClosure ++ libSystemClosure;
 
-    initialPath      = import ../common-path.nix { inherit pkgs; };
-    shell            = "${pkgs.bash}/bin/bash";
+    initialPath = import ../common-path.nix { inherit pkgs; };
+    shell       = "${pkgs.bash}/bin/bash";
 
     cc = import ../../build-support/clang-wrapper {
-      inherit stdenv;
-      nativeTools  = false;
-      nativeLibc   = true; # Should be false with libc = libSystem, but that's tricky
-      inherit (pkgs) libcxx libcxxabi coreutils binutils;
+      inherit stdenv shell;
+      nativeTools = false;
+      nativeLibc  = false;
+      inherit (stage3.pkgs) libcxx libcxxabi;
+      inherit (pkgs) coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
-      shell = "${pkgs.bash}/bin/bash";
+      libc = stage2.pkgs.darwin.libSystem;
     };
+
+    extraBuildInputs = [ pkgs.darwin.corefoundation ];
 
     extraAttrs = {
       inherit platform bootstrapTools;
-      libc         = pkgs.darwin.libSystem;
       shellPackage = pkgs.bash;
     };
 
-    overrides = pkgs: {
+    # Way too large, but at least we have a list that we can start whittling down now
+    # allowedRequisites = with pkgs; (map (x: lib.traceVal x.outPath) stage4reqs);
+
+    overrides = _: {
       clang = cc;
       inherit cc;
-      inherit (stage3.pkgs)
+      inherit (pkgs)
         gzip bzip2 xz bash binutils coreutils diffutils findutils gawk
-        glibc gnumake gnused gnutar gnugrep gnupatch patchelf
-        attr acl paxctl zlib;
+        glibc gnumake gnused gnutar gnugrep gnupatch zlib;
+        # TODO: pass llvm, clang (not just the wrappers) through
     };
   };
 
-  stdenvDarwin = stage4;
+
+  stdenvDarwin = stage5;
 }
