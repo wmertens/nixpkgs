@@ -92,15 +92,8 @@ stdenv.mkDerivation rec {
     #endif  /* __TARGETCONDITIONALS__ */
     EOF
 
-
-
     # The startup object files
     cp ${csu}/lib/* $out/lib
-
-    # This probably doesn't belong here, but we want to stay similar to glibc, which includes resolv internally...
-    # TODO: add darwin-conditional libresolv dependency to packages that need it instead of this...
-    ln -s ${libresolv}/lib/libresolv.9.dylib $out/lib/libresolv.9.dylib
-    ln -s libresolv.9.dylib $out/lib/libresolv.dylib
 
     # selectively re-export functions from libsystem_c and libsystem_kernel
     # to provide a consistent interface across OSX verions
@@ -132,6 +125,20 @@ stdenv.mkDerivation rec {
     for name in c dbm dl info m mx poll proc pthread rpcsvc gcc_s.10.4 gcc_s.10.5; do
       ln -s libSystem.dylib $out/lib/lib$name.dylib
     done
+
+    # This probably doesn't belong here, but we want to stay similar to glibc, which includes resolv internally...
+    cp ${libresolv}/lib/libresolv.9.dylib $out/lib/libresolv.9.dylib
+    resolv_libSystem=$(otool -L "$out/lib/libresolv.9.dylib" | tail -n +3 | grep -o "$NIX_STORE.*-\S*") || true
+    echo $libs
+
+    chmod +w $out/lib/libresolv.9.dylib
+    install_name_tool \
+      -id $out/lib/libresolv.9.dylib \
+      -change "$resolv_libSystem" $out/lib/libSystem.dylib \
+      $out/lib/libresolv.9.dylib
+    ln -s libresolv.9.dylib $out/lib/libresolv.dylib
+
+    otool -L $out/lib/libresolv.dylib
   '';
 
   meta = with stdenv.lib; {

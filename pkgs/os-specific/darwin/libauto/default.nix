@@ -73,7 +73,7 @@ stdenv.mkDerivation rec {
     c++ -I. -O3 -c ZoneCompaction.cpp
     c++ -I. -O3 -c BlockRef.cpp
 
-    c++ --stdlib=libc++ -dynamiclib -o libauto.dylib *.o
+    c++ -Wl,-no_dtrace_dof --stdlib=libc++ -dynamiclib -o libauto.dylib *.o
   '';
 
   installPhase = ''
