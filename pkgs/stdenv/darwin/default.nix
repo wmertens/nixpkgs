@@ -248,6 +248,7 @@ in rec {
 
     extraAttrs = {
       inherit platform bootstrapTools;
+      libc         = libSystemClean;
       shellPackage = pkgs.bash;
     };
 
