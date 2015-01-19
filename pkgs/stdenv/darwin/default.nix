@@ -154,7 +154,6 @@ in rec {
     allowedRequisites = [ bootstrapTools pkgs.libSystemBoot pkgs.libcxxBoot pkgs.libcxxabiBoot ];
   };
 
-  # Add xz to bootstrap tools
   # TODO: just bundle xz in the bootstrap tools next time around
   stage2 = with stage1; stageFun 2 {
     inherit (stdenv) cc;
@@ -167,6 +166,10 @@ in rec {
       (with stage1.pkgs; [ xz darwin.corefoundation icu ]);
   };
 
+  # These two have no dependencies (probably because they're impure, so we can keep reusing them)
+  dyldClean      = stage2.pkgs.darwin.dyld;
+  libSystemClean = stage2.pkgs.darwin.libSystem;
+
   # Add a new libSystem
   stage3 = with stage2; stageFun 3 {
     cc = import ../../build-support/clang-wrapper {
@@ -176,21 +179,19 @@ in rec {
       nativeTools  = true;
       nativePrefix = bootstrapTools;
       nativeLibc   = false;
-      libc         = pkgs.darwin.libSystem;
+      libc         = libSystemClean;
       shell        = "${bootstrapTools}/bin/bash";
       clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
     };
 
     extraBuildInputs = [ stage1.pkgs.xz pkgs.darwin.corefoundation ];
-    extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
+    extraPreHook     = "export LD_DYLD_PATH=${dyldClean}/lib/dyld";
 
     allowedRequisites =
       [ bootstrapTools ] ++
       (with stage1.pkgs; [ xz ]) ++
-      (with stage2.pkgs; [ darwin.libSystem libcxx libcxxabi darwin.dyld darwin.corefoundation icu ]);
+      (with stage2.pkgs; [ libSystemClean libcxx libcxxabi dyldClean darwin.corefoundation icu ]);
   };
-
-  #########################
 
   stage4 = with stage3; stageFun 4 rec {
     cc = import ../../build-support/clang-wrapper {
@@ -200,18 +201,18 @@ in rec {
       nativeTools  = true;
       nativePrefix = bootstrapTools;
       nativeLibc   = false;
-      libc         = stage2.pkgs.darwin.libSystem; # N.B: stage2, so we don't end up with duplicate libSystems floating around
+      libc         = libSystemClean;
       clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
     };
 
     shell            = "${pkgs.bash}/bin/bash";
     extraBuildInputs = [ stage1.pkgs.xz pkgs.darwin.corefoundation ];
-    extraPreHook     = "export LD_DYLD_PATH=${stage2.pkgs.darwin.dyld}/lib/dyld";
+    extraPreHook     = "export LD_DYLD_PATH=${dyldClean}/lib/dyld";
 
     allowedRequisites =
       [ bootstrapTools ] ++
       (with stage1.pkgs; [ xz ]) ++
-      (with stage2.pkgs; [ darwin.libSystem darwin.dyld libcxx libcxxabi ]) ++
+      (with stage2.pkgs; [ libSystemClean dyldClean libcxx libcxxabi ]) ++
       (with stage3.pkgs; [ libcxx libcxxabi darwin.dyld darwin.corefoundation icu bash ]);
   };
 
@@ -224,7 +225,7 @@ in rec {
 
     preHook = ''
       ${commonPreHook}
-      export LD_DYLD_PATH=${stage2.pkgs.darwin.dyld}/lib/dyld
+      export LD_DYLD_PATH=${dyldClean}/lib/dyld
     '';
 
     __stdenvImpureHostDeps = binShClosure ++ libSystemClosure;
@@ -240,7 +241,7 @@ in rec {
       inherit (stage3.pkgs) libcxx libcxxabi;
       inherit (pkgs) coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
-      libc = stage2.pkgs.darwin.libSystem;
+      libc = libSystemClean;
     };
 
     extraBuildInputs = [ pkgs.darwin.corefoundation ];
@@ -250,8 +251,13 @@ in rec {
       shellPackage = pkgs.bash;
     };
 
-    # Way too large, but at least we have a list that we can start whittling down now
-    # allowedRequisites = with pkgs; (map (x: lib.traceVal x.outPath) stage4reqs);
+    allowedRequisites =
+      (with stage2.pkgs; [ darwin.dyld darwin.libSystem ]) ++
+      (with stage3.pkgs; [ bash libcxx libcxxabi ] ) ++
+      (with stage4.pkgs; [
+        coreutils findutils diffutils gnused gnugrep gawk gnutar gzip bzip2 gnumake bash patch xz
+        zlib ncurses binutils libffi libiconv pcre icu ed gmp llvmPackages.llvm llvmPackages.clang
+      ]);
 
     overrides = _: {
       clang = cc;
@@ -262,7 +268,6 @@ in rec {
         # TODO: pass llvm, clang (not just the wrappers) through
     };
   };
-
 
   stdenvDarwin = stage5;
 }
