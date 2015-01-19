@@ -443,6 +443,10 @@ let
 
   ### TOOLS
 
+  "3dfsb" = callPackage ../applications/misc/3dfsb {
+    glibc = glibc.override { debugSymbols = true; };
+  };
+
   abduco = callPackage ../tools/misc/abduco { };
 
   acct = callPackage ../tools/system/acct { };
@@ -1340,7 +1344,7 @@ let
 
   gnupg = gnupg20;
 
-  gnuplot = callPackage ../tools/graphics/gnuplot { };
+  gnuplot = callPackage ../tools/graphics/gnuplot { qt = qt5; };
 
   gnuplot_qt = gnuplot.override { withQt = true; };
 
@@ -1497,6 +1501,8 @@ let
   hping = callPackage ../tools/networking/hping { };
 
   httpie = callPackage ../tools/networking/httpie { };
+
+  httping = callPackage ../tools/networking/httping {};
 
   httpfs2 = callPackage ../tools/filesystems/httpfs { };
 
@@ -5415,7 +5421,8 @@ let
     installLocales = config.glibc.locales or false;
   };
 
-  glibcLocales = callPackage ../development/libraries/glibc/locales.nix { };
+  # Not supported on Darwin
+  glibcLocales = if (! stdenv.isDarwin) then (callPackage ../development/libraries/glibc/locales.nix { }) else null;
 
   glibcInfo = callPackage ../development/libraries/glibc/info.nix { };
 
@@ -6956,6 +6963,8 @@ let
   SDL_net = callPackage ../development/libraries/SDL_net { };
 
   SDL_sound = callPackage ../development/libraries/SDL_sound { };
+
+  SDL_stretch= callPackage ../development/libraries/SDL_stretch { };
 
   SDL_ttf = callPackage ../development/libraries/SDL_ttf { };
 
@@ -11018,8 +11027,8 @@ let
 
   stp = callPackage ../applications/science/logic/stp {};
 
+  stumpwmContrib = callPackage ../applications/window-managers/stumpwm/contrib.nix { };
   stumpwm = callPackage ../applications/window-managers/stumpwm {
-    stumpwmContrib = callPackage ../applications/window-managers/stumpwm/contrib.nix { };
     sbcl = sbcl_1_2_5;
     lispPackages = lispPackagesFor (wrapLisp sbcl_1_2_5);
   };
@@ -11306,6 +11315,11 @@ let
     virtualgl_i686 = if system == "x86_64-linux"
       then pkgsi686Linux.virtualgl
       else null;
+  };
+
+  # use if you intend to connect the nvidia card to a monitor
+  bumblebee_display = bumblebee.override {
+    useDisplayDevice = true;
   };
 
   vkeybd = callPackage ../applications/audio/vkeybd {

@@ -30,9 +30,6 @@ let
     crypt = null;
   };
 
-  # glibcLocales doesn't build on Darwin
-  localePath = optionalString (! stdenv.isDarwin) "${pkgs.glibcLocales}/lib/locale/locale-archive";
-
   pythonPackages = modules // import ./python-packages-generated.nix {
     inherit pkgs python;
     inherit (pkgs) stdenv fetchurl;
@@ -2107,8 +2104,9 @@ let
 
     propagatedBuildInputs = with self; [ self.six ];
 
+    buildInputs = [ pkgs.glibcLocales ];
+
     preBuild = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -2821,8 +2819,9 @@ let
       sha256 = "0qk8fv8cszzqpdi3wl9vvkym1jil502ycn6sic4jrxckw5s9jsfj";
     };
 
+    buildInputs = [ pkgs.glibcLocales ];
+
     preBuild = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -4066,8 +4065,9 @@ let
       md5 = "92978492871342ad64e8ae0ccfcf200c";
     };
 
+    buildInputs = [ pkgs.glibcLocales ];
+
     preConfigure = ''
-      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -4431,6 +4431,34 @@ let
     };
   });
 
+  fusepy = buildPythonPackage rec {
+    name = "fusepy-2.0.2";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/f/fusepy/${name}.tar.gz";
+      sha256 = "1z0va3z1hzjw167skl21k9dsklbmr46k66j80qadibjc8vajjnda";
+    };
+
+    propagatedBuildInputs = [ pkgs.fuse ];
+
+    patchPhase = ''
+      substituteInPlace fuse.py --replace \
+        "find_library('fuse')" "'${pkgs.fuse}/lib/libfuse.so'"
+    '';
+
+    meta = with stdenv.lib; {
+      description = "Simple ctypes bindings for FUSE";
+      longDescription = ''
+        Python module that provides a simple interface to FUSE and MacFUSE.
+        It's just one file and is implemented using ctypes.
+      '';
+      homepage = http://github.com/terencehonles/fusepy;
+      license = with licenses; isc;
+      platforms = with platforms; linux;
+      maintainers = with maintainers; [ nckx ];
+    };
+  };
+
   future = buildPythonPackage rec {
     version = "v0.14.3";
     name = "future-${version}";
@@ -4491,6 +4519,42 @@ let
     meta = {
       description = "A Python script for summarizing gcov data";
       license = "BSD";
+    };
+  };
+
+  gdrivefs = buildPythonPackage rec {
+    version = "0.14.2";
+    name = "gdrivefs-${version}";
+    disabled = !isPy27;
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/dsoprea/GDriveFS/archive/${version}.tar.gz";
+      sha256 = "0cfx9y1kqikrn3ngyl93k9f939hf1h7adqv0lpfri8m8glszhchz";
+    };
+
+    buildInputs = with self; [ gipc greenlet httplib2 six ];
+    propagatedBuildInputs = with self; [ dateutil fusepy google_api_python_client ];
+
+    patchPhase = ''
+      substituteInPlace gdrivefs/resources/requirements.txt \
+        --replace "==" ">="
+    '';
+
+    meta = with stdenv.lib; {
+      description = "Mount Google Drive as a local file system";
+      longDescription = ''
+        GDriveFS is a FUSE wrapper for Google Drive developed. Design goals:
+        - Thread for monitoring changes via "changes" functionality of API.
+        - Complete stat() implementation.
+        - Seamlessly work around duplicate-file allowances in Google Drive.
+        - Seamlessly manage file-type versatility in Google Drive
+          (Google Doc files do not have a particular format).
+        - Allow for the same file at multiple paths.
+      '';
+      homepage = https://github.com/dsoprea/GDriveFS;
+      license = with licenses; gpl2;
+      platforms = with platforms; linux;
+      maintainers = with maintainers; [ nckx ];
     };
   };
 
@@ -4619,6 +4683,32 @@ let
     };
   };
 
+  gipc = buildPythonPackage rec {
+    name = "gipc-0.5.0";
+    disabled = !isPy26 && !isPy27;
+
+    src = pkgs.fetchurl {
+      url = "http://pypi.python.org/packages/source/g/gipc/${name}.zip";
+      sha256 = "08c35xzv7nr12d9xwlywlbyzzz2igy0yy6y52q2nrkmh5d4slbpc";
+    };
+
+    propagatedBuildInputs = with self; [ gevent ];
+
+    meta = with stdenv.lib; {
+      description = "gevent-cooperative child processes and IPC";
+      longDescription = ''
+        Usage of Python's multiprocessing package in a gevent-powered
+        application may raise problems and most likely breaks the application
+        in various subtle ways. gipc (pronunciation "gipsy") is developed with
+        the motivation to solve many of these issues transparently. With gipc,
+        multiprocessing. Process-based child processes can safely be created
+        anywhere within your gevent-powered application.
+      '';
+      homepage = http://gehrcke.de/gipc;
+      license = with licenses; mit;
+      maintainers = with maintainers; [ nckx ];
+    };
+  };
 
   glance = buildPythonPackage rec {
     name = "glance-0.1.7";
@@ -4714,7 +4804,7 @@ let
     };
   };
 
-   google_apputils = buildPythonPackage rec {
+  google_apputils = buildPythonPackage rec {
     name = "google-apputils-0.4.0";
     disabled = isPy3k;
 
@@ -4833,11 +4923,10 @@ let
     };
 
     preBuild = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
-    buildInputs = with self; [ six ];
+    buildInputs = with self; [ six pkgs.glibcLocales ];
 
     meta = with stdenv.lib; {
       description = "Library collecting some useful snippets";
@@ -5766,7 +5855,6 @@ let
     doCheck = false;
 
     preBuild = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -5778,7 +5866,7 @@ let
     '';
 
     buildInputs = with self; [
-      pkgs.libjpeg pkgs.freetype pkgs.zlib
+      pkgs.libjpeg pkgs.freetype pkgs.zlib pkgs.glibcLocales
       pillow twitter pyfiglet requests arrow dateutil modules.readline pysocks
     ];
 
@@ -5965,9 +6053,10 @@ let
       md5 = "84a117c9a75b86842b0fa5f5c9c767f3";
     };
 
+    buildInputs = [ pkgs.glibcLocales ];
+
     # some files in tests dir include unicode names
     preBuild = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -6033,8 +6122,9 @@ let
       md5 = "9e17a181af72d04a291c9a960bc73d44";
     };
 
+    buildInputs = [ pkgs.glibcLocales ];
+
     preCheck = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -6965,13 +7055,14 @@ let
     };
 
     preConfigure = ''
-      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
       export LC_ALL="en_US.UTF-8"
     '';
 
     # Test data not provided
     #buildInputs = [nose mock];
     doCheck = false;
+
+    buildInputs = [ pkgs.glibcLocales ];
 
     propagatedBuildInputs = with self; [
       jinja2 pygments docutils pytz unidecode six dateutil feedgenerator
@@ -7265,10 +7356,11 @@ let
       url = "http://pypi.python.org/packages/source/P/PrettyTable/${name}.tar.bz2";
       sha1 = "ad346a18d92c1d95f2295397c7a8a4f489e48851";
     };
+        
+    buildInputs = [ pkgs.glibcLocales ];
 
     preCheck = ''
       export LANG="en_US.UTF-8"
-      export LOCALE_ARCHIVE=${localePath}
     '';
 
     meta = {
@@ -9291,7 +9383,7 @@ let
       md5 = "d9822ad0238e17b382a3c756ea94fe0d";
     };
 
-    buildInputs = with self; [ nose pillow pkgs.gfortran ];
+    buildInputs = with self; [ nose pillow pkgs.gfortran pkgs.glibcLocales ];
     propagatedBuildInputs = with self; [ numpy scipy pkgs.atlas ];
 
     buildPhase = ''
@@ -9300,7 +9392,7 @@ let
     '';
 
     checkPhase = ''
-      LOCALE_ARCHIVE=${localePath} LC_ALL="en_US.UTF-8" HOME=$TMPDIR ATLAS="" nosetests
+      LC_ALL="en_US.UTF-8" HOME=$TMPDIR ATLAS="" nosetests
     '';
 
     meta = {
@@ -9483,11 +9575,10 @@ let
       sha256 = "099sc7ajpp6hbgrx3c0bl6hhkz1mhnr0ahvc7s4i3f3b7q1zfn7l";
     };
 
-    buildInputs = with self; [ pkgs.geos ];
+    buildInputs = with self; [ pkgs.geos pkgs.glibcLocales ];
 
     preConfigure = ''
       export LANG="en_US.UTF-8";
-      export LOCALE_ARCHIVE=${localePath}
     '';
 
     patchPhase = ''
@@ -9543,9 +9634,10 @@ let
       sha256 = "0h1b9mx0snyyybj1x1ga69qssgjzkkgx2rw6nddjhyz1fknf8ywh";
     };
 
+    buildInputs = [ pkgs.glibcLocales ];
+
     preCheck = ''
       export LANG="en_US.UTF-8"
-      export LOCALE_ARCHIVE=${localePath}
     '';
 
     meta = with stdenv.lib; {
@@ -9608,10 +9700,9 @@ let
 
     preCheck = ''
       export LANG="en_US.UTF-8"
-      export LOCALE_ARCHIVE=${localePath}
     '';
 
-    buildInputs = with self; [ pytest py mock ];
+    buildInputs = with self; [ pytest py mock pkgs.glibcLocales ];
 
     meta = with stdenv.lib; {
       maintainers = [ maintainers.iElectric ];
@@ -10124,7 +10215,6 @@ let
     version = "1.2.8";
 
     preBuild = ''
-      export LOCALE_ARCHIVE=${localePath}
       export LC_ALL="en_US.UTF-8"
     '';
 
@@ -10137,7 +10227,7 @@ let
       sha256 = "0pgi9xg00wcw0m1pv5qp7jv53q38yffcmkf2fj1zlfi2b9c3njid";
     };
 
-    buildInputs = with self; [ nose ];
+    buildInputs = with self; [ nose pkgs.glibcLocales ];
 
     propagatedBuildInputs = with self; [ six mock ];
 
