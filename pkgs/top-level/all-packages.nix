@@ -972,6 +972,8 @@ let
 
   dar = callPackage ../tools/archivers/dar { };
 
+  darkstat = callPackage ../tools/networking/darkstat { };
+
   davfs2 = callPackage ../tools/filesystems/davfs2 { };
 
   dbench = callPackage ../development/tools/misc/dbench { };
@@ -1628,6 +1630,8 @@ let
 
   netperf = callPackage ../applications/networking/netperf { };
 
+  netsniff-ng = callPackage ../tools/networking/netsniff-ng { };
+
   ninka = callPackage ../development/tools/misc/ninka { };
 
   nodejs = callPackage ../development/web/nodejs { };
@@ -2257,6 +2261,8 @@ let
     inherit python libsexy pkgconfig libxml2 pygtk pango gtk glib;
   };
 
+  pytrainer = callPackage ../applications/misc/pytrainer { };
+
   openmpi = callPackage ../development/libraries/openmpi { };
 
   qastools = callPackage ../tools/audio/qastools {
@@ -2800,6 +2806,8 @@ let
   xarchive = callPackage ../tools/archivers/xarchive { };
 
   xarchiver = callPackage ../tools/archivers/xarchiver { };
+
+  xbrightness = callPackage ../tools/X11/xbrightness { };
 
   xcruiser = callPackage ../applications/misc/xcruiser { };
 
@@ -4298,6 +4306,7 @@ let
   ruby_2_1_1 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.1.nix { });
   ruby_2_1_2 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.2.nix { });
   ruby_2_1_3 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.3.nix { });
+  ruby_2_2_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.2.0.nix { });
 
   # Ruby aliases
   ruby = ruby_1_9;
@@ -4305,6 +4314,7 @@ let
   ruby_1_9 = ruby_1_9_3;
   ruby_2_0 = ruby_2_0_0;
   ruby_2_1 = ruby_2_1_3;
+  ruby_2_2 = ruby_2_2_0;
 
   rubyLibs = recurseIntoAttrs (callPackage ../development/interpreters/ruby/libs.nix { });
 
@@ -4553,6 +4563,8 @@ let
   ctagsWrapped = import ../development/tools/misc/ctags/wrapped.nix {
     inherit pkgs ctags writeScriptBin;
   };
+
+  ctodo = callPackage ../applications/misc/ctodo { };
 
   cmake = callPackage ../development/tools/build-managers/cmake {
     inherit (darwin) ps; # This only gets forced if isDarwin
@@ -4860,6 +4872,8 @@ let
   slimerjs = callPackage ../development/tools/slimerjs {};
 
   sloccount = callPackage ../development/tools/misc/sloccount { };
+
+  sloc = callPackage ../development/tools/sloc { };
 
   smatch = callPackage ../development/tools/analysis/smatch {
     buildllvmsparse = false;
@@ -5827,6 +5841,8 @@ let
 
   libchop = callPackage ../development/libraries/libchop { };
 
+  libcli = callPackage ../development/libraries/libcli { };
+
   libcm = callPackage ../development/libraries/libcm { };
 
   inherit (gnome3) libcroco;
@@ -6639,6 +6655,8 @@ let
 
   openbabel = callPackage ../development/libraries/openbabel { };
 
+  openbr = callPackage ../development/libraries/openbr { };
+
   opencascade = callPackage ../development/libraries/opencascade { };
 
   opencascade_6_5 = callPackage ../development/libraries/opencascade/6.5.nix {
@@ -6882,6 +6900,8 @@ let
 
   readline63 = callPackage ../development/libraries/readline/6.3.nix { };
 
+  readosm = callPackage ../development/libraries/readosm { };
+
   librdf_raptor = callPackage ../development/libraries/librdf/raptor.nix { };
 
   librdf_raptor2 = callPackage ../development/libraries/librdf/raptor2.nix { };
@@ -7000,6 +7020,8 @@ let
   soundtouch = callPackage ../development/libraries/soundtouch {};
 
   spandsp = callPackage ../development/libraries/spandsp {};
+
+  spatialite_tools = callPackage ../development/libraries/spatialite-tools { };
 
   speechd = callPackage ../development/libraries/speechd { };
 
@@ -8078,6 +8100,8 @@ let
 
   acpitool = callPackage ../os-specific/linux/acpitool { };
 
+  alfred = callPackage ../os-specific/linux/batman-adv/alfred.nix { };
+
   alienfx = callPackage ../os-specific/linux/alienfx { };
 
   alsaLib = callPackage ../os-specific/linux/alsa-lib { };
@@ -9143,6 +9167,8 @@ let
   nafees = callPackage ../data/fonts/nafees { };
 
   oldstandard = callPackage ../data/fonts/oldstandard { };
+
+  open-dyslexic = callPackage ../data/fonts/open-dyslexic { };
 
   opensans-ttf = callPackage ../data/fonts/opensans-ttf { };
 
@@ -10245,6 +10271,11 @@ let
     inherit (pythonPackages) lxml;
   };
 
+  jumanji = callPackage ../applications/networking/browsers/jumanji {
+    webkitgtk = webkitgtk24x;
+    gtk = gtk3;
+  };
+
   jwm = callPackage ../applications/window-managers/jwm { };
 
   k3d = callPackage ../applications/graphics/k3d {
@@ -10948,6 +10979,10 @@ let
 
   st = callPackage ../applications/misc/st {
     conf = config.st.conf or null;
+  };
+
+  stag = callPackage ../applications/misc/stag {
+    curses = ncurses;
   };
 
   stella = callPackage ../misc/emulators/stella { };
@@ -11799,6 +11834,8 @@ let
 
   gltron = callPackage ../games/gltron { };
 
+  gnubg = callPackage ../games/gnubg { };
+
   gnuchess = callPackage ../games/gnuchess { };
 
   gnugo = callPackage ../games/gnugo { };
@@ -12335,8 +12372,6 @@ let
   };
 
   archimedes = callPackage ../applications/science/electronics/archimedes { };
-
-  biolib = callPackage ../development/libraries/science/biology/biolib { };
 
   emboss = callPackage ../applications/science/biology/emboss { };
 
