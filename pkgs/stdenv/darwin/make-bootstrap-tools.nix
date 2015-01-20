@@ -52,6 +52,7 @@ rec {
       cp ${bzip2}/bin/bzip2 $out/bin
       cp -d ${gnumake}/bin/* $out/bin
       cp -d ${patch}/bin/* $out/bin
+      cp -d ${xz}/bin/xz $out/bin
 
       # This used to be in-nixpkgs, but now is in the bundle
       # because I can't be bothered to make it partially static
@@ -79,6 +80,7 @@ rec {
       cp -d ${icu}/lib/libicu*.dylib $out/lib
       cp -d ${zlib}/lib/libz.*       $out/lib
       cp -d ${gmpxx}/lib/libgmp*.*   $out/lib
+      cp -d ${xz}/lib/liblzma*.*     $out/lib
 
       # Copy binutils.
       for i in as ld ar ranlib nm strip otool install_name_tool dsymutil; do
@@ -239,8 +241,11 @@ rec {
       awk --version
       grep --version
       clang --version
+      xz --version
 
-      curl -k https://google.com > /dev/null
+      # The grep will return a nonzero exit code if there is no match, and we want to assert that we have
+      # an SSL-capable curl
+      curl --version | grep SSL
 
       ${build}/in-nixpkgs/sh -c 'echo Hello World'
 
