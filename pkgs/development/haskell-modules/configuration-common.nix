@@ -134,6 +134,69 @@ self: super: {
 
   # tests don't compile for some odd reason
   jwt = dontCheck super.jwt;
+
+  # https://github.com/liamoc/wizards/issues/5
+  wizards = doJailbreak super.wizards;
+
+  # https://github.com/ekmett/trifecta/issues/41
+  trifecta = overrideCabal super.trifecta (drv: {
+    patches = [
+    (pkgs.fetchpatch {
+       url = "https://github.com/ekmett/trifecta/pull/40.patch";
+       sha256 = "0qwz83fp0karf6164jykdwsrafq08l6zsdmcdm83xnkcxabgplxv";
+    })];});
+
+  # https://github.com/NixOS/cabal2nix/issues/136
+  gio = overrideCabal (super.gio.override { glib = self.glib; }) (drv: { pkgconfigDepends = [pkgs.glib]; });
+  glade = overrideCabal super.gio (drv: { pkgconfigDepends = [pkgs.gtk2]; });
+  pango = super.pango.override { cairo = self.cairo; };
+
+  # https://github.com/jgm/zip-archive/issues/21
+  zip-archive = overrideCabal super.zip-archive (drv: { patchPhase = ''
+    sed -i -e 's|/usr/bin/zip|${pkgs.zip}/bin/zip|' "tests/"*.hs
+  ''; });
+
+  # Upstream notified by e-mail.
+  permutation = dontCheck super.permutation;
+
+  # Wants to call external processes that don't exist in our sandbox.
+  graceful = dontCheck super.graceful;
+
+  # https://github.com/jputcu/serialport/issues/25
+  serialport = dontCheck super.serialport;
+
+  # https://github.com/kazu-yamamoto/simple-sendfile/issues/17
+  simple-sendfile = dontCheck super.simple-sendfile;
+
+  # Fails no apparent reason. Upstream has been notified by e-mail.
+  assertions = dontCheck super.assertions;
+
+  # https://github.com/vincenthz/tasty-kat/issues/1
+  tasty-kat = dontCheck super.tasty-kat;
+
+  # These packages try to execute non-existent external programs.
+  filestore = dontCheck super.filestore;
+  HList = dontCheck super.HList;
+  memcached-binary = dontCheck super.memcached-binary;
+  postgresql-simple = dontCheck super.postgresql-simple;
+  snowball = dontCheck super.snowball;
+  xmlgen = dontCheck super.xmlgen;
+
+  # Tries to access the network.
+  js-jquery = dontCheck super.js-jquery;
+
+  # https://github.com/NICTA/digit/issues/3
+  digit = dontCheck super.digit;
+
+  # Fails for non-obvious reasons while attempting to use doctest.
+  search = dontCheck super.search;
+
+  # https://github.com/ekmett/structures/issues/3
+  structures = dontCheck super.structures;
+
+  # Tries to mess with extended POSIX attributes, but can't in our chroot environment.
+  xattr = dontCheck super.xattr;
+
 }
 // {
   # Not on Hackage yet.
@@ -142,8 +205,8 @@ self: super: {
     version = "2.0";
     src = pkgs.fetchgit {
       url = "http://github.com/NixOS/cabal2nix.git";
-      sha256 = "8e1943affa70bf664d6b306f6331bad9332ca74816078f298d4acff0921c8520";
-      rev = "a5db30dbd55d7b4ec5df8fa116083b786bcf81c4";
+      sha256 = "fab9409a774d17ad2d723dd58395d029109de151c9773f37524b8502374a78f3";
+      rev = "0db08c71de87823fb2c2782b039bcad7acf6096c";
     };
     isLibrary = false;
     isExecutable = true;
