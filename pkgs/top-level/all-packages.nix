@@ -3507,6 +3507,8 @@ let
         jdk = openjdkBootstrap;
       }) // { outputs = [ "out" ]; };
 
+  openjdk8 = callPackage ../development/compilers/openjdk/openjdk8.nix { } // { outputs = [ "out" ]; };
+
   # FIXME: Need a way to set per-output meta attributes.
   openjre = (lib.setName "openjre-${lib.getVersion pkgs.openjdk.jre}" (lib.addMetaAttrs
     { description = "The open-source Java Runtime Environment"; }
@@ -3568,23 +3570,23 @@ let
 
   jikes = callPackage ../development/compilers/jikes { };
 
-  julia021 = callPackage ../development/compilers/julia/0.2.1.nix {
+  julia02 = callPackage ../development/compilers/julia/0.2.nix {
     liblapack = liblapack.override {shared = true;};
     llvm = llvm_33;
     openblas = openblas_0_2_2;
     suitesparse = suitesparse_4_2;
   };
 
-  julia035 = let
+  julia03 = let
     liblapack = liblapack_3_5_0.override {shared = true;};
-  in callPackage ../development/compilers/julia/0.3.5.nix {
+  in callPackage ../development/compilers/julia/0.3.nix {
     inherit liblapack;
     suitesparse = suitesparse_4_2.override {
       inherit liblapack;
     };
     llvm = llvm_33;
   };
-  julia = julia035;
+  julia = julia03;
 
   lazarus = callPackage ../development/compilers/fpc/lazarus.nix {
     fpc = fpc;
@@ -9944,6 +9946,8 @@ let
   };
 
   fuze = callPackage ../applications/networking/instant-messengers/fuze {};
+
+  game-music-emu = callPackage ../applications/audio/game-music-emu { };
 
   gcolor2 = callPackage ../applications/graphics/gcolor2 { };
 
