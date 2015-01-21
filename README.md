@@ -14,7 +14,7 @@ manager.
 
 Communication:
 
-* [Mailing list](https://lists.science.uu.nl/mailman/listinfo/nix-dev)
+* [Mailing list](http://lists.science.uu.nl/mailman/listinfo/nix-dev)
 * [IRC - #nixos on freenode.net](irc://irc.freenode.net/#nixos)
 
 # Darwin stdenv notes
