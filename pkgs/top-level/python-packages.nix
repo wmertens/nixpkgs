@@ -7167,6 +7167,29 @@ let
     };
   };
 
+  pgcli = buildPythonPackage rec {
+    name = "pgcli-${version}";
+    version = "0.13.0";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/pgcli/${name}.tar.gz";
+      sha256 = "15qw4as8ryl4qv3p3diq31xwa7kygrnsx4ixlfijgvfwr2pcmgxm";
+    };
+
+    propagatedBuildInputs = with self; [ click jedi prompt_toolkit psycopg2 pygments sqlparse ];
+
+    meta = with stdenv.lib; {
+      description = "Command-line interface for PostgreSQL";
+      longDescription = ''
+        Rich command-line interface for PostgreSQL with auto-completion and
+        syntax highlighting.
+      '';
+      homepage = http://pgcli.com/about;
+      license = with licenses; [ bsd3 ];
+      maintainers = with maintainers; [ nckx ];
+    };
+  };
+
   pip = buildPythonPackage rec {
     version = "1.5.6";
     name = "pip-${version}";
@@ -7368,6 +7391,32 @@ let
   };
 
 
+  prompt_toolkit = buildPythonPackage rec {
+    name = "prompt_toolkit-${version}";
+    version = "0.26";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/prompt_toolkit/${name}.tar.gz";
+      sha256 = "1rd9gy3bcwp08agw5hiqckhaxbsz1i1kgkhjqw6vwhjdfgdjiq9l";
+    };
+
+    buildInputs = with self; [ jedi ipython pygments ];
+    propagatedBuildInputs = with self; [ docopt six wcwidth ];
+
+    meta = with stdenv.lib; {
+      description = "Python library for building powerful interactive command lines";
+      longDescription = ''
+        prompt_toolkit could be a replacement for readline, but it can be
+        much more than that. It is cross-platform, everything that you build
+        with it should run fine on both Unix and Windows systems. Also ships
+        with a nice interactive Python shell (called ptpython) built on top.
+      '';
+      homepage = https://github.com/jonathanslenders/python-prompt-toolkit;
+      license = with licenses; [ bsd3 ];
+      maintainers = with maintainers; [ nckx ];
+    };
+  };
+
   protobuf = buildPythonPackage rec {
     inherit (pkgs.protobuf) name src;
 
@@ -7402,7 +7451,7 @@ let
 
 
   psycopg2 = buildPythonPackage rec {
-    name = "psycopg2-2.5.3";
+    name = "psycopg2-2.5.4";
     disabled = isPyPy;
 
     # error: invalid command 'test'
@@ -7410,7 +7459,7 @@ let
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/psycopg2/${name}.tar.gz";
-      sha256 = "02h33barxigsczpympnwa0yvw9hgdv8d63bxm5x251ri26xz6b9s";
+      sha256 = "07ivzl7bq8bjcq5n90w4bsl29gjfm5l8yamw0paxh25si8r3zfi4";
     };
 
     propagatedBuildInputs = with self; [ pkgs.postgresql ];
@@ -7458,6 +7507,8 @@ let
     };
 
     propagatedBuildInputs = with self; [ requests audioread ];
+
+    patches = [ ../development/python-modules/pyacoustid-py3.patch ];
 
     postPatch = ''
       sed -i \
@@ -8325,12 +8376,12 @@ let
   });
 
   ldap = buildPythonPackage rec {
-    name = "ldap-2.4.15";
+    name = "ldap-2.4.19";
     disabled = isPy3k;
 
     src = pkgs.fetchurl {
       url = "http://pypi.python.org/packages/source/p/python-ldap/python-${name}.tar.gz";
-      sha256 = "0w0nn5yj0nbbkvpbqgfni56v7sjx6jf6s6zvp9zmahyrvqrsrg1h";
+      sha256 = "0j5hzaar4d0vhnrlpmkczgwm7ci2wibr99a7zx04xddzrhxdpz82";
     };
 
     NIX_CFLAGS_COMPILE = "-I${pkgs.cyrus_sasl}/include/sasl";
@@ -10144,6 +10195,26 @@ let
   };
 
 
+  sqlparse = buildPythonPackage rec {
+    name = "sqlparse-${version}";
+    version = "0.1.14";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/s/sqlparse/${name}.tar.gz";
+      sha256 = "1w6shyh7n139cp636sym0frdyiwybw1m7gd2l4s3d7xbaccf6qg5";
+    };
+
+    meta = with stdenv.lib; {
+      description = "Non-validating SQL parser for Python";
+      longDescription = ''
+        Provides support for parsing, splitting and formatting SQL statements.
+      '';
+      homepage = https://github.com/andialbrecht/sqlparse;
+      license = with licenses; [ bsd3 ];
+      maintainers = with maintainers; [ nckx ];
+    };
+  };
+
   python_statsd = buildPythonPackage rec {
     name = "python-statsd-${version}";
     version = "1.6.0";
@@ -11001,6 +11072,32 @@ let
     };
   };
 
+
+  wcwidth = buildPythonPackage rec {
+    name = "wcwidth-${version}";
+    version = "0.1.4";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/w/wcwidth/${name}.tar.gz";
+      sha256 = "0awx28xi938nv55qlmai3b5ddqd1w5c294gy95xh4xsx0hik2vch";
+    };
+
+    # Checks fail due to missing tox.ini file:
+    doCheck = false;
+
+    meta = with stdenv.lib; {
+      description = "Measures number of Terminal column cells of wide-character codes";
+      longDescription = ''
+        This API is mainly for Terminal Emulator implementors -- any Python
+        program that attempts to determine the printable width of a string on
+        a Terminal. It is implemented in python (no C library calls) and has
+        no 3rd-party dependencies.
+      '';
+      homepage = https://github.com/jquast/wcwidth;
+      license = with licenses; [ mit ];
+      maintainers = with maintainers; [ nckx ];
+    };
+  };
 
   webob = buildPythonPackage rec {
     version = "1.4";

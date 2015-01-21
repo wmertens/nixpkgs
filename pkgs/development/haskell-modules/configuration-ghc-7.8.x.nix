@@ -52,6 +52,15 @@ self: super: {
   # Depends on time == 0.1.5, which we don't have.
   HStringTemplate_0_8 = dontDistribute super.HStringTemplate_0_8;
 
+  # This is part of bytestring in our compiler.
+  bytestring-builder = dontHaddock super.bytestring-builder;
+
+  # Won't compile against mtl 2.1.x.
+  imports = super.imports.override { mtl = self.mtl_2_2_1; };
+
+  # Newer versions require mtl 2.2.x.
+  mtl-prelude = self.mtl-prelude_1_0_2;
+
 }
 
 // # packages relating to amazonka
