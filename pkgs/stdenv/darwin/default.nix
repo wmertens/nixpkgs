@@ -200,7 +200,8 @@ in rec {
 
     allowedRequisites =
       [ bootstrapTools ] ++
-      (with stage1.pkgs; [ xz darwin.dyld darwin.libSystem libcxx libcxxabi darwin.corefoundation icu ]);
+      (with pkgs; [ xz libcxx libcxxabi icu ]) ++
+      (with pkgs.darwin; [ dyld libSystem corefoundation ]);
 
     overrides = persistent1;
   };
@@ -235,9 +236,30 @@ in rec {
     extraBuildInputs = [ pkgs.xz pkgs.darwin.corefoundation ];
     extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
 
-    allowedRequisites = null;
+    allowedRequisites =
+      [ bootstrapTools ] ++
+      (with pkgs; [ icu bash libcxx libcxxabi ]) ++
+      (with pkgs.darwin; [ dyld libSystem ]);
 
     overrides = persistent2;
+  };
+
+  persistent3 = orig: with stage3.pkgs; {
+    inherit
+      pcre libiconv gnugrep xz ncurses zlib libxml2 libffi llvm libedit
+      gnused gzip ed patch gmp coreutils diffutils icu libsigsegv bzip2
+      gnutar gawk gnumake findutils cpio gnum4 bash perl bison expat
+      curl gettext sharutils libarchive cmake libcxx libcxxabi openssl;
+
+    llvmPackages = orig.llvmPackages // {
+      inherit (llvmPackages) llvm clang;
+    };
+
+    darwin = orig.darwin // {
+      inherit (darwin)
+        dyld libSystem xnu configd libdispatch libclosure launchd libobjc
+        cctools corefoundation ps;
+    };
   };
 
   stage4 = with stage3; import ../generic rec {
@@ -261,8 +283,7 @@ in rec {
       inherit stdenv shell;
       nativeTools = false;
       nativeLibc  = false;
-      inherit (stage2.pkgs) libcxx libcxxabi;
-      inherit (pkgs) coreutils binutils;
+      inherit (pkgs) libcxx libcxxabi coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
       libc = pkgs.darwin.libSystem;
     };
@@ -275,21 +296,17 @@ in rec {
       shellPackage = pkgs.bash;
     };
 
-    allowedRequisites = null;
-/*      (with stage1.pkgs; [ darwin.dyld darwin.libSystem ]) ++
-      (with stage2.pkgs; [ bash libcxx libcxxabi ] ) ++
-      (with stage3.pkgs; [
-        coreutils findutils diffutils gnused gnugrep gawk gnutar gzip bzip2 gnumake bash patch xz
-        zlib ncurses binutils libffi libiconv pcre icu ed gmp llvmPackages.llvm llvmPackages.clang
-      ]);
-*/
-    overrides = _: {
+    allowedRequisites = (with pkgs; [
+      xz libcxx libcxxabi icu gmp gnumake findutils bzip2 llvm zlib libffi
+      coreutils ed diffutils gnutar gzip ncurses libiconv gnused bash gawk
+      gnugrep llvmPackages.clang patch pcre
+    ]) ++ (with pkgs.darwin; [
+      dyld libSystem corefoundation cctools
+    ]);
+
+    overrides = orig: persistent3 orig // {
       clang = cc;
       inherit cc;
-      inherit (pkgs)
-        gzip bzip2 xz bash binutils coreutils diffutils findutils gawk
-        glibc gnumake gnused gnutar gnugrep gnupatch zlib;
-        # TODO: pass llvm, clang (not just the wrappers) through
     };
   };
 
