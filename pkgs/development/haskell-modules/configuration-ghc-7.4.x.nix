@@ -54,4 +54,13 @@ self: super: {
   # https://github.com/tibbe/unordered-containers/issues/96
   unordered-containers = dontCheck super.unordered-containers;
 
+  # The test suite depends on time >=1.4.0.2.
+  cookie = dontCheck super.cookie ;
+
+  # Work around bytestring >=0.10.2.0 requirement.
+  streaming-commons = addBuildDepend super.streaming-commons self.bytestring-builder;
+
+  # Choose appropriate flags for our version of 'bytestring'.
+  bytestring-builder = disableCabalFlag super.bytestring-builder "bytestring_has_builder";
+
 }

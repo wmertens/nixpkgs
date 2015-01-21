@@ -521,6 +521,8 @@ let
 
   attic = callPackage ../tools/backup/attic { };
 
+  avfs = callPackage ../tools/filesystems/avfs { };
+
   awscli = callPackage ../tools/admin/awscli { };
 
   ec2_api_tools = callPackage ../tools/virtualization/ec2-api-tools { };
@@ -3772,6 +3774,8 @@ let
 
     js_of_ocaml = callPackage ../development/tools/ocaml/js_of_ocaml { };
 
+    jsonm = callPackage ../development/ocaml-modules/jsonm { };
+
     lablgl = callPackage ../development/ocaml-modules/lablgl { };
 
     lablgtk_2_14 = callPackage ../development/ocaml-modules/lablgtk/2.14.0.nix {
@@ -3971,7 +3975,7 @@ let
     ocaml = ocaml_3_08_0;
   };
 
-  rustc       = callPackage ../development/compilers/rustc/0.12.nix {};
+  rustc       = callPackage ../development/compilers/rustc/1.0.0-alpha.nix {};
   rustcMaster = callPackage ../development/compilers/rustc/head.nix {};
 
 
@@ -4816,7 +4820,10 @@ let
 
   premake = premake4;
 
-  racerRust = callPackage ../development/tools/rust/racer { rustc = rustcMaster; };
+  racerRust = callPackage ../development/tools/rust/racer {
+    rustc = rustcMaster;
+    cargo = cargoSnapshot;
+  };
 
   radare = callPackage ../development/tools/analysis/radare {
     inherit (gnome) vte;
