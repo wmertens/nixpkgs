@@ -34,6 +34,7 @@
 , testDepends ? []
 , testTarget ? ""
 , broken ? false
+, preUnpack ? "", postUnpack ? ""
 , patches ? [], patchPhase ? "", prePatch ? "", postPatch ? ""
 , preConfigure ? "", postConfigure ? ""
 , preBuild ? "", postBuild ? ""
@@ -275,6 +276,8 @@ stdenv.mkDerivation ({
          ;
 
 }
+// optionalAttrs (preUnpack != "")      { inherit preUnpack; }
+// optionalAttrs (postUnpack != "")     { inherit postUnpack; }
 // optionalAttrs (configureFlags != []) { inherit configureFlags; }
 // optionalAttrs (patches != [])        { inherit patches; }
 // optionalAttrs (patchPhase != "")     { inherit patchPhase; }
@@ -284,11 +287,12 @@ stdenv.mkDerivation ({
 // optionalAttrs (postConfigure != "")  { inherit postConfigure; }
 // optionalAttrs (preBuild != "")       { inherit preBuild; }
 // optionalAttrs (postBuild != "")      { inherit postBuild; }
-// optionalAttrs (preInstall != "")     { inherit preInstall; }
-// optionalAttrs (postInstall != "")    { inherit postInstall; }
+// optionalAttrs (doCheck)              { inherit doCheck; }
 // optionalAttrs (checkPhase != "")     { inherit checkPhase; }
 // optionalAttrs (preCheck != "")       { inherit preCheck; }
 // optionalAttrs (postCheck != "")      { inherit postCheck; }
+// optionalAttrs (preInstall != "")     { inherit preInstall; }
+// optionalAttrs (postInstall != "")    { inherit postInstall; }
 // optionalAttrs (preFixup != "")       { inherit preFixup; }
 // optionalAttrs (postFixup != "")      { inherit postFixup; }
 )
