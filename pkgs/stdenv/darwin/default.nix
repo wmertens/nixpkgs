@@ -57,30 +57,41 @@ in rec {
     builder = bootstrapFiles.sh; # Not a filename! Attribute 'sh' on bootstrapFiles
     args    = [ ./unpack-bootstrap-tools.sh ];
 
-    mkdir = bootstrapFiles.mkdir;
-    bzip2 = bootstrapFiles.bzip2;
-    cpio  = bootstrapFiles.cpio;
-
-    # What are these doing?
-    langC  = true;
-    langCC = true;
+    inherit (bootstrapFiles) mkdir bzip2 cpio;
 
     __impureHostDeps  = binShClosure ++ libSystemClosure;
   };
 
-  stageFun = step: {cc, shell ? "${bootstrapTools}/bin/sh", overrides ? (pkgs: {}), extraPreHook ? "", extraBuildInputs ? [], allowedRequisites ? null}:
+  stageFun = step: last: {shell             ? "${bootstrapTools}/bin/sh",
+                          overrides         ? (pkgs: {}),
+                          extraPreHook      ? "export LD_DYLD_PATH=${last.pkgs.darwin.dyld}/lib/dyld",
+                          extraBuildInputs  ? with last.pkgs; [ xz darwin.corefoundation ],
+                          allowedRequisites ? null}:
     let
       thisStdenv = import ../generic {
-        inherit system config cc shell extraBuildInputs allowedRequisites;
-        name    = "stdenv-darwin-boot-${toString step}";
-        preHook =
-          ''
-            # Don't patch #!/interpreter because it leads to retained
-            # dependencies on the bootstrapTools in the final stdenv.
-            dontPatchShebangs=1
-            ${commonPreHook}
-            ${extraPreHook}
-          '';
+        inherit system config shell extraBuildInputs allowedRequisites;
+
+        name = "stdenv-darwin-boot-${toString step}";
+
+        cc = if isNull last then "/no-such-path" else import ../../build-support/clang-wrapper {
+          inherit shell;
+          inherit (last) stdenv;
+          inherit (last.pkgs) libcxx libcxxabi;
+
+          nativeTools  = true;
+          nativePrefix = bootstrapTools;
+          nativeLibc   = false;
+          libc         = last.pkgs.darwin.libSystem;
+          clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
+        };
+
+        preHook = ''
+          # Don't patch #!/interpreter because it leads to retained
+          # dependencies on the bootstrapTools in the final stdenv.
+          dontPatchShebangs=1
+          ${commonPreHook}
+          ${extraPreHook}
+        '';
         initialPath  = [ bootstrapTools ];
         fetchurlBoot = import ../../build-support/fetchurl {
           stdenv = stage0.stdenv;
@@ -101,10 +112,7 @@ in rec {
       };
     in { stdenv = thisStdenv; pkgs = thisPkgs; };
 
-  stage0 = stageFun 0 {
-    cc = "/no-such-path";
-
-    # TODO: just make better bootstrap tools next time around!
+  stage0 = stageFun 0 null {
     overrides = orig: with stage0; {
       darwin = orig.darwin // {
         libSystem = stdenv.mkDerivation {
@@ -142,31 +150,24 @@ in rec {
         '';
       };
     };
+
+    extraPreHook     = "";
+    extraBuildInputs = [];
   };
 
-  persistent0 = { inherit (stage0.pkgs) xz; };
+  persistent0 = _: { inherit (stage0.pkgs) xz; };
 
-  stage1 = with stage0; stageFun 1 {
-    cc = import ../../build-support/clang-wrapper {
-      inherit (pkgs) libcxx libcxxabi;
-
-      nativeTools  = true;
-      nativePrefix = bootstrapTools;
-      nativeLibc   = false;
-      libc         = pkgs.darwin.libSystem;
-      stdenv       = stdenv;
-      shell        = "${bootstrapTools}/bin/bash";
-      clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
-    };
-
+  stage1 = with stage0; stageFun 1 stage0 {
     extraPreHook = ''
       export NIX_CFLAGS_COMPILE+=" -F${bootstrapTools}/Library/Frameworks"
       export LD_DYLD_PATH=${bootstrapTools}/lib/dyld
     '';
+    extraBuildInputs = [];
 
-    allowedRequisites = [ bootstrapTools pkgs.darwin.libSystem pkgs.libcxx pkgs.libcxxabi ];
+    allowedRequisites =
+      [ bootstrapTools ] ++ (with pkgs; [ libcxx libcxxabi ]) ++ [ pkgs.darwin.libSystem ];
 
-    overrides = _: persistent0;
+    overrides = persistent0;
   };
 
   persistent1 = orig: with stage1.pkgs; {
@@ -182,22 +183,7 @@ in rec {
     };
   };
 
-  stage2 = with stage1; stageFun 2 {
-    cc = import ../../build-support/clang-wrapper {
-      inherit stdenv;
-      inherit (pkgs) libcxx libcxxabi;
-
-      nativeTools  = true;
-      nativePrefix = bootstrapTools;
-      nativeLibc   = false;
-      libc         = pkgs.darwin.libSystem;
-      shell        = "${bootstrapTools}/bin/bash";
-      clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
-    };
-
-    extraBuildInputs = [ pkgs.xz pkgs.darwin.corefoundation ];
-    extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
-
+  stage2 = with stage1; stageFun 2 stage1 {
     allowedRequisites =
       [ bootstrapTools ] ++
       (with pkgs; [ xz libcxx libcxxabi icu ]) ++
@@ -209,8 +195,8 @@ in rec {
   persistent2 = orig: with stage2.pkgs; {
     inherit
       patchutils m4 scons flex perl bison unifdef unzip openssl python
-      gettext sharutils libarchive pkg-config groff bash
-      openssh sqlite sed serf openldap db cyrus-sasl expat apr-util subversion
+      gettext sharutils libarchive pkg-config groff bash subversion
+      openssh sqlite sed serf openldap db cyrus-sasl expat apr-util
       findfreetype libssh curl cmake autoconf automake libtool cpio
       libcxx libcxxabi;
 
@@ -220,21 +206,8 @@ in rec {
     };
   };
 
-  stage3 = with stage2; stageFun 3 rec {
-    cc = import ../../build-support/clang-wrapper {
-      inherit stdenv shell;
-      inherit (pkgs) libcxx libcxxabi;
-
-      nativeTools  = true;
-      nativePrefix = bootstrapTools;
-      nativeLibc   = false;
-      libc         = pkgs.darwin.libSystem;
-      clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
-    };
-
-    shell            = "${pkgs.bash}/bin/bash";
-    extraBuildInputs = [ pkgs.xz pkgs.darwin.corefoundation ];
-    extraPreHook     = "export LD_DYLD_PATH=${pkgs.darwin.dyld}/lib/dyld";
+  stage3 = with stage2; stageFun 3 stage2 rec {
+    shell = "${pkgs.bash}/bin/bash";
 
     allowedRequisites =
       [ bootstrapTools ] ++
