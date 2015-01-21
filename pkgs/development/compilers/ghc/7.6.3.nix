@@ -40,9 +40,14 @@ in stdenv.mkDerivation rec {
 
   '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
     export NIX_LDFLAGS="$NIX_LDFLAGS -rpath $out/lib/ghc-${version}"
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
+    find . -name '*.hs'  | xargs sed -i -e 's|ASSERT (|ASSERT(|' -e 's|ASSERT2 (|ASSERT2(|' -e 's|WARN (|WARN(|'
+    find . -name '*.lhs' | xargs sed -i -e 's|ASSERT (|ASSERT(|' -e 's|ASSERT2 (|ASSERT2(|' -e 's|WARN (|WARN(|'
+    patch -p0 < ${./fix-7.6.3-clang.patch}
   '';
 
-  configureFlags = "--with-gcc=${stdenv.cc}/bin/gcc";
+  configureFlags = if stdenv.isDarwin then "--with-gcc=${./gcc-clang-wrapper.sh}"
+                                      else "--with-gcc=${stdenv.cc}/bin/gcc";
 
   postInstall = ''
     # ghci uses mmap with rwx protection at it implements dynamic
