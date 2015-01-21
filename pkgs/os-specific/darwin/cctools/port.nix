@@ -1,5 +1,5 @@
 { stdenv, fetchurl, autoconf, automake, libtool
-, llvm, libcxx, clang, openssl, libuuid
+, llvm, libcxx, clang, openssl, libuuid, libobjc ? null
 }:
 
 let
@@ -19,7 +19,8 @@ let
 
     buildInputs = [ autoconf automake libtool openssl libuuid ] ++
       # Only need llvm and clang if the stdenv isn't already clang-based (TODO: just make a stdenv.cc.isClang)
-      stdenv.lib.optionals (!stdenv.isDarwin) [ llvm clang ];
+      stdenv.lib.optionals (!stdenv.isDarwin) [ llvm clang ] ++
+      stdenv.lib.optional stdenv.isDarwin libobjc;
 
     patches = [ ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch ];
 
@@ -49,13 +50,6 @@ let
       #  include_next "unistd.h"
       #endif
       EOF
-    '' + stdenv.lib.optionalString stdenv.isDarwin ''
-      substituteInPlace cctools/otool/Makefile.am \
-        --replace " -lobjc" ""
-
-      substituteInPlace cctools/otool/print_objc.c \
-        --replace "objc_getClass(objc_class.name)" "0" \
-        --replace "objc_getMetaClass(objc_class.name)" "0"
     '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
       sed -i -e 's|clang++|& -I${libcxx}/include/c++/v1|' cctools/autogen.sh
     '';

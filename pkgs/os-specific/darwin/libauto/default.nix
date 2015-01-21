@@ -9,8 +9,6 @@ stdenv.mkDerivation rec {
     sha256 = "17z27yq5d7zfkwr49r7f0vn9pxvj95884sd2k6lq6rfaz9gxqhy3";
   };
 
-  phases = [ "unpackPhase" "buildPhase" "installPhase" ];
-
   buildPhase = ''
     cp ${./auto_dtrace.h} ./auto_dtrace.h
 
@@ -73,7 +71,7 @@ stdenv.mkDerivation rec {
     c++ -I. -O3 -c ZoneCompaction.cpp
     c++ -I. -O3 -c BlockRef.cpp
 
-    c++ --stdlib=libc++ -dynamiclib -o libauto.dylib *.o
+    c++ -Wl,-no_dtrace_dof --stdlib=libc++ -dynamiclib -install_name $out/lib/libauto.dylib -o libauto.dylib *.o
   '';
 
   installPhase = ''
