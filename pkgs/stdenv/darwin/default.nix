@@ -85,10 +85,11 @@ in rec {
           clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
         };
 
-        preHook = ''
+        preHook = stage0.stdenv.lib.optionalString /*(shell == "${bootstrapTools}/bin/sh")*/ true ''
           # Don't patch #!/interpreter because it leads to retained
           # dependencies on the bootstrapTools in the final stdenv.
           dontPatchShebangs=1
+        '' + ''
           ${commonPreHook}
           ${extraPreHook}
         '';
@@ -219,10 +220,9 @@ in rec {
 
   persistent3 = orig: with stage3.pkgs; {
     inherit
-      pcre libiconv gnugrep xz ncurses zlib libxml2 libffi llvm libedit
-      gnused gzip ed patch gmp coreutils diffutils icu libsigsegv bzip2
-      gnutar gawk gnumake findutils cpio gnum4 bash perl bison expat
-      curl gettext sharutils libarchive cmake libcxx libcxxabi openssl;
+      gnumake gzip gnused bzip2 gnutar gawk ed xz patch libiconv bash
+      libcxxabi libcxx ncurses libffi zlib icu llvm gmp pcre gnugrep
+      coreutils findutils diffutils patchutils binutils;
 
     llvmPackages = orig.llvmPackages // {
       inherit (llvmPackages) llvm clang;
@@ -230,8 +230,7 @@ in rec {
 
     darwin = orig.darwin // {
       inherit (darwin)
-        dyld libSystem xnu configd libdispatch libclosure launchd libobjc
-        cctools corefoundation ps;
+        dyld libSystem cctools corefoundation;
     };
   };
 
