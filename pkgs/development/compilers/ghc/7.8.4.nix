@@ -9,14 +9,18 @@ stdenv.mkDerivation rec {
     sha256 = "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3";
   };
 
-  buildInputs = [ ghc perl gmp ncurses libiconv ];
+  buildInputs = [ ghc perl gmp ncurses ];
 
-  enableParallelBuilding = true;
+  propagatedBuildInputs = [ libiconv ];
 
   postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
-    wrapProgram $out/bin/haddock \
-      --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib:${stdenv.libc}/lib"
+    mkdir -p $out/nix-support
+    cat >$out/nix-support/setup-hook <<EOF
+      addToSearchPath DYLD_FALLBACK_LIBRARY_PATH "${libiconv}/lib"
+    EOF
   '';
+
+  enableParallelBuilding = true;
 
   buildMK = ''
     libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries="${gmp}/lib"

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl, ncurses, gmp}:
+{stdenv, fetchurl, perl, ncurses, gmp, libiconv, makeWrapper}:
 
 stdenv.mkDerivation rec {
   version = "7.4.2";
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
       }
     else throw "cannot bootstrap GHC on this platform";
 
-  buildInputs = [perl];
+  buildInputs = [perl makeWrapper];
 
   postUnpack =
     # Strip is harmful, see also below. It's important that this happens
@@ -50,7 +50,7 @@ stdenv.mkDerivation rec {
      '' +
     # On Linux, use patchelf to modify the executables so that they can
     # find editline/gmp.
-    (if stdenv.isLinux then ''
+    stdenv.lib.optionalString stdenv.isLinux ''
       find . -type f -perm +100 \
           -exec patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
           --set-rpath "${ncurses}/lib:${gmp}/lib" {} \;
@@ -59,7 +59,23 @@ stdenv.mkDerivation rec {
       for prog in ld ar gcc strip ranlib; do
         find . -name "setup-config" -exec sed -i "s@/usr/bin/$prog@$(type -p $prog)@g" {} \;
       done
-     '' else "");
+     '' + stdenv.lib.optionalString stdenv.isDarwin ''
+       # not enough room in the object files for the full path to libiconv :(
+       fix () {
+         install_name_tool -change /usr/lib/libiconv.2.dylib @executable_path/libiconv.dylib $1
+       }
+
+       ln -s ${libiconv}/lib/libiconv.dylib ghc-7.4.2/utils/ghc-pwd/dist-install/build/tmp
+       ln -s ${libiconv}/lib/libiconv.dylib ghc-7.4.2/ghc/stage2/build/tmp
+
+       for file in ghc-cabal ghc-pwd ghc-stage2 ghc-pkg hsc2hs; do
+         fix $(find . -type f -name $file)
+       done
+
+       for file in $(find . -name setup-config); do
+         substituteInPlace $file --replace /usr/bin/ranlib "$(type -P ranlib)"
+       done
+     '';
 
   configurePhase = ''
     ./configure --prefix=$out \
@@ -75,19 +91,29 @@ stdenv.mkDerivation rec {
   # calls install-strip ...
   buildPhase = "true";
 
-  postInstall =
-      ''
-        # Sanity check, can ghc create executables?
-        cd $TMP
-        mkdir test-ghc; cd test-ghc
-        cat > main.hs << EOF
-          module Main where
-          main = putStrLn "yes"
-        EOF
-        $out/bin/ghc --make main.hs
-        echo compilation ok
-        [ $(./main) == "yes" ]
-      '';
+  preInstall = ''
+    mkdir -p $out/lib/ghc-7.4.2
+    ln -s ${libiconv}/lib/libiconv.dylib $out/lib/ghc-7.4.2/libiconv.dylib
+    ln -s ${libiconv}/lib/libiconv.dylib utils/ghc-cabal/dist-install/build/tmp
+  '';
+
+  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
+    wrapProgram $out/bin/ghc \
+      --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib" \
+      --set NIX_LDFLAGS '"$NIX_LDFLAGS -L${libiconv}/lib -no_dtrace_dof"'
+  '' + ''
+    # Sanity check, can ghc create executables?
+    cd $TMP
+    mkdir test-ghc; cd test-ghc
+    cat > main.hs << EOF
+      {-# LANGUAGE TemplateHaskell #-}
+      module Main where
+      main = putStrLn \$([|"yes"|])
+    EOF
+    $out/bin/ghc --make main.hs
+    echo compilation ok
+    [ $(./main) == "yes" ]
+  '';
 
   meta.license = stdenv.lib.licenses.bsd3;
   meta.platforms = ["x86_64-linux" "i686-linux" "i686-darwin" "x86_64-darwin"];
