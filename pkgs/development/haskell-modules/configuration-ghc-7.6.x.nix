@@ -51,6 +51,16 @@ self: super: {
   # Haddock chokes on the prologue from the cabal file.
   ChasingBottoms = dontHaddock super.ChasingBottoms;
 
-  # wizards = doJailbreak super.wizards;
+  # Later versions require a newer version of bytestring than we have.
+  aeson = self.aeson_0_7_0_6;
+
+  # The test suite depends on time >=1.4.0.2.
+  cookie = dontCheck super.cookie ;
+
+  # Work around bytestring >=0.10.2.0 requirement.
+  streaming-commons = addBuildDepend super.streaming-commons self.bytestring-builder;
+
+  # Choose appropriate flags for our version of 'bytestring'.
+  bytestring-builder = disableCabalFlag super.bytestring-builder "bytestring_has_builder";
 
 }

@@ -521,6 +521,8 @@ let
 
   attic = callPackage ../tools/backup/attic { };
 
+  avfs = callPackage ../tools/filesystems/avfs { };
+
   awscli = callPackage ../tools/admin/awscli { };
 
   ec2_api_tools = callPackage ../tools/virtualization/ec2-api-tools { };
@@ -1060,6 +1062,8 @@ let
   dropbear = callPackage ../tools/networking/dropbear { };
 
   dtach = callPackage ../tools/misc/dtach { };
+
+  dub = callPackage ../development/tools/build-managers/dub { };
 
   duff = callPackage ../tools/filesystems/duff { };
 
@@ -2604,7 +2608,7 @@ let
 
   thc-hydra = callPackage ../tools/security/thc-hydra { };
 
-  tiled-qt = callPackage ../applications/editors/tiled-qt { qt = qt4; };
+  tiled = callPackage ../applications/editors/tiled { qt = qt4; };
 
   tinc = callPackage ../tools/networking/tinc { };
 
@@ -3770,6 +3774,8 @@ let
 
     js_of_ocaml = callPackage ../development/tools/ocaml/js_of_ocaml { };
 
+    jsonm = callPackage ../development/ocaml-modules/jsonm { };
+
     lablgl = callPackage ../development/ocaml-modules/lablgl { };
 
     lablgtk_2_14 = callPackage ../development/ocaml-modules/lablgtk/2.14.0.nix {
@@ -3969,7 +3975,7 @@ let
     ocaml = ocaml_3_08_0;
   };
 
-  rustc       = callPackage ../development/compilers/rustc/0.12.nix {};
+  rustc       = callPackage ../development/compilers/rustc/1.0.0-alpha.nix {};
   rustcMaster = callPackage ../development/compilers/rustc/head.nix {};
 
 
@@ -4827,7 +4833,10 @@ let
 
   premake = premake4;
 
-  racerRust = callPackage ../development/tools/rust/racer { rustc = rustcMaster; };
+  racerRust = callPackage ../development/tools/rust/racer {
+    rustc = rustcMaster;
+    cargo = cargoSnapshot;
+  };
 
   radare = callPackage ../development/tools/analysis/radare {
     inherit (gnome) vte;
@@ -5586,6 +5595,8 @@ let
 
   gdk_pixbuf = callPackage ../development/libraries/gdk-pixbuf { };
 
+  gnome-sharp = callPackage ../development/libraries/gnome-sharp {};
+
   granite = callPackage ../development/libraries/granite { };
 
   gtk2 = callPackage ../development/libraries/gtk+/2.x.nix {
@@ -5600,24 +5611,13 @@ let
   gtkmm3 = callPackage ../development/libraries/gtkmm/3.x.nix { };
 
   gtkmozembedsharp = callPackage ../development/libraries/gtkmozembed-sharp {
-    gtksharp = gtksharp2;
+    gtksharp = gtk-sharp;
   };
 
-  gtksharp1 = callPackage ../development/libraries/gtk-sharp-1 {
-    inherit (gnome) libglade libgtkhtml gtkhtml
-              libgnomecanvas libgnomeui libgnomeprint
-              libgnomeprintui GConf;
-  };
-
-  gtksharp2 = callPackage ../development/libraries/gtk-sharp-2 {
+  gtk-sharp = callPackage ../development/libraries/gtk-sharp-2 {
     inherit (gnome) libglade libgtkhtml gtkhtml
               libgnomecanvas libgnomeui libgnomeprint
               libgnomeprintui GConf gnomepanel;
-  };
-
-  gtksourceviewsharp = callPackage ../development/libraries/gtksourceview-sharp {
-    inherit (gnome) gtksourceview;
-    gtksharp = gtksharp2;
   };
 
   gtkspell = callPackage ../development/libraries/gtkspell { };
@@ -9589,7 +9589,9 @@ let
   dmtx-utils = callPackage (import ../tools/graphics/dmtx-utils) {
   };
 
-  docker = callPackage ../applications/virtualization/docker { };
+  docker = callPackage ../applications/virtualization/docker {
+    go = go_1_3;
+  };
 
   doodle = callPackage ../applications/search/doodle { };
 
@@ -9987,11 +9989,6 @@ let
   freerdpUnstable = callPackage ../applications/networking/remote/freerdp/unstable.nix { };
 
   freicoin = callPackage ../applications/misc/freicoin { };
-
-  fspot = callPackage ../applications/graphics/f-spot {
-    inherit (gnome) libgnome libgnomeui;
-    gtksharp = gtksharp1;
-  };
 
   fuze = callPackage ../applications/networking/instant-messengers/fuze {};
 
@@ -10486,6 +10483,8 @@ let
     inherit (vamp) vampSDK;
   };
 
+  mjpg-streamer = callPackage ../applications/video/mjpg-streamer { };
+
   mmex = callPackage ../applications/office/mmex { };
 
   moc = callPackage ../applications/audio/moc { };
@@ -10494,15 +10493,7 @@ let
 
   monkeysAudio = callPackage ../applications/audio/monkeys-audio { };
 
-  monodevelop = callPackage ../applications/editors/monodevelop {
-    inherit (gnome) gnome_vfs libbonobo libglade libgnome GConf;
-    mozilla = firefox;
-    gtksharp = gtksharp2;
-  };
-
-  monodoc = callPackage ../applications/editors/monodoc {
-    gtksharp = gtksharp1;
-  };
+  monodevelop = callPackage ../applications/editors/monodevelop {};
 
   monotone = callPackage ../applications/version-management/monotone {
     lua = lua5;
@@ -10819,7 +10810,7 @@ let
   pinpoint = callPackage ../applications/office/pinpoint {};
 
   pinta = callPackage ../applications/graphics/pinta {
-    gtksharp = gtksharp2;
+    gtksharp = gtk-sharp;
   };
 
   pommed = callPackage ../os-specific/linux/pommed {
