@@ -85,7 +85,7 @@ in rec {
           clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
         };
 
-        preHook = stage0.stdenv.lib.optionalString (shell == "${bootstrapTools}/bin/sh") ''
+        preHook = stage0.stdenv.lib.optionalString /*(shell == "${bootstrapTools}/bin/sh")*/ true ''
           # Don't patch #!/interpreter because it leads to retained
           # dependencies on the bootstrapTools in the final stdenv.
           dontPatchShebangs=1
