@@ -10,6 +10,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ m4 ];
 
+  enableParallelBuilding = true;
+
   # Prevent the build system from using sub-architecture-specific
   # instructions (e.g., SSE2 on i686).
   #
