@@ -85,10 +85,11 @@ in rec {
           clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
         };
 
-        preHook = ''
+        preHook = stage0.stdenv.lib.optionalString (shell == "${bootstrapTools}/bin/sh") ''
           # Don't patch #!/interpreter because it leads to retained
           # dependencies on the bootstrapTools in the final stdenv.
           dontPatchShebangs=1
+        '' + ''
           ${commonPreHook}
           ${extraPreHook}
         '';
@@ -220,7 +221,7 @@ in rec {
   persistent3 = orig: with stage3.pkgs; {
     inherit
       gnumake gzip gnused bzip2 gnutar gawk ed xz patch libiconv bash
-      libcxxabi lbicxx ncurses libffi zlib icu llvm gmp pcre gnugrep
+      libcxxabi libcxx ncurses libffi zlib icu llvm gmp pcre gnugrep
       coreutils findutils diffutils patchutils binutils;
 
     llvmPackages = orig.llvmPackages // {
