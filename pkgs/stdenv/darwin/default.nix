@@ -66,6 +66,7 @@ in rec {
                           overrides         ? (pkgs: {}),
                           extraPreHook      ? "export LD_DYLD_PATH=${last.pkgs.darwin.dyld}/lib/dyld",
                           extraBuildInputs  ? with last.pkgs; [ xz darwin.corefoundation ],
+                          extraInitialPath  ? [],
                           allowedRequisites ? null}:
     let
       thisStdenv = import ../generic {
@@ -85,7 +86,7 @@ in rec {
           clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
         };
 
-        preHook = stage0.stdenv.lib.optionalString /*(shell == "${bootstrapTools}/bin/sh")*/ true ''
+        preHook = stage0.stdenv.lib.optionalString (shell == "${bootstrapTools}/bin/sh") ''
           # Don't patch #!/interpreter because it leads to retained
           # dependencies on the bootstrapTools in the final stdenv.
           dontPatchShebangs=1
@@ -93,7 +94,7 @@ in rec {
           ${commonPreHook}
           ${extraPreHook}
         '';
-        initialPath  = [ bootstrapTools ];
+        initialPath  = extraInitialPath ++ [ bootstrapTools ];
         fetchurlBoot = import ../../build-support/fetchurl {
           stdenv = stage0.stdenv;
           curl   = bootstrapTools;
@@ -207,8 +208,14 @@ in rec {
     };
   };
 
-  stage3 = with stage2; stageFun 3 stage2 rec {
+  stage3 = with stage2; stageFun 3 stage2 {
     shell = "${pkgs.bash}/bin/bash";
+
+    # We have a valid shell here (this one has no bootstrap-tools runtime deps) so stageFun
+    # enables patchShebangs above. Unfortunately, patchShebangs ignores our $SHELL setting
+    # and instead goes by $PATH, which happens to contain bootstrapTools. So it goes and
+    # patches our shebangs back to point at bootstrapTools. This makes sure bash comes first.
+    extraInitialPath = [ pkgs.bash ];
 
     allowedRequisites =
       [ bootstrapTools ] ++
