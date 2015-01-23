@@ -9,16 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3";
   };
 
-  buildInputs = [ ghc perl gmp ncurses ];
-
-  propagatedBuildInputs = [ libiconv ];
-
-  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
-    mkdir -p $out/nix-support
-    cat >$out/nix-support/setup-hook <<EOF
-      addToSearchPath DYLD_FALLBACK_LIBRARY_PATH "${libiconv}/lib"
-    EOF
-  '';
+  buildInputs = [ ghc perl gmp ncurses libiconv ];
 
   enableParallelBuilding = true;
 
@@ -27,6 +18,10 @@ stdenv.mkDerivation rec {
     libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-includes="${gmp}/include"
     libraries/terminfo_CONFIGURE_OPTS += --configure-option=--with-curses-includes="${ncurses}/include"
     libraries/terminfo_CONFIGURE_OPTS += --configure-option=--with-curses-libraries="${ncurses}/lib"
+    ${stdenv.lib.optionalString stdenv.isDarwin ''
+      libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-includes="${libiconv}/include"
+      libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-libraries="${libiconv}/lib"
+    ''}
     DYNAMIC_BY_DEFAULT = NO
   '';
 
@@ -35,6 +30,8 @@ stdenv.mkDerivation rec {
     sed -i -e 's|-isysroot /Developer/SDKs/MacOSX10.5.sdk||' configure
   '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
     export NIX_LDFLAGS="$NIX_LDFLAGS -rpath $out/lib/ghc-${version}"
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
+    export NIX_LDFLAGS+=" -no_dtrace_dof"
   '';
 
   # required, because otherwise all symbols from HSffi.o are stripped, and

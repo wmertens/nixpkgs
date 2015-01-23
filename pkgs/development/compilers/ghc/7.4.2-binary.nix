@@ -36,6 +36,8 @@ stdenv.mkDerivation rec {
     # has hardcoded paths to /usr/bin/strip in many places. We replace
     # those below, making them point to our dummy script.
      ''
+      export NIX_LDFLAGS+=" -no_dtrace_dof"
+
       mkdir "$TMP/bin"
       for i in strip; do
         echo '#! ${stdenv.shell}' > "$TMP/bin/$i"
@@ -47,6 +49,9 @@ stdenv.mkDerivation rec {
      ''
       find . -name integer-gmp.buildinfo \
           -exec sed -i "s@extra-lib-dirs: @extra-lib-dirs: ${gmp}/lib@" {} \;
+     '' + stdenv.lib.optionalString stdenv.isDarwin ''
+      find . -name base.buildinfo \
+          -exec sed -i "s@extra-lib-dirs: @extra-lib-dirs: ${libiconv}/lib@" {} \;
      '' +
     # On Linux, use patchelf to modify the executables so that they can
     # find editline/gmp.
@@ -97,11 +102,7 @@ stdenv.mkDerivation rec {
     ln -s ${libiconv}/lib/libiconv.dylib utils/ghc-cabal/dist-install/build/tmp
   '';
 
-  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
-    wrapProgram $out/bin/ghc \
-      --prefix DYLD_LIBRARY_PATH : "${libiconv}/lib" \
-      --set NIX_LDFLAGS '"$NIX_LDFLAGS -L${libiconv}/lib -no_dtrace_dof"'
-  '' + ''
+  postInstall = ''
     # Sanity check, can ghc create executables?
     cd $TMP
     mkdir test-ghc; cd test-ghc
@@ -110,7 +111,7 @@ stdenv.mkDerivation rec {
       module Main where
       main = putStrLn \$([|"yes"|])
     EOF
-    $out/bin/ghc --make main.hs
+    $out/bin/ghc --make main.hs || exit 1
     echo compilation ok
     [ $(./main) == "yes" ]
   '';
