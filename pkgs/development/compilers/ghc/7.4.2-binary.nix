@@ -31,12 +31,17 @@ stdenv.mkDerivation rec {
   buildInputs = [perl makeWrapper];
 
   postUnpack =
+    # GHC has dtrace probes, which causes ld to try to open /usr/lib/libdtrace.dylib
+    # during linking
+    stdenv.lib.optionalString stdenv.isDarwin ''
+      export NIX_LDFLAGS+=" -no_dtrace_dof"
+    '' +
+
     # Strip is harmful, see also below. It's important that this happens
     # first. The GHC Cabal build system makes use of strip by default and
     # has hardcoded paths to /usr/bin/strip in many places. We replace
     # those below, making them point to our dummy script.
-     ''
-      export NIX_LDFLAGS+=" -no_dtrace_dof"
+    ''
 
       mkdir "$TMP/bin"
       for i in strip; do

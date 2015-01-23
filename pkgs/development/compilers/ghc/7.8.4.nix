@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3";
   };
 
-  buildInputs = [ ghc perl gmp ncurses libiconv ];
+  buildInputs = [ ghc perl gmp ncurses ];
 
   enableParallelBuilding = true;
 
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
 
   # required, because otherwise all symbols from HSffi.o are stripped, and
   # that in turn causes GHCi to abort
-  stripDebugFlags = [ "-S" "--keep-file-symbols" ];
+  stripDebugFlags = [ "-S" ] ++ stdenv.lib.optional stdenv.isDarwin "--keep-file-symbols";
 
   meta = with stdenv.lib; {
     homepage = "http://haskell.org/ghc";
