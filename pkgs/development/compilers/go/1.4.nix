@@ -64,6 +64,8 @@ stdenv.mkDerivation {
     sed -i 's,/lib/ld-linux.so.3,${loaderArm},' src/cmd/5l/asm.c
     sed -i 's,/lib64/ld-linux-x86-64.so.2,${loaderAmd64},' src/cmd/6l/asm.c
     sed -i 's,/lib/ld-linux.so.2,${loader386},' src/cmd/8l/asm.c
+  '' + lib.optionalString stdenv.isDarwin ''
+    substituteInPlace src/run.bash --replace 'time go test' '# time go test'
   '';
 
   patches = [ ./cacert-1.4.patch ];

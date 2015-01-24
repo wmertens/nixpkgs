@@ -17,8 +17,6 @@ stdenv.mkDerivation rec {
       cacert cmake ]
     ++ stdenv.lib.optionals stdenv.isDarwin [ pythonPackages.pync libobjc ];
 
-  NIX_CFLAGS_COMPILE = "-I${python}/include/${python.libPrefix}";
-
   postInstall = ''
     NIX_PYTHONPATH="$out/lib/${python.libPrefix}/site-packages"
   '' + stdenv.lib.optionalString stdenv.isDarwin ''
