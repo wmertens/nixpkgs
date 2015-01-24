@@ -1,8 +1,8 @@
-{ stdenv, fetchurl, fetchFromGitHub
+{ stdenv, lib, fetchurl, fetchFromGitHub
 , zlib, zlibSupport ? true
 , openssl, opensslSupport ? true
 , gdbm, gdbmSupport ? true
-, ncurses, readline, cursesSupport ? false
+, ncurses, readline, cursesSupport ? true
 , groff, docSupport ? false
 , ruby_1_8_7, autoreconfHook, bison, useRailsExpress ? true
 , libiconv
@@ -77,6 +77,12 @@ stdenv.mkDerivation rec {
 
     envHooks+=(addGemPath)
     EOF
+  '' + lib.optionalString useRailsExpress ''
+    rbConfig=$(find $out/lib/ruby -name rbconfig.rb)
+
+    # Prevent the baseruby from being included in the closure.
+    sed -i '/^  CONFIG\["BASERUBY"\]/d' $rbConfig
+    sed -i "s|'--with-baseruby=${baseruby}/bin/ruby'||" $rbConfig
   '';
 
   meta = {
@@ -90,7 +96,8 @@ stdenv.mkDerivation rec {
     minorVersion = "8";
     teenyVersion = "7";
     patchLevel = "374";
-    libPath = "lib/ruby/${majorVersion}.${minorVersion}";
-    gemPath = "lib/ruby/gems/${majorVersion}.${minorVersion}";
+    rubyEngine = "ruby";
+    libPath = "lib/${rubyEngine}/${majorVersion}.${minorVersion}.${teenyVersion}";
+    gemPath = "lib/${rubyEngine}/gems/${majorVersion}.${minorVersion}.${teenyVersion}";
   };
 }

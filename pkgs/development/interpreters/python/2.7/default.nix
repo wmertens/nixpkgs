@@ -63,6 +63,7 @@ let
   # external dependencies.
   python = stdenv.mkDerivation {
     name = "python-${version}";
+    pythonVersion = majorVersion;
 
     inherit majorVersion version src patches buildInputs preConfigure;
 

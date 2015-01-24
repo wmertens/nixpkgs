@@ -16,7 +16,6 @@ self: super: {
   hasql-postgres = dontCheck super.hasql-postgres;
   hspec-expectations = dontCheck super.hspec-expectations;
   HTTP = dontCheck super.HTTP;
-  matlab = super.matlab.override { matlab = null; };
   mwc-random = dontCheck super.mwc-random;
   nanospec = dontCheck super.nanospec;
   options = dontCheck super.options;
@@ -58,13 +57,11 @@ self: super: {
   # https://github.com/haskell/time/issues/23
   time_1_5_0_1 = dontCheck super.time_1_5_0_1;
 
-  # Doesn't accept modern versions of hashtable.
-  Agda = dontHaddock super.Agda;
-
   # Cannot compile its own test suite: https://github.com/haskell/network-uri/issues/10.
   network-uri = dontCheck super.network-uri;
 
   # The Haddock phase fails for one reason or another.
+  Agda = dontHaddock super.Agda;
   attoparsec-conduit = dontHaddock super.attoparsec-conduit;
   blaze-builder-conduit = dontHaddock super.blaze-builder-conduit;
   bytestring-progress = dontHaddock super.bytestring-progress;
@@ -84,6 +81,7 @@ self: super: {
   hspec-discover = dontHaddock super.hspec-discover;
   http-client-conduit = dontHaddock super.http-client-conduit;
   http-client-multipart = dontHaddock super.http-client-multipart;
+  hxt = dontHaddock super.hxt;                                  # https://github.com/UweSchmidt/hxt/issues/38
   markdown-unlit = dontHaddock super.markdown-unlit;
   network-conduit = dontHaddock super.network-conduit;
   shakespeare-text = dontHaddock super.shakespeare-text;
@@ -101,20 +99,13 @@ self: super: {
   # https://github.com/techtangents/ablist/issues/1
   ABList = dontCheck super.ABList;
 
-  # Depends on broken NewBinary package.
-  ASN1 = markBroken super.ASN1;
-
-  # Depends on broken Hails package.
-  hails-bin = markBroken super.hails-bin;
-
-  # Depends on broken frame package.
-  frame-markdown = markBroken super.frame-markdown;
-
-  # Depends on broken lss package.
-  snaplet-lss = markBroken super.snaplet-lss;
-
-  # depends on broken hbro package.
-  hbro-contrib = markBroken super.hbro-contrib;
+  # These packages have broken dependencies.
+  ASN1 = dontDistribute super.ASN1;                             # NewBinary
+  frame-markdown = dontDistribute super.frame-markdown;         # frame
+  hails-bin = dontDistribute super.hails-bin;                   # Hails
+  hbro-contrib = dontDistribute super.hbro-contrib;             # hbro
+  lss = markBrokenVersion "0.1.0.0" super.lss;                  # https://github.com/dbp/lss/issues/2
+  snaplet-lss = markBrokenVersion "0.1.0.0" super.snaplet-lss;  # https://github.com/dbp/lss/issues/2
 
   fsnotify = super.fsnotify.override {
     hinotify = if pkgs.stdenv.isDarwin
@@ -129,7 +120,7 @@ self: super: {
   base_4_7_0_2 = markBroken super.base_4_7_0_2;
 
   # Obsolete: https://github.com/massysett/prednote/issues/1.
-  prednote-test = markBroken super.prednote-test;
+  prednote-test = markBrokenVersion "0.26.0.4" super.prednote-test;
 
   # Doesn't compile: <http://hydra.cryp.to/build/465891/nixlog/1/raw>.
   integer-gmp_0_5_1_0 = markBroken super.integer-gmp_0_5_1_0;
@@ -147,17 +138,14 @@ self: super: {
   wizards = doJailbreak super.wizards;
 
   # https://github.com/ekmett/trifecta/issues/41
-  trifecta = overrideCabal super.trifecta (drv: {
-    patches = [
-    (pkgs.fetchpatch {
-       url = "https://github.com/ekmett/trifecta/pull/40.patch";
-       sha256 = "0qwz83fp0karf6164jykdwsrafq08l6zsdmcdm83xnkcxabgplxv";
-    })];});
+  trifecta = appendPatch super.trifecta (pkgs.fetchpatch {
+    url = "https://github.com/ekmett/trifecta/pull/40.patch";
+    sha256 = "0qwz83fp0karf6164jykdwsrafq08l6zsdmcdm83xnkcxabgplxv";
+  });
 
   # https://github.com/NixOS/cabal2nix/issues/136
-  gio = overrideCabal (super.gio.override { glib = self.glib; }) (drv: { pkgconfigDepends = [pkgs.glib]; });
-  glade = overrideCabal super.gio (drv: { pkgconfigDepends = [pkgs.gtk2]; buildDepends = drv.buildDepends ++ [self.glib]; });
-  pango = super.pango.override { cairo = self.cairo; };
+  gtk = addBuildDepends super.gtk [pkgs.pkgconfig pkgs.gtk];
+  glib = addBuildDepends super.glib [pkgs.pkgconfig pkgs.glib];
 
   # https://github.com/jgm/zip-archive/issues/21
   zip-archive = addBuildTool super.zip-archive pkgs.zip;
@@ -201,6 +189,7 @@ self: super: {
   http-conduit = dontCheck super.http-conduit;          # http://hydra.cryp.to/build/501966/nixlog/1/raw
   js-jquery = dontCheck super.js-jquery;
   marmalade-upload = dontCheck super.marmalade-upload;  # http://hydra.cryp.to/build/501904/nixlog/1/raw
+  network-transport-zeromq = dontCheck super.network-transport-zeromq; # https://github.com/tweag/network-transport-zeromq/issues/30
   raven-haskell = dontCheck super.raven-haskell;        # http://hydra.cryp.to/build/502053/log/raw
   riak = dontCheck super.riak;                          # http://hydra.cryp.to/build/498763/log/raw
   stackage = dontCheck super.stackage;                  # http://hydra.cryp.to/build/501867/nixlog/1/raw
@@ -230,6 +219,7 @@ self: super: {
   bindings-GLFW = dontCheck super.bindings-GLFW;        # http://hydra.cryp.to/build/497379/log/raw
   bits = dontCheck super.bits;                          # http://hydra.cryp.to/build/500239/log/raw
   bloodhound = dontCheck super.bloodhound;
+  boundingboxes = dontCheck super.boundingboxes;        # https://github.com/fumieval/boundingboxes/issues/1
   buildwrapper = dontCheck super.buildwrapper;
   burst-detection = dontCheck super.burst-detection;    # http://hydra.cryp.to/build/496948/log/raw
   cabal-bounds = dontCheck super.cabal-bounds;          # http://hydra.cryp.to/build/496935/nixlog/1/raw
@@ -239,7 +229,6 @@ self: super: {
   command-qq = dontCheck super.command-qq;              # http://hydra.cryp.to/build/499042/log/raw
   conduit-connection = dontCheck super.conduit-connection;
   craftwerk = dontCheck super.craftwerk;
-  crypto-pubkey = dontCheck super.crypto-pubkey;
   damnpacket = dontCheck super.damnpacket;              # http://hydra.cryp.to/build/496923/log
   Deadpan-DDP = dontCheck super.Deadpan-DDP;            # http://hydra.cryp.to/build/496418/log/raw
   DigitalOcean = dontCheck super.DigitalOcean;
@@ -344,9 +333,6 @@ self: super: {
   xcffib = dontCheck super.xcffib;
   xsd = dontCheck super.xsd;
 
-  # https://github.com/athanclark/dag/issues/2
-  dag = addBuildTool super.dag self.Cabal_1_22_0_0;     # http://hydra.cryp.to/build/498554/log/raw
-
   # The build fails with the most recent version of c2hs.
   ncurses = super.ncurses.override { c2hs = self.c2hs_0_20_1; };
 
@@ -368,9 +354,6 @@ self: super: {
   # https://github.com/bos/snappy/issues/1
   snappy = dontCheck super.snappy;
 
-  # https://github.com/fanjam/paypal-adaptive-hoops/issues/5
-  paypal-adaptive-hoops = dontCheck super.paypal-adaptive-hoops;
-
   # Needs llvm to compile.
   bytestring-arbitrary = addBuildTool super.bytestring-arbitrary pkgs.llvm;
 
@@ -380,9 +363,29 @@ self: super: {
   # https://github.com/begriffs/postgrest/issues/127
   postgrest = dontDistribute super.postgrest;
 
-}
-// {
-  # Not on Hackage yet.
+  # Needs older versions of its dependencies.
+  structured-haskell-mode = (dontJailbreak super.structured-haskell-mode).override {
+    haskell-src-exts = self.haskell-src-exts_1_15_0_1;  # https://github.com/chrisdone/structured-haskell-mode/issues/90
+  };
+
+  # Expect to find sendmail(1) in $PATH.
+  mime-mail = appendConfigureFlag super.mime-mail "--ghc-option=-DMIME_MAIL_SENDMAIL_PATH=\"sendmail\"";
+
+  # Help the test suite find system timezone data.
+  tz = overrideCabal super.tz (drv: { preConfigure = "export TZDIR=${pkgs.tzdata}/share/zoneinfo"; });
+
+  # https://ghc.haskell.org/trac/ghc/ticket/9625
+  vty = dontCheck super.vty;
+
+  # https://github.com/vincenthz/hs-crypto-pubkey/issues/20
+  crypto-pubkey = dontCheck super.crypto-pubkey;
+
+  # https://github.com/rrnewton/haskell-lockfree/issues/44
+  chaselev-deque = markBrokenVersion "0.5.0.3" super.chaselev-deque;
+
+} // {
+
+  # Not on Hackage.
   cabal2nix = self.mkDerivation {
     pname = "cabal2nix";
     version = "2.0";

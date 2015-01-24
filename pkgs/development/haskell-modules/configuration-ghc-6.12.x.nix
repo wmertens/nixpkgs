@@ -38,7 +38,7 @@ self: super: {
   unix = null;
 
   # binary is not a core library for this compiler.
-  binary = self.binary_0_7_2_3;
+  binary = self.binary_0_7_3_0;
 
   # deepseq is not a core library for this compiler.
   deepseq_1_3_0_1 = dontJailbreak super.deepseq_1_3_0_1;
@@ -60,7 +60,8 @@ self: super: {
 
   # https://github.com/glguy/utf8-string/issues/9
   utf8-string = overrideCabal super.utf8-string (drv: {
-    patchPhase = "sed -ir -e 's|Extensions: | Extensions: UndecidableInstances, |' utf8-string.cabal";
+    configureFlags = drv.configureFlags or [] ++ ["-f-bytestring-in-base" "--ghc-option=-XUndecidableInstances"];
+    preConfigure = "sed -i -e 's|base >= .* < .*,|base,|' utf8-string.cabal";
   });
 
   # https://github.com/haskell/HTTP/issues/80

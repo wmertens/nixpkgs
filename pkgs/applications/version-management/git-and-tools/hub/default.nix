@@ -38,7 +38,6 @@ stdenv.mkDerivation rec {
 # ?
   '';
 
-
   meta = with stdenv.lib; {
     description = "Command-line wrapper for git that makes you better at GitHub";
 

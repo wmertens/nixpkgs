@@ -40,7 +40,7 @@ self: super: {
   terminfo = self.terminfo_0_4_0_0;
 
   # https://github.com/haskell/cabal/issues/2322
-  Cabal_1_22_0_0 = super.Cabal_1_22_0_0.override { binary = self.binary_0_7_2_3; };
+  Cabal_1_22_0_0 = super.Cabal_1_22_0_0.override { binary = self.binary_0_7_3_0; };
 
   # https://github.com/tibbe/hashable/issues/85
   hashable = dontCheck super.hashable;
@@ -55,7 +55,7 @@ self: super: {
   aeson = self.aeson_0_7_0_6;
 
   # The test suite depends on time >=1.4.0.2.
-  cookie = dontCheck super.cookie ;
+  cookie = dontCheck super.cookie;
 
   # Work around bytestring >=0.10.2.0 requirement.
   streaming-commons = addBuildDepend super.streaming-commons self.bytestring-builder;
@@ -73,4 +73,31 @@ self: super: {
   # cpphs doesn't like defined(MIN_VERSION_foo)
   semigroups = dontCpphs super.semigroups;
   semigroupoids = dontCpphs super.semigroupoids;
+
+} // {
+
+  # Not on Hackage.
+  cryptol = self.mkDerivation rec {
+    pname = "cryptol";
+    version = "2.1.0";
+    src = pkgs.fetchFromGitHub {
+      owner = "GaloisInc";
+      repo = "cryptol";
+      rev = "v${version}";
+      sha256 = "00bmad3qc7h47j26xp7hbrlb0qv0f7k9spxgsc1f6lsmpgq9axr3";
+    };
+    isLibrary = true;
+    isExecutable = true;
+    buildDepends = with self; [
+      ansi-terminal array async base containers deepseq directory
+      executable-path filepath GraphSCC haskeline monadLib mtl old-time
+      presburger pretty process QuickCheck random smtLib syb text
+      tf-random transformers utf8-string
+    ];
+    buildTools = with self; [ alex happy Cabal_1_22_0_0 ];
+    patchPhase = "sed -i -e 's|process .*,|process,|' cryptol.cabal";
+    description = "Cryptol: The Language of Cryptography";
+    license = pkgs.stdenv.lib.licenses.bsd3;
+  };
+
 }

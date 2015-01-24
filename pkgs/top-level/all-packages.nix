@@ -679,7 +679,7 @@ let
   cloud-init = callPackage ../tools/virtualization/cloud-init { };
 
   consul = callPackage ../servers/consul {
-    inherit ruby rubyLibs;
+   # inherit ruby;
   };
 
   consul_ui = consul.ui;
@@ -726,7 +726,8 @@ let
 
   fop = callPackage ../tools/typesetting/fop { };
 
-  gist = callPackage ../tools/text/gist { };
+  # Evaluation broken by recent ruby changes.
+  # gist = callPackage ../tools/text/gist { };
 
   mcrl = callPackage ../tools/misc/mcrl { };
 
@@ -763,6 +764,8 @@ let
   });
 
   autossh = callPackage ../tools/networking/autossh { };
+
+  asynk = callPackage ../tools/networking/asynk { };
 
   bacula = callPackage ../tools/backup/bacula { };
 
@@ -1308,9 +1311,13 @@ let
 
   gifsicle = callPackage ../tools/graphics/gifsicle { };
 
-  gitlab = callPackage ../applications/version-management/gitlab { };
+  # Evaluation broken by recent ruby changes.
+  # gitlab = callPackage ../applications/version-management/gitlab {
+  #  libiconv = libiconvOrLibc;
+  # };
 
-  gitlab-shell = callPackage ../applications/version-management/gitlab-shell { };
+  # Evaluation broken by recent ruby changes.
+  # gitlab-shell = callPackage ../applications/version-management/gitlab-shell { };
 
   glusterfs = callPackage ../tools/filesystems/glusterfs { };
 
@@ -1466,6 +1473,8 @@ let
   partclone = callPackage ../tools/backup/partclone { };
 
   partimage = callPackage ../tools/backup/partimage { };
+
+  pgf_graphics = callPackage ../tools/graphics/pgf { };
 
   pigz = callPackage ../tools/compression/pigz { };
 
@@ -1652,11 +1661,9 @@ let
   nodejs = callPackage ../development/web/nodejs { };
   nodejs-unstable = callPackage ../development/web/nodejs { unstableVersion = true; };
 
-  nodePackages = recurseIntoAttrs (callPackage ./node-packages.nix {
-    inherit pkgs stdenv nodejs fetchurl fetchgit;
-    neededNatives = [python] ++ lib.optional (lib.elem system lib.platforms.linux) utillinux;
-    self = pkgs.nodePackages;
-  });
+  nodePackages = recurseIntoAttrs (
+    callPackage ./node-packages.nix { self = nodePackages; }
+  );
 
   ldapvi = callPackage ../tools/misc/ldapvi { };
 
@@ -2083,25 +2090,23 @@ let
 
   otpw = callPackage ../os-specific/linux/otpw { };
 
+  owncloud = callPackage ../servers/owncloud { };
+
   owncloudclient = callPackage ../applications/networking/owncloud-client { };
 
   p7zip = callPackage ../tools/archivers/p7zip { };
 
   pal = callPackage ../tools/misc/pal { };
 
-  pandoc = with haskellPackages; pandoc.override {
-    cabal = cabal.override {
-      extension = self: super: {
-        configureFlags = super.configureFlags or "" + " -fembed_data_files";
-        buildTools = super.buildTools or [] ++ [hsb2hs];
-        enableSharedExecutables = false;
-        enableSharedLibraries = false;
-        isLibrary = false;
-        noHaddock = true;
-        postFixup = "rm -rf $out/lib $out/nix-support $out/share";
-      };
-    };
-  };
+  pandoc = haskell-ng.lib.overrideCabal haskellngPackages.pandoc (drv: {
+    configureFlags = drv.configureFlags or [] ++ ["-fembed_data_files"];
+    buildTools = drv.buildTools or [] ++ [haskellngPackages.hsb2hs];
+    enableSharedExecutables = false;
+    enableSharedLibraries = false;
+    isLibrary = false;
+    doHaddock = false;
+    postFixup = "rm -rf $out/lib $out/nix-support $out/share";
+  });
 
   panomatic = callPackage ../tools/graphics/panomatic { };
 
@@ -3104,15 +3109,7 @@ let
 
   compcert = callPackage ../development/compilers/compcert {};
 
-  cryptol1 = lowPrio (callPackage ../development/compilers/cryptol/1.8.x.nix {});
-  cryptol2 = with haskellPackages_ghc763; callPackage ../development/compilers/cryptol/2.0.x.nix {
-    Cabal = Cabal_1_18_1_3;
-    cabalInstall = cabalInstall_1_18_0_3.override {
-      network = network_2_5_0_0;
-      HTTP = HTTP.override { network = network_2_5_0_0; };
-    };
-    process = process_1_2_0_0;
-  };
+  cryptol = haskell-ng.packages.ghc763.cryptol;
 
   cython = pythonPackages.cython;
   cython3 = python3Packages.cython;
@@ -3460,7 +3457,8 @@ let
 
   fsharp = callPackage ../development/compilers/fsharp {};
 
-  gem-nix = callPackage ../tools/package-management/gem-nix { };
+  # Evaluation broken by recent ruby changes.
+  # gem-nix = callPackage ../tools/package-management/gem-nix { };
 
   go_1_0 = callPackage ../development/compilers/go { };
 
@@ -3784,6 +3782,8 @@ let
     gmetadom = callPackage ../development/ocaml-modules/gmetadom { };
 
     gtktop = callPackage ../development/ocaml-modules/gtktop { };
+
+    hex = callPackage ../development/ocaml-modules/hex { };
 
     js_of_ocaml = callPackage ../development/tools/ocaml/js_of_ocaml { };
 
@@ -4326,6 +4326,19 @@ let
     wrapPython = pythonPackages.wrapPython;
   };
 
+  bundix = callPackage ../development/interpreters/ruby/bundix {
+    ruby = ruby_2_1_3;
+  };
+  bundler = callPackage ../development/interpreters/ruby/bundler.nix { };
+  bundler_HEAD = import ../development/interpreters/ruby/bundler-head.nix {
+    inherit buildRubyGem coreutils fetchgit;
+  };
+  defaultGemConfig = callPackage ../development/interpreters/ruby/bundler-env/default-gem-config.nix { };
+  buildRubyGem = callPackage ../development/interpreters/ruby/gem.nix { };
+  # Evaluation broken by recent ruby changes.
+  # loadRubyEnv = callPackage ../development/interpreters/ruby/load-ruby-env.nix { };
+  bundlerEnv = callPackage ../development/interpreters/ruby/bundler-env { };
+
   ruby_1_8_7 = callPackage ../development/interpreters/ruby/ruby-1.8.7.nix { };
   ruby_1_9_3 = callPackage ../development/interpreters/ruby/ruby-1.9.3.nix { libobjc = darwin.libobjc; };
   ruby_2_0_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.0.0.nix { });
@@ -4342,12 +4355,6 @@ let
   ruby_2_0 = ruby_2_0_0;
   ruby_2_1 = ruby_2_1_3;
   ruby_2_2 = ruby_2_2_0;
-
-  rubyLibs = recurseIntoAttrs (callPackage ../development/interpreters/ruby/libs.nix { });
-
-  rake = rubyLibs.rake;
-
-  rubySqlite3 = callPackage ../development/ruby-modules/sqlite3 { };
 
   rubygemsFun = ruby: builderDefsPackage (import ../development/interpreters/ruby/rubygems.nix) {
     inherit ruby makeWrapper;
@@ -4806,7 +4813,13 @@ let
       pythonPackages = python3Packages;
   };
 
-  node_webkit = callPackage ../development/tools/node-webkit {
+  node_webkit = node_webkit_0_9;
+
+  node_webkit_0_11 = callPackage ../development/tools/node-webkit/nw11.nix {
+    gconf = pkgs.gnome.GConf;
+  };
+
+  node_webkit_0_9 = callPackage ../development/tools/node-webkit/nw9.nix {
     gconf = pkgs.gnome.GConf;
   };
 
@@ -4996,6 +5009,8 @@ let
 
   winpdb = callPackage ../development/tools/winpdb { };
 
+  grabserial = callPackage ../development/tools/grabserial { };
+
 
   ### DEVELOPMENT / LIBRARIES
 
@@ -5027,6 +5042,8 @@ let
   amrnb = callPackage ../development/libraries/amrnb { };
 
   amrwb = callPackage ../development/libraries/amrwb { };
+
+  appstream = callPackage ../development/libraries/appstream { };
 
   apr = callPackage ../development/libraries/apr { };
 
@@ -5456,8 +5473,8 @@ let
     installLocales = config.glibc.locales or false;
   };
 
-  # Not supported on Darwin
-  glibcLocales = if (! stdenv.isDarwin) then (callPackage ../development/libraries/glibc/locales.nix { }) else null;
+  # Only supported on Linux
+  glibcLocales = if stdenv.isLinux then callPackage ../development/libraries/glibc/locales.nix { } else null;
 
   glibcInfo = callPackage ../development/libraries/glibc/info.nix { };
 
@@ -6264,6 +6281,8 @@ let
   libpcap = callPackage ../development/libraries/libpcap { };
 
   libpipeline = callPackage ../development/libraries/libpipeline { };
+
+  libpgf = callPackage ../development/libraries/libpgf { };
 
   libpng = callPackage ../development/libraries/libpng { };
   libpng_apng = libpng.override { apngSupport = true; };
@@ -7189,6 +7208,10 @@ let
 
   ucommon = callPackage ../development/libraries/ucommon { };
 
+  v8_3_16_14 = callPackage ../development/libraries/v8/3.16.14.nix {
+    inherit (pythonPackages) gyp;
+  };
+
   v8 = callPackage ../development/libraries/v8 {
     inherit (pythonPackages) gyp;
   };
@@ -7897,6 +7920,7 @@ let
   newrelic-sysmond = callPackage ../servers/monitoring/newrelic-sysmond { };
 
   riemann = callPackage ../servers/monitoring/riemann { };
+  riemann-dash = callPackage ../servers/monitoring/riemann-dash { };
 
   oidentd = callPackage ../servers/identd/oidentd { };
 
@@ -8573,7 +8597,7 @@ let
      for a specific kernel.  This function can then be called for
      whatever kernel you're using. */
 
-  linuxPackagesFor = kernel: self: let callPackage = newScope self; in {
+  linuxPackagesFor = kernel: self: let callPackage = newScope self; in rec {
     inherit kernel;
 
     acpi_call = callPackage ../os-specific/linux/acpi-call {};
@@ -8652,6 +8676,10 @@ let
       enableExtensionPack = config.virtualbox.enableExtensionPack or false;
       pulseSupport = config.pulseaudio or false;
     };
+
+    virtualboxHardened = lowPrio (virtualbox.override {
+      enableHardening = true;
+    });
 
     virtualboxGuestAdditions = callPackage ../applications/virtualization/virtualbox/guest-additions { };
 
@@ -10451,7 +10479,6 @@ let
 
   meld = callPackage ../applications/version-management/meld {
     inherit (gnome) scrollkeeper;
-    pygtk = pyGtkGlade;
   };
 
   mcomix = callPackage ../applications/graphics/mcomix { };
@@ -10625,42 +10652,14 @@ let
 
   pcmanfm = callPackage ../applications/misc/pcmanfm { };
 
-  ruby_gpgme = callPackage ../development/libraries/ruby_gpgme {
-    ruby = ruby_1_9_3;
-    hoe = rubyLibs.hoe;
-  };
-
-  ruby_ncursesw_sup = callPackage ../development/libraries/ruby_ncursesw_sup { };
-
   shotcut = callPackage ../applications/video/shotcut { mlt = mlt-qt5; };
 
   smplayer = callPackage ../applications/video/smplayer { };
 
   smtube = callPackage ../applications/video/smtube {};
 
-  sup = with rubyLibs; callPackage ../applications/networking/mailreaders/sup {
-    ruby = ruby_1_9_3.override {
-      cursesSupport = true;
-    };
-
-    inherit gettext highline iconv locale lockfile
-      text trollop xapian_ruby which;
-
-    rmail_sup = ""; # missing
-    unicode = "";
-
-    # See https://github.com/NixOS/nixpkgs/issues/1804 and
-    # https://github.com/NixOS/nixpkgs/issues/2146
-    bundler = pkgs.lib.overrideDerivation pkgs.rubyLibs.bundler (
-      oldAttrs: {
-        dontPatchShebangs = 1;
-      }
-    );
-    chronic      = chronic;
-    gpgme        = ruby_gpgme;
-    mime_types   = mime_types;
-    ncursesw_sup = ruby_ncursesw_sup;
-    rake         = rake;
+  sup = callPackage ../applications/networking/mailreaders/sup {
+    ruby = ruby_1_9_3.override { cursesSupport = true; };
   };
 
   synfigstudio = callPackage ../applications/graphics/synfigstudio {
@@ -11217,6 +11216,10 @@ let
 
   tla = callPackage ../applications/version-management/arch { };
 
+  tlp = callPackage ../tools/misc/tlp {
+    enableRDW = config.networking.networkmanager.enable or false;
+  };
+
   todo-txt-cli = callPackage ../applications/office/todo.txt-cli { };
 
   tomahawk = callPackage ../applications/audio/tomahawk {
@@ -11532,6 +11535,16 @@ let
       );
   };
 
+  wrapKodi = { kodi }: import ../applications/video/kodi/wrapper.nix {
+    inherit stdenv lib makeWrapper kodi;
+    plugins = let inherit (lib) optional; in with kodiPlugins;
+      ([]
+      ++ optional (config.kodi.enableAdvancedLauncher or false) advanced-launcher
+      ++ optional (config.kodi.enableGenesis or false) genesis
+      ++ optional (config.kodi.enableSVTPlay or false) svtplay
+      );
+  };
+
   wxhexeditor = callPackage ../applications/editors/wxhexeditor { };
 
   wxcam = callPackage ../applications/video/wxcam {
@@ -11569,12 +11582,25 @@ let
     xbmc = xbmcPlain;
   };
 
-  kodi = callPackage ../applications/video/kodi { };
+  kodiPlain = callPackage ../applications/video/kodi { };
+
+  kodiPlugins = recurseIntoAttrs (callPackage ../applications/video/kodi/plugins.nix {
+    kodi = kodiPlain;
+  });
+
+  kodi = wrapKodi {
+    kodi = kodiPlain;
+  };
 
   xbmc-retroarch-advanced-launchers =
     callPackage ../misc/emulators/retroarch/xbmc-advanced-launchers.nix {
       cores = retroArchCores;
-    };
+  };
+
+  kodi-retroarch-advanced-launchers =
+    callPackage ../misc/emulators/retroarch/kodi-advanced-launchers.nix {
+      cores = retroArchCores;
+  };
 
   xca = callPackage ../applications/misc/xca { };
 
@@ -12899,6 +12925,8 @@ let
 
   nixopsUnstable = callPackage ../tools/package-management/nixops/unstable.nix { };
 
+  nixui = callPackage ../tools/package-management/nixui { node_webkit = node_webkit_0_11; };
+
   nix-prefetch-scripts = callPackage ../tools/package-management/nix-prefetch-scripts { };
 
   nix-repl = callPackage ../tools/package-management/nix-repl { };
@@ -12983,6 +13011,8 @@ let
   rssglx = callPackage ../misc/screensavers/rss-glx { };
 
   runit = callPackage ../tools/system/runit { };
+
+  refind = callPackage ../tools/bootloaders/refind { };
 
   xlockmore = callPackage ../misc/screensavers/xlockmore { };
 

@@ -3,6 +3,8 @@
 with pkgs.lib;
 
 let
+  pythonAtLeast = versionAtLeast python.pythonVersion;
+  pythonOlder = versionOlder python.pythonVersion;
   isPy26 = python.majorVersion == "2.6";
   isPy27 = python.majorVersion == "2.7";
   isPy33 = python.majorVersion == "3.3";
@@ -683,12 +685,12 @@ let
   };
 
   batinfo = buildPythonPackage rec {
-    version = "0.1.9";
+    version = "0.2";
     name = "batinfo-${version}";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/b/batinfo/${name}.tar.gz";
-      sha256 = "0ppzbh8lii16xfq5piczn82hwps1fnbq9rbwwl3rdpdx0n86l560";
+      sha256 = "1kmrdr1c2ivpqgp2csln7vbanga3sh3nvaqmgbsg96z6fbg7f7w8";
     };
 
     meta = with stdenv.lib; {
@@ -1124,12 +1126,12 @@ let
   };
 
   bottle = buildPythonPackage rec {
-    version = "0.12.7";
+    version = "0.12.8";
     name = "bottle-${version}";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/b/bottle/${name}.tar.gz";
-      sha256 = "0wr0gfz0bqlzhxk691x0xnf80b8v5pnl3jpnbgs1m9bcy28j3sp3";
+      sha256 = "1b2hq0l4nwh75s2w6wgiqlkj4q1qvyx6a94axl2k4lsym1aifpfd";
     };
 
     propagatedBuildInputs = with self; [ setuptools ];
@@ -2992,11 +2994,14 @@ let
   };
 
   pew = buildPythonPackage rec {
-    name = "pew-0.1.9";
+    name = "pew-0.1.14";
+    namePrefix = "";
+
+    disabled = pythonOlder "3.4"; # old versions require backported libraries
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/pew/${name}.tar.gz";
-      md5 = "90a82400074b50a9e73c3045ed9ac217";
+      md5 = "0a06ab0885b39f1ef3890893942f3225";
     };
 
     propagatedBuildInputs = with self; [ virtualenv virtualenv-clone ];
@@ -3005,6 +3010,7 @@ let
       description = "Tools to manage multiple virtualenvs written in pure python, a virtualenvwrapper rewrite";
       license = licenses.mit;
       platforms = platforms.all;
+      maintainers = [ maintainers.berdario ];
     };
   };
 
@@ -3846,11 +3852,11 @@ let
 
   dulwich = buildPythonPackage rec {
     name = "dulwich-${version}";
-    version = "0.9.7";
+    version = "0.9.8";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/d/dulwich/${name}.tar.gz";
-      sha256 = "1wq083g9b1xsk89kb0wwpi4mxy63x6760vn9x5sk1fx36h27prqj";
+      sha256 = "0iwxp9n2c09wahq8bqnc5z431kq5bs75vbwl93nzwm2grj00l6lb";
     };
 
     # Only test dependencies
@@ -3867,11 +3873,11 @@ let
 
   hg-git = buildPythonPackage rec {
     name = "hg-git-${version}";
-    version = "0.6.1";
+    version = "0.7.0";
 
     src = pkgs.fetchurl {
       url = "http://pypi.python.org/packages/source/h/hg-git/${name}.tar.gz";
-      sha256 = "136kz4w377ldcjdg865azi8aym0xnxzxl3rycnflgay26ar1309s";
+      sha256 = "1ab1phaqa8jrba6dqsf3b0lgx912j41b8dlkna9c2wxip63wvfcx";
     };
 
     propagatedBuildInputs = with self; [ pkgs.mercurial dulwich ];
@@ -4591,7 +4597,7 @@ let
       url = "https://pypi.python.org/packages/source/g/gevent/${name}.tar.gz";
       sha256 = "0hyzfb0gcx9pm5c2igan8y57hqy2wixrwvdjwsaivxsqs0ay49s6";
     };
- 
+
     patches = [ ../development/python-modules/gevent_sslwrap.patch ];
 
     buildInputs = with self; [ pkgs.libev ];
@@ -7094,12 +7100,12 @@ let
 
   percol = buildPythonPackage rec {
     name = "percol-${version}";
-    version = "0.0.7";
+    version = "0.0.8";
     disabled = isPy3k;
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/percol/${name}.tar.gz";
-      sha256 = "01444z62clvx9rms9aiqx47s0fbvsfgbp6hlfff344xl7kc4l2gj";
+      sha256 = "169s5mhw1s60qbsd6pkf9bb2x6wfgx8hn8nw9d4qgc68qnnpp2cj";
     };
 
     propagatedBuildInputs = with self; [ modules.curses ];
@@ -7377,7 +7383,7 @@ let
       url = "http://pypi.python.org/packages/source/P/PrettyTable/${name}.tar.bz2";
       sha1 = "ad346a18d92c1d95f2295397c7a8a4f489e48851";
     };
-        
+
     buildInputs = [ pkgs.glibcLocales ];
 
     preCheck = ''
@@ -7582,6 +7588,46 @@ let
       description = "Python bindings for PortAudio";
       homepage = "http://people.csail.mit.edu/hubert/pyaudio/";
       license = stdenv.lib.licenses.mit;
+    };
+  };
+
+  vobject = buildPythonPackage rec {
+    version = "0.8.1c";
+    name = "vobject-${version}";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/v/vobject/vobject-${version}.tar.gz";
+      sha256 = "1xanqn7rn96841s3lim5lnx5743gc4kyfg4ggj1ys5r0gw8i6har";
+    };
+
+    propagatedBuildInputs = with self; [ dateutil ];
+
+    meta = with stdenv.lib; {
+      description = "Module for reading vCard and vCalendar files";
+      homepage = http://vobject.skyhouseconsulting.com/;
+      license = licenses.asl20;
+      maintainers = [ maintainers.DamienCassou ];
+    };
+  };
+
+  pycarddav = buildPythonPackage rec {
+    version = "0.7.0";
+    name = "pycarddav-${version}";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/pyCardDAV/pyCardDAV-${version}.tar.gz";
+      sha256 = "0avkrcpisfvhz103v7vmq2jd83hvmpqrb4mlbx6ikkk1wcvclsx8";
+    };
+
+    disabled = isPy3k;
+
+    propagatedBuildInputs = with self; [ sqlite3 vobject lxml requests urwid pyxdg ];
+
+    meta = with stdenv.lib; {
+      description = "Command-line interface carddav client";
+      homepage = http://lostpackets.de/pycarddav;
+      license = licenses.mit;
+      maintainers = [ maintainers.DamienCassou ];
     };
   };
 
@@ -8181,14 +8227,16 @@ let
 
   pyqtgraph = buildPythonPackage rec {
     name = "pyqtgraph-${version}";
-    version = "0.9.8";
+    version = "0.9.10";
+
+    doCheck = false;  # "PyQtGraph requires either PyQt4 or PySide; neither package could be imported."
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/pyqtgraph/${name}.tar.gz";
-      sha256 = "1fnhj26d9qrqqmjx092m1qspclh3mia3vag7rji5wciw0plpszi5";
+      sha256 = "188pcxf3sxxjf0aipjn820lx2rf9f42zzp0sibmcl90955a3ipf1";
     };
 
-    propagatedBuildInputs = with self; [ scipy pyqt4 pyopengl ];
+    propagatedBuildInputs = with self; [ scipy numpy pyqt4 pyopengl ];
 
     meta = with stdenv.lib; {
       description = "Scientific Graphics and GUI Library for Python";
@@ -8957,11 +9005,11 @@ let
 
   restview = buildPythonPackage rec {
     name = "restview-${version}";
-    version = "2.1.1";
+    version = "2.2.1";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/r/restview/${name}.tar.gz";
-      sha256 = "07scf80hhr9rijrbfrplyi3gwkx74knnzfhvlg6yf1cd0x2yiy8v";
+      sha256 = "070qx694bpk2n67grm82jvvar4nqvvfmmibbnv8snl4qn41jw66s";
     };
 
     propagatedBuildInputs = with self; [ docutils mock pygments ];
@@ -10944,11 +10992,11 @@ let
   };
 
   virtualenv-clone = buildPythonPackage rec {
-    name = "virtualenv-clone-0.2.4";
+    name = "virtualenv-clone-0.2.5";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/v/virtualenv-clone/${name}.tar.gz";
-      md5 = "71168b975eaaa91e65559bcc79290b3b";
+      md5 = "23e71d255058b2543d839af7f4ce3208";
     };
 
     buildInputs = with self; [pytest];
@@ -13144,7 +13192,7 @@ let
     propagatedBuildInputs = with self; [ dateutil ];
 
     preInstall = stdenv.lib.optionalString stdenv.isDarwin ''
-      sed -i 's|^\([ ]*\)self.bin_path.*$|\1self.bin_path = "${pkgs.rubyLibs.terminal_notifier}/bin/terminal-notifier"|' build/lib/pync/TerminalNotifier.py
+      sed -i 's|^\([ ]*\)self.bin_path.*$|\1self.bin_path = "${pkgs.rubyPackages.terminal_notifier}/bin/terminal-notifier"|' build/lib/pync/TerminalNotifier.py
     '';
 
     meta = with stdenv.lib; {
