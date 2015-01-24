@@ -8234,6 +8234,8 @@ let
     cmdline_sdk   = cmdline.sdk;
     cmdline_tools = cmdline.tools;
 
+    apple_sdk = callPackage ../os-specific/darwin/apple-sdk {};
+
     csu              = callPackage ../os-specific/darwin/csu {};
     objconv          = callPackage ../os-specific/darwin/objconv {};
     dyld             = callPackage ../os-specific/darwin/dyld {};
