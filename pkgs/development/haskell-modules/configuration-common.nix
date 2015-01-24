@@ -116,6 +116,12 @@ self: super: {
   # depends on broken hbro package.
   hbro-contrib = markBroken super.hbro-contrib;
 
+  fsnotify = super.fsnotify.override {
+    hinotify = if pkgs.stdenv.isDarwin
+      then super.hfsevents
+      else super.hinotify;
+  };
+
   # https://github.com/haskell/vector/issues/47
   vector = if pkgs.stdenv.isi686 then appendConfigureFlag super.vector "--ghc-options=-msse2" else super.vector;
 
