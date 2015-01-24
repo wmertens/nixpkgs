@@ -42,7 +42,7 @@
 , checkPhase ? "", preCheck ? "", postCheck ? ""
 , preFixup ? "", postFixup ? ""
 , coreSetup ? false # Use only core packages to build Setup.hs.
-, useCpphs ? false
+, useCpphs ? (stdenv.lib.versionOlder ghc.version "7.8" && stdenv.isDarwin)
 }:
 
 assert pkgconfigDepends != [] -> pkgconfig != null;

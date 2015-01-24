@@ -101,7 +101,7 @@ stdenv.mkDerivation rec {
   # calls install-strip ...
   buildPhase = "true";
 
-  preInstall = ''
+  preInstall = stdenv.lib.optionalString stdenv.isDarwin ''
     mkdir -p $out/lib/ghc-7.4.2
     ln -s ${libiconv}/lib/libiconv.dylib $out/lib/ghc-7.4.2/libiconv.dylib
     ln -s ${libiconv}/lib/libiconv.dylib utils/ghc-cabal/dist-install/build/tmp

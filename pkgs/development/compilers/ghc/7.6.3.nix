@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, ghc, perl, gmp, ncurses, binutils }:
+{ stdenv, fetchurl, ghc, perl, gmp, ncurses, binutils, libiconv }:
 
 let
   # The "-Wa,--noexecstack" options might be needed only with GNU ld (as opposed
@@ -19,11 +19,17 @@ in stdenv.mkDerivation rec {
 
   buildInputs = [ ghc perl gmp ncurses ];
 
+  enableParallelBuilding = true;
+
   buildMK = ''
     libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries="${gmp}/lib"
     libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-includes="${gmp}/include"
     libraries/terminfo_CONFIGURE_OPTS += --configure-option=--with-curses-includes="${ncurses}/include"
     libraries/terminfo_CONFIGURE_OPTS += --configure-option=--with-curses-libraries="${ncurses}/lib"
+    ${stdenv.lib.optionalString stdenv.isDarwin ''
+      libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-includes="${libiconv}/include"
+      libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-libraries="${libiconv}/lib"
+    ''}
   '' + stdenv.lib.optionalString stdenv.isLinux ''
     # Set ghcFlags for building ghc itself
     SRC_HC_OPTS += ${ghcFlags}
@@ -44,6 +50,7 @@ in stdenv.mkDerivation rec {
     find . -name '*.hs'  | xargs sed -i -e 's|ASSERT (|ASSERT(|' -e 's|ASSERT2 (|ASSERT2(|' -e 's|WARN (|WARN(|'
     find . -name '*.lhs' | xargs sed -i -e 's|ASSERT (|ASSERT(|' -e 's|ASSERT2 (|ASSERT2(|' -e 's|WARN (|WARN(|'
     patch -p0 < ${./fix-7.6.3-clang.patch}
+    export NIX_LDFLAGS+=" -no_dtrace_dof"
   '';
 
   configureFlags = if stdenv.isDarwin then "--with-gcc=${./gcc-clang-wrapper.sh}"

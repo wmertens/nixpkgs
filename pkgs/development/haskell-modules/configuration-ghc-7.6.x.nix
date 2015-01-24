@@ -63,4 +63,14 @@ self: super: {
   # Choose appropriate flags for our version of 'bytestring'.
   bytestring-builder = disableCabalFlag super.bytestring-builder "bytestring_has_builder";
 
+  # Data/Vector/Generic.hs:61:3: parse error on input `unsafeUpd'
+  vector = dontHaddock (dontCpphs super.vector);
+
+  # these conditionally depend on tagged
+  contravariant = addBuildDepend super.contravariant self.tagged;
+  reflection = addBuildDepend super.reflection self.tagged;
+
+  # cpphs doesn't like defined(MIN_VERSION_foo)
+  semigroups = dontCpphs super.semigroups;
+  semigroupoids = dontCpphs super.semigroupoids;
 }

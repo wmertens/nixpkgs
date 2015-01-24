@@ -11,6 +11,9 @@ rec {
   doHaddock = drv: overrideCabal drv (drv: { doHaddock = true; });
   dontHaddock = drv: overrideCabal drv (drv: { doHaddock = false; });
 
+  doCpphs = drv: overrideCabal drv (drv: { useCpphs = true; });
+  dontCpphs = drv: overrideCabal drv (drv: { useCpphs = false; });
+
   doJailbreak = drv: overrideCabal drv (drv: { jailbreak = true; });
   dontJailbreak = drv: overrideCabal drv (drv: { jailbreak = false; });
 
