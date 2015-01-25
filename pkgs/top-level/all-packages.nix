@@ -4270,7 +4270,8 @@ let
   };
   python27 = callPackage ../development/interpreters/python/2.7 {
     self = python27;
-    inherit (darwin) configd corefoundation;
+    inherit (darwin) configd;
+    corefoundation = darwin.CF;
   };
   python32 = callPackage ../development/interpreters/python/3.2 {
     self = python32;
@@ -4600,9 +4601,7 @@ let
 
   ctodo = callPackage ../applications/misc/ctodo { };
 
-  cmake = callPackage ../development/tools/build-managers/cmake {
-    inherit (darwin) ps; # This only gets forced if isDarwin
-  };
+  cmake = callPackage ../development/tools/build-managers/cmake { };
 
   cmake-3_0 = callPackage ../development/tools/build-managers/cmake/3.0.nix { };
   cmake264 = callPackage ../development/tools/build-managers/cmake/264.nix { };
@@ -8230,7 +8229,8 @@ let
 
   darwin = let
     cmdline = callPackage ../os-specific/darwin/command-line-tools {};
-  in rec {
+    apple-source-releases = import ../os-specific/darwin/apple-source-releases { inherit stdenv fetchurl pkgs; };
+  in apple-source-releases // rec {
     cctools_cross = forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {
       cross = assert crossSystem != null; crossSystem;
       inherit maloader;
@@ -8239,72 +8239,23 @@ let
 
     cctools = (callPackage ../os-specific/darwin/cctools/port.nix { inherit libobjc; }).native;
 
-    maloader = callPackage ../os-specific/darwin/maloader {
-      inherit opencflite;
-    };
+    maloader = callPackage ../os-specific/darwin/maloader { inherit opencflite; };
 
     opencflite = callPackage ../os-specific/darwin/opencflite {};
 
     xcode = callPackage ../os-specific/darwin/xcode {};
 
-
     osx_sdk = callPackage ../os-specific/darwin/osx-sdk {};
     osx_private_sdk = callPackage ../os-specific/darwin/osx-private-sdk { inherit osx_sdk; };
-
-    ps = callPackage ../os-specific/darwin/adv_cmds/ps.nix {};
 
     security_tool = callPackage ../os-specific/darwin/security-tool { inherit osx_private_sdk; };
 
     cmdline_sdk   = cmdline.sdk;
     cmdline_tools = cmdline.tools;
 
-    csu              = callPackage ../os-specific/darwin/csu {};
-    objconv          = callPackage ../os-specific/darwin/objconv {};
-    dyld             = callPackage ../os-specific/darwin/dyld {};
-    libc_825_40_1    = callPackage ../os-specific/darwin/libc/825_40_1.nix {};
-    libc             = callPackage ../os-specific/darwin/libc { libc_old = libc_825_40_1; };
-    libm             = callPackage ../os-specific/darwin/libm {};
-    xnu              = callPackage ../os-specific/darwin/xnu { inherit bootstrap_cmds; };
-    coreos_makefiles = callPackage ../os-specific/darwin/coreos-makefiles {};
-    bootstrap_cmds   = callPackage ../os-specific/darwin/bootstrap-cmds {};
-    libinfo          = callPackage ../os-specific/darwin/libinfo {};
-    corefoundation   = callPackage ../os-specific/darwin/corefoundation { inherit dyld libdispatch launchd libclosure; };
-    architecture     = callPackage ../os-specific/darwin/architecture {};
-    libunwind        = callPackage ../os-specific/darwin/libunwind { inherit dyld; };
-    carbon-headers   = callPackage ../os-specific/darwin/carbon-headers {};
-    commonCrypto     = callPackage ../os-specific/darwin/CommonCrypto {};
-    copyfile         = callPackage ../os-specific/darwin/copyfile {};
-    removefile       = callPackage ../os-specific/darwin/removefile {};
-    configd          = callPackage ../os-specific/darwin/configd { inherit launchd bootstrap_cmds xnu ppp iokit eap8021x security; };
-    libnotify        = callPackage ../os-specific/darwin/libnotify {};
-    libiconv         = callPackage ../os-specific/darwin/libiconv {};
-    libobjc          = callPackage ../os-specific/darwin/libobjc {};
+    objconv = callPackage ../os-specific/darwin/objconv {};
 
-    # Has global state that conflicts with the system libobjc that we get through libSystem, so we can't use it yet...
-    libobjcPure      = callPackage ../os-specific/darwin/libobjc/pure.nix { inherit libauto launchd libunwind; libc_old = libc_825_40_1; };
-    mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
-    libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
-    libauto          = callPackage ../os-specific/darwin/libauto {};
-    iokit            = callPackage ../os-specific/darwin/iokit { inherit xnu; };
-    security         = callPackage ../os-specific/darwin/Security {};
-    ppp              = callPackage ../os-specific/darwin/ppp {};
-    eap8021x         = callPackage ../os-specific/darwin/eap8021x {};
-
-    libSystem        = callPackage ../os-specific/darwin/libSystem {
-      inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
-      inherit libclosure carbon-headers commonCrypto copyfile removefile libresolv libnotify;
-      inherit libpthread mDNSResponder;
-    };
-
-    # We only have headers for these for now
-    libdispatch      = callPackage ../os-specific/darwin/libdispatch {};
-    libclosure       = callPackage ../os-specific/darwin/libclosure {};
-    libpthread       = callPackage ../os-specific/darwin/libpthread {
-      inherit libdispatch xnu;
-    };
-    launchd          = callPackage ../os-specific/darwin/launchd {};
-
-    dtrace           = callPackage ../os-specific/darwin/dtrace { inherit cctools; };
+    libobjc = apple-source-releases.objc4;
   };
 
   devicemapper = lvm2;
@@ -8855,6 +8806,8 @@ let
   powertop = callPackage ../os-specific/linux/powertop { };
 
   prayer = callPackage ../servers/prayer { };
+
+  ps = if stdenv.isDarwin then darwin.adv_cmds else procps;
 
   procps = procps-ng;
 
