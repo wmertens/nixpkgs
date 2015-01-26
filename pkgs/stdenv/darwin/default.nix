@@ -65,7 +65,7 @@ in rec {
   stageFun = step: last: {shell             ? "${bootstrapTools}/bin/sh",
                           overrides         ? (pkgs: {}),
                           extraPreHook      ? "export LD_DYLD_PATH=${last.pkgs.darwin.dyld}/lib/dyld",
-                          extraBuildInputs  ? with last.pkgs; [ xz darwin.corefoundation ],
+                          extraBuildInputs  ? with last.pkgs; [ xz darwin.CF ],
                           extraInitialPath  ? [],
                           allowedRequisites ? null}:
     let
@@ -82,7 +82,7 @@ in rec {
           nativeTools  = true;
           nativePrefix = bootstrapTools;
           nativeLibc   = false;
-          libc         = last.pkgs.darwin.libSystem;
+          libc         = last.pkgs.darwin.Libsystem;
           clang        = { name = "clang-9.9.9"; outPath = bootstrapTools; };
         };
 
@@ -117,7 +117,7 @@ in rec {
   stage0 = stageFun 0 null {
     overrides = orig: with stage0; {
       darwin = orig.darwin // {
-        libSystem = stdenv.mkDerivation {
+        Libsystem = stdenv.mkDerivation {
           name = "bootstrap-libSystem";
           buildCommand = ''
             mkdir -p $out
@@ -167,7 +167,7 @@ in rec {
     extraBuildInputs = [];
 
     allowedRequisites =
-      [ bootstrapTools ] ++ (with pkgs; [ libcxx libcxxabi ]) ++ [ pkgs.darwin.libSystem ];
+      [ bootstrapTools ] ++ (with pkgs; [ libcxx libcxxabi ]) ++ [ pkgs.darwin.Libsystem ];
 
     overrides = persistent0;
   };
@@ -181,7 +181,7 @@ in rec {
 
     darwin = orig.darwin // {
       inherit (darwin)
-        dyld libSystem xnu configd libdispatch libclosure launchd;
+        dyld Libsystem xnu configd libdispatch libclosure launchd;
     };
   };
 
@@ -189,7 +189,7 @@ in rec {
     allowedRequisites =
       [ bootstrapTools ] ++
       (with pkgs; [ xz libcxx libcxxabi icu ]) ++
-      (with pkgs.darwin; [ dyld libSystem corefoundation ]);
+      (with pkgs.darwin; [ dyld Libsystem CF ]);
 
     overrides = persistent1;
   };
@@ -204,7 +204,7 @@ in rec {
 
     darwin = orig.darwin // {
       inherit (darwin)
-        dyld libSystem xnu configd libdispatch libclosure launchd;
+        dyld Libsystem xnu configd libdispatch libclosure launchd;
     };
   };
 
@@ -220,7 +220,7 @@ in rec {
     allowedRequisites =
       [ bootstrapTools ] ++
       (with pkgs; [ icu bash libcxx libcxxabi ]) ++
-      (with pkgs.darwin; [ dyld libSystem ]);
+      (with pkgs.darwin; [ dyld Libsystem ]);
 
     overrides = persistent2;
   };
@@ -237,7 +237,7 @@ in rec {
 
     darwin = orig.darwin // {
       inherit (darwin)
-        dyld libSystem cctools corefoundation;
+        dyld Libsystem cctools CF;
     };
   };
 
@@ -264,14 +264,14 @@ in rec {
       nativeLibc  = false;
       inherit (pkgs) libcxx libcxxabi coreutils binutils;
       inherit (pkgs.llvmPackages) clang;
-      libc = pkgs.darwin.libSystem;
+      libc = pkgs.darwin.Libsystem;
     };
 
-    extraBuildInputs = [ pkgs.darwin.corefoundation ];
+    extraBuildInputs = [ pkgs.darwin.CF ];
 
     extraAttrs = {
       inherit platform bootstrapTools;
-      libc         = pkgs.darwin.libSystem;
+      libc         = pkgs.darwin.Libsystem;
       shellPackage = pkgs.bash;
     };
 
@@ -280,7 +280,7 @@ in rec {
       coreutils ed diffutils gnutar gzip ncurses libiconv gnused bash gawk
       gnugrep llvmPackages.clang patch pcre
     ]) ++ (with pkgs.darwin; [
-      dyld libSystem corefoundation cctools
+      dyld Libsystem CF cctools
     ]);
 
     overrides = orig: persistent3 orig // {

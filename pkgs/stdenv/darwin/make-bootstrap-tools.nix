@@ -20,20 +20,20 @@ rec {
       cp -d ${darwin.dyld}/lib/dyld $out/lib/
 
       # C standard library stuff
-      cp -d ${darwin.libSystem}/lib/*.o $out/lib/
-      cp -d ${darwin.libSystem}/lib/*.dylib $out/lib/
-      cp -d ${darwin.libSystem}/lib/system/*.dylib $out/lib/
+      cp -d ${darwin.Libsystem}/lib/*.o $out/lib/
+      cp -d ${darwin.Libsystem}/lib/*.dylib $out/lib/
+      cp -d ${darwin.Libsystem}/lib/system/*.dylib $out/lib/
 
       # Resolv is actually a link to another package, so let's copy it properly
       rm $out/lib/libresolv.9.dylib
-      cp -L ${darwin.libSystem}/lib/libresolv.9.dylib $out/lib
+      cp -L ${darwin.Libsystem}/lib/libresolv.9.dylib $out/lib
 
-      cp -rL ${darwin.libSystem}/include $out
+      cp -rL ${darwin.Libsystem}/include $out
       chmod -R u+w $out/include
       cp -rL ${icu}/include*             $out/include
       cp -rL ${libiconv}/include/*       $out/include
       cp -rL ${gnugrep.pcre}/include/*   $out/include
-      mv $out/include $out/include-libSystem
+      mv $out/include $out/include-Libsystem
 
       # Copy coreutils, bash, etc.
       cp ${coreutils_}/bin/* $out/bin
@@ -87,7 +87,7 @@ rec {
         cp ${darwin.cctools}/bin/$i $out/bin
       done
 
-      cp -rd ${pkgs.darwin.corefoundation}/Library $out
+      cp -rd ${pkgs.darwin.CF}/Library $out
 
       chmod -R u+w $out
 
@@ -199,7 +199,7 @@ rec {
           id=$(otool -D "$i" | tail -n 1)
           install_name_tool -id "$(dirname $i)/$(basename $id)" $i
 
-          libs=$(otool -L "$i" | tail -n +2 | grep -v libSystem | cat)
+          libs=$(otool -L "$i" | tail -n +2 | grep -v Libsystem | cat)
           if [ -n "$libs" ]; then
             install_name_tool -add_rpath $out/lib $i
           fi
@@ -249,7 +249,7 @@ rec {
 
       ${build}/in-nixpkgs/sh -c 'echo Hello World'
 
-      export flags="-idirafter ${unpack}/include-libSystem --sysroot=${unpack} -L${unpack}/lib"
+      export flags="-idirafter ${unpack}/include-Libsystem --sysroot=${unpack} -L${unpack}/lib"
 
       export CPP="clang -E $flags"
       export CC="clang $flags -Wl,-rpath,${unpack}/lib -Wl,-v"
