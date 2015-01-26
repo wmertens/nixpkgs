@@ -1,6 +1,6 @@
 { stdenv, appleDerivation, cpio, bootstrap_cmds, xnu, Libc, Libm, libdispatch, cctools, Libinfo,
   dyld, Csu, architecture, libclosure, CarbonHeaders, ncurses, CommonCrypto, copyfile,
-  removefile, libresolv, libnotify, libpthread, mDNSResponder, version }:
+  removefile, libresolv, Libnotify, libpthread, mDNSResponder, version }:
 
 appleDerivation rec {
   phases = [ "unpackPhase" "installPhase" ];
@@ -50,7 +50,7 @@ appleDerivation rec {
     cp ${xnu}/Library/Frameworks/Kernel.framework/Versions/A/Headers/Availability*.h $out/include
     cp ${xnu}/Library/Frameworks/Kernel.framework/Versions/A/Headers/stdarg.h        $out/include
 
-    for dep in ${Libc} ${Libm} ${Libinfo} ${dyld} ${architecture} ${libclosure} ${CarbonHeaders} ${libdispatch} ${ncurses} ${CommonCrypto} ${copyfile} ${removefile} ${libresolv} ${libnotify} ${mDNSResponder}; do
+    for dep in ${Libc} ${Libm} ${Libinfo} ${dyld} ${architecture} ${libclosure} ${CarbonHeaders} ${libdispatch} ${ncurses} ${CommonCrypto} ${copyfile} ${removefile} ${libresolv} ${Libnotify} ${mDNSResponder}; do
       (cd $dep/include && find . -name '*.h' | cpio -pdm $out/include)
     done
 
