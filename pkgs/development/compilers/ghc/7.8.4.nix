@@ -22,7 +22,6 @@ stdenv.mkDerivation rec {
       libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-includes="${libiconv}/include"
       libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-libraries="${libiconv}/lib"
     ''}
-    DYNAMIC_BY_DEFAULT = NO
   '';
 
   preConfigure = ''

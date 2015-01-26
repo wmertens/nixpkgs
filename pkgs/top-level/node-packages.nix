@@ -24,6 +24,15 @@ rec {
     "node-stringprep".buildInputs = [ pkgs.icu pkgs.which ];
     "node-protobuf".buildInputs = [ pkgs.protobuf ];
     "rbytes".buildInputs = [ pkgs.openssl ];
+
+    bipio.patchPhase = ''
+      ${self.json}/bin/json -I -f package.json -e 'this.scripts.install=""'
+    '';
+    bip-pod.patchPhase = ''
+      substituteInPlace index.js --replace \
+        "__dirname + (literal ? '/' : '/../bip-pod-') + podName" \
+        "(literal ? __dirname + '/' : \"bip-pod-\") + podName"
+    '';
   } // args.overrides or {};
 
   # Apply overrides and back compatiblity transformations
@@ -33,11 +42,12 @@ rec {
       pkgs.callPackage ../development/web/nodejs/build-node-package.nix {
         inherit nodejs neededNatives;
       }
-    ) (args // {
+    ) (args // (optionalAttrs (isList args.src) {
       # Backwards compatibility
-      src = if isList args.src then head args.src else args.src;
-      pkgName = (builtins.parseDrvName args.name).name;
-    });
+      src = head args.src;
+    }) // (optionalAttrs (attrByPath ["passthru" "names"] null args != null) {
+       pkgName = head args.passthru.names;
+    }));
 
     override = overrides.${args.name} or overrides.${pkg.pkgName} or {};
 
