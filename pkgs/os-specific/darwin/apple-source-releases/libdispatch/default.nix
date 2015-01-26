@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "339.92.1";
-  name    = "libdispatch-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "libdispatch";
-    sha256 = "1lc5033cmkwxy3r26gh9plimxshxfcbgw6i0j7mgjlnpk86iy5bk";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''

@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "239.4";
-  name    = "dyld-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "dyld";
-    sha256 = "07z7lyv6x0f6gllb5hymccl31zisrdhz4gqp722xcs9nhsqaqvn7";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''

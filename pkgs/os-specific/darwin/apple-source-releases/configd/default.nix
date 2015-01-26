@@ -1,16 +1,6 @@
-{ stdenv, fetchapplesource, launchd, bootstrap_cmds, xnu, ppp, IOKit, eap8021x, Security }:
+{ stdenv, appleDerivation, launchd, bootstrap_cmds, xnu, ppp, IOKit, eap8021x, Security }:
 
-stdenv.mkDerivation rec {
-  # Version from 10.8 because the newer versions have redacted VPN stuff that prevents us from building it :(
-  version = "453.19";
-  name    = "configd-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "configd";
-    sha256 = "1gxakahk8gallf16xmhxhprdxkh3prrmzxnmxfvj0slr0939mmr2";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "patchPhase" "buildPhase" "installPhase" "fixupPhase" ];
 
   buildInputs = [ launchd bootstrap_cmds xnu ppp IOKit eap8021x ];

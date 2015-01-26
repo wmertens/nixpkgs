@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "265";
-  name    = "architecture-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "architecture";
-    sha256 = "05wz8wmxlqssfp29x203fwfb8pgbdjj1mpz12v508658166yzqj8";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   postUnpack = ''

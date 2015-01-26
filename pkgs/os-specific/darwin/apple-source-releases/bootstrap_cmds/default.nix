@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, yacc, flex }:
+{ stdenv, appleDerivation, yacc, flex }:
 
-stdenv.mkDerivation rec {
-  version = "86";
-  name    = "bootstrap_cmds-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "bootstrap_cmds";
-    sha256 = "0xr0296jm1r3q7kbam98h85g23qlfi763z54ahj563n636kyk2wb";
-  };
-
+appleDerivation {
   buildInputs = [ yacc flex ];
 
   buildPhase = ''

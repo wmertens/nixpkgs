@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "185.5";
-  name    = "libauto-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "libauto";
-    sha256 = "17z27yq5d7zfkwr49r7f0vn9pxvj95884sd2k6lq6rfaz9gxqhy3";
-  };
-
+appleDerivation {
   buildPhase = ''
     cp ${./auto_dtrace.h} ./auto_dtrace.h
 

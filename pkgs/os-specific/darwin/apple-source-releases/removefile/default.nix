@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "33";
-  name    = "removefile-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "removefile";
-    sha256 = "0ycvp7cnv40952a1jyhm258p6gg5xzh30x86z5gb204x80knw30y";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''

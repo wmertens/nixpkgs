@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "727.90.1";
-  name    = "ppp-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "ppp";
-    sha256 = "166xz1q7al12hm3q3drlp2r6fgdrsq3pmazjp3nsqg3vnglyh4gk";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
 
   installPhase = ''

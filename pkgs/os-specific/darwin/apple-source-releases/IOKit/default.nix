@@ -1,38 +1,8 @@
-{ stdenv, fetchapplesource, xnu }:
+{ stdenv, appleDerivation, IOKitSrcs, xnu }:
 
 # Someday it'll make sense to split these out into their own packages, but today is not that day.
-let
-  packageSpecs = {
-    IOAudioFamily                        = { version = "197.4.2";    sha256 = "1dmrczdmbdkvnhjbv233wx4xczgpf5wjrhr83aizrwpks5avkxbr"; };
-    IOFireWireFamily                     = { version = "455.4.0";    sha256 = "034n2v6z7lf1cx3sp3309z4sn8mkchjcrsf177iag46yzlzcjgfl"; };
-    IOFWDVComponents                     = { version = "207.4.1";    sha256 = "1brr0yn6mxgapw3bvlhyissfksifzj2mqsvj9vmps6zwcsxjfw7m"; };
-    IOFireWireAVC                        = { version = "422.4.0";    sha256 = "1anw8cfmwkavnrs28bzshwa3cwk4r1p3x72561zljx57d0na9164"; };
-    IOFireWireSBP2                       = { version = "426.4.1";    sha256 = "0asik6qjhf3jjp22awsiyyd6rj02zwnx47l0afbwmxpn5bchfk60"; };
-    IOFireWireSerialBusProtocolTransport = { version = "251.0.1";    sha256 = "09kiq907qpk94zbij1mrcfcnyyc5ncvlxavxjrj4v5braxm78lhi"; };
-    IOGraphics                           = { version = "471.92.1";   sha256 = "1c110c9chafy5ilvnc08my9ka530aljggbn66gh3sjsg7lzck9nb"; };
-    IOHIDFamily                          = { version = "503.215.2";  sha256 = "0nx9mzdw848y6ppcfvip3ybczd1fxkr413zhi9qhw7gnpvac5g3n"; };
-    IONetworkingFamily                   = { version = "100";        sha256 = "10r769mqq7aiksdsvyz76xjln0lg7dj4pkg2x067ygyf9md55hlz"; };
-    IOSerialFamily                       = { version = "64.1.1";     sha256 = "1bfkqmg7clwm23byr3iji812j7v1p6565b1ri6p78zviqxnxh7cx"; };
-    IOStorageFamily                      = { version = "172";        sha256 = "0w5yr8ppl82anwph2zba0ppjji6ipf5x410zhcm1drzwn4bbkxrj"; };
-    IOBDStorageFamily                    = { version = "14";         sha256 = "1rbvmh311n853j5qb6hfda94vym9wkws5w736w2r7dwbrjyppc1q"; };
-    IOCDStorageFamily                    = { version = "51";         sha256 = "1905sxwmpxdcnm6yggklc5zimx1558ygm3ycj6b34f9h48xfxzgy"; };
-    IODVDStorageFamily                   = { version = "35";         sha256 = "1fv82rn199mi998l41c0qpnlp3irhqp2rb7v53pxbx7cra4zx3i6"; };
-    # There should be an IOStreamFamily project here, but they haven't released it :(
-    IOUSBFamily                          = { version = "630.4.5";    sha256 = "1znqb6frxgab9mkyv7csa08c26p9p0ip6hqb4wm9c7j85kf71f4j"; }; # This is from 10.8 :(
-    IOUSBFamily_older                    = { version = "560.4.2";    sha256 = "113lmpz8n6sibd27p42h8bl7a6c3myc6zngwri7gnvf8qlajzyml"; name = "IOUSBFamily"; }; # This is even older :(
-    IOKitUser                            = { version = "907.100.13"; sha256 = "0kcbrlyxcyirvg5p95hjd9k8a01k161zg0bsfgfhkb90kh2s8x0m"; };
-    # There should be an IOVideo here, but they haven't released it :(
-  };
-
-  packages = stdenv.lib.mapAttrs (name: value: fetchapplesource {
-    name = if value ? name then value.name else name;
-    inherit (value) version sha256;
-  }) packageSpecs;
-in stdenv.mkDerivation rec {
-  version = "907.100.13";
-  name    = "IOKit-${version}";
-
-  srcs = stdenv.lib.attrValues packages;
+appleDerivation {
+  srcs = stdenv.lib.attrValues IOKitSrcs;
   sourceRoot = ".";
 
   phases = [ "unpackPhase" "installPhase" ];

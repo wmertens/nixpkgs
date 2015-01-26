@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "2026";
-  name    = "Libm-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "Libm";
-    sha256 = "02sd82ig2jvvyyfschmb4gpz6psnizri8sh6i982v341x6y4ysl7";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''

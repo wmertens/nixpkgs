@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, dyld }:
+{ stdenv, appleDerivation, dyld }:
 
-stdenv.mkDerivation rec {
-  version = "35.3";
-  name    = "libunwind-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "libunwind";
-    sha256 = "0miffaa41cv0lzf8az5k1j1ng8jvqvxcr4qrlkf3xyj479arbk1b";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 
   buildInputs = [ dyld ];

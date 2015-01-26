@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, icu, dyld, libdispatch, launchd, libclosure }:
+{ stdenv, appleDerivation, icu, dyld, libdispatch, launchd, libclosure }:
 
-stdenv.mkDerivation rec {
-  version = "855.17";
-  name    = "CF-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "CF";
-    sha256 = "1sadmxi9fsvsmdyxvg2133sdzvkzwil5fvyyidxsyk1iyfzqsvln";
-  };
-
+appleDerivation {
   buildInputs = [ dyld icu libdispatch launchd libclosure ];
 
   patches = [ ./add-cf-initialize.patch ./add-cfmachport.patch ];

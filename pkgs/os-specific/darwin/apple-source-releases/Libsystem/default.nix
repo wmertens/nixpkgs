@@ -1,17 +1,8 @@
-{ stdenv, fetchapplesource, cpio, bootstrap_cmds, xnu, Libc, Libm, libdispatch, cctools, Libinfo,
+{ stdenv, appleDerivation, cpio, bootstrap_cmds, xnu, Libc, Libm, libdispatch, cctools, Libinfo,
   dyld, Csu, architecture, libclosure, CarbonHeaders, ncurses, CommonCrypto, copyfile,
-  removefile, libresolv, libnotify, libpthread, mDNSResponder }:
+  removefile, libresolv, libnotify, libpthread, mDNSResponder, version }:
 
-stdenv.mkDerivation rec {
-  version = "1197.1.1";
-  name    = "Libsystem-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "Libsystem";
-    sha256 = "1yfj2qdrf9vrzs7p9m4wlb7zzxcrim1gw43x4lvz4qydpp5kg2rh";
-  };
-
+appleDerivation rec {
   phases = [ "unpackPhase" "installPhase" ];
 
   buildInputs = [ cpio libpthread ];

@@ -1,4 +1,4 @@
-{ stdenv, fetchapplesource, fetchzip, bootstrap_cmds, bison, flex, gnum4, unifdef, perl }:
+{ stdenv, appleDerivation, fetchzip, bootstrap_cmds, bison, flex, gnum4, unifdef, perl }:
 
 let
   newXnu = fetchzip {
@@ -6,16 +6,7 @@ let
     sha256 = "17cf879fgf863vkhm8jdjkx94pykbzbky1bcp8xgmh61yifzbip3";
   };
 
-in stdenv.mkDerivation rec {
-  version = "2422.115.4";
-  name    = "xnu-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "xnu";
-    sha256 = "1ssw5fzvgix20bw6y13c39ib0zs7ykpig3irlwbaccpjpci5jl0s";
-  };
-
+in appleDerivation {
   phases = [ "unpackPhase" "patchPhase" "installPhase" ];
 
   buildInputs = [ bootstrap_cmds bison flex gnum4 unifdef perl ];

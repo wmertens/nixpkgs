@@ -1,14 +1,8 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation, version }:
 
-stdenv.mkDerivation rec {
+appleDerivation {
+  # Will override the name until we provide all of adv_cmds
   name = "ps-${version}";
-  version = "153";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "adv_cmds";
-    sha256 = "174v6a4zkcm2pafzgdm6kvs48z5f911zl7k49hv7kjq6gm58w99v";
-  };
 
   buildPhase = ''
     cd ps

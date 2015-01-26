@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, unifdef }:
+{ stdenv, appleDerivation, unifdef }:
 
-stdenv.mkDerivation rec {
-  version = "76";
-  name    = "CoreOSMakefiles-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "CoreOSMakefiles";
-    sha256 = "0sw3w3sjil0kvxz8y86b81sz82rcd1nijayki1a1bsnsf0hz6qbf";
-  };
-
+appleDerivation {
   buildinputs = [ unifdef ];
 
   phases = [ "unpackPhase" "installPhase" ];
@@ -36,5 +27,4 @@ stdenv.mkDerivation rec {
 
     export DSTROOT=$out
   '';
-
 }

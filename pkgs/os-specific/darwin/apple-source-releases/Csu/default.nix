@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "79";
-  name    = "Csu-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "Csu";
-    sha256 = "1hif4dz23isgx85sgh11yg8amvp2ksvvhz3y5v07zppml7df2lnh";
-  };
-
+appleDerivation {
   postUnpack = ''
     substituteInPlace $sourceRoot/Makefile \
       --replace "/usr/lib" "/lib" \

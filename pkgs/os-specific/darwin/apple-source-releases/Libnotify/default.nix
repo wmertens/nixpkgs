@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "121.20.1";
-  name    = "Libnotify-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "Libnotify";
-    sha256 = "164rx4za5z74s0mk9x0m1815r1m9kfal8dz3bfaw7figyjd6nqad";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''

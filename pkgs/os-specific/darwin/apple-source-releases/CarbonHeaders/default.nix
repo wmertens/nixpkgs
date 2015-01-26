@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "9A581";
-  name    = "CarbonHeaders-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "CarbonHeaders";
-    sha256 = "1hc0yijlpwq39x5bic6nnywqp2m1wj1f11j33m2q7p505h1h740c";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''

@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, cctools, zlib }:
+{ stdenv, appleDerivation, cctools, zlib }:
 
-stdenv.mkDerivation rec {
-  version = "118.1";
-  name    = "dtrace-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "dtrace";
-    sha256 = "0pp5x8dgvzmg9vvg32hpy2brm17dpmbwrcr4prsmdmfvd4767wcf";
-  };
-
+appleDerivation {
   buildInputs = [ cctools zlib ];
 
   buildPhase = ''

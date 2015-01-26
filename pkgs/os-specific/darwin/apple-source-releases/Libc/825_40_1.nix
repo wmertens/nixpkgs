@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, ed, unifdef }:
+{ stdenv, appleDerivation, ed, unifdef }:
 
-stdenv.mkDerivation rec {
-  version = "825.40.1";
-  name    = "Libc-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "Libc";
-    sha256 = "0xsx1im52gwlmcrv4lnhhhn9dyk5ci6g27k6yvibn9vj8fzjxwcf";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   buildInputs = [ ed unifdef ];

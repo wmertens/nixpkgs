@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "41";
-  name    = "libiconv-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "libiconv";
-    sha256 = "10q7yd35flr893nysn9i04njgks4m3gis7jivb9ra9dcb77gqdcn";
-  };
-
+appleDerivation {
   preConfigure = "cd libiconv";
 
   postInstall = ''

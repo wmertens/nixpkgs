@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource, Libinfo, configd, libnotify, mDNSResponder }:
+{ stdenv, appleDerivation, Libinfo, configd, libnotify, mDNSResponder }:
 
-stdenv.mkDerivation rec {
-  version = "54";
-  name    = "libresolv-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "libresolv";
-    sha256 = "028mp2smd744ryxwl8cqz4njv8h540sdw3an1yl7yxqcs04r0p4b";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 
   buildInputs = [ Libinfo configd libnotify mDNSResponder ];

@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "55471.14.18";
-  name    = "Security-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "Security";
-    sha256 = "1nv0dczf67dhk17hscx52izgdcyacgyy12ag0jh6nl5hmfzsn8yy";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   __propagatedImpureHostDeps = [

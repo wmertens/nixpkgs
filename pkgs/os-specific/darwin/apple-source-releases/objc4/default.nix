@@ -1,15 +1,6 @@
-{ stdenv, fetchapplesource }:
+{ stdenv, appleDerivation }:
 
-stdenv.mkDerivation rec {
-  version = "551.1";
-  name    = "objc4-${version}";
-
-  src = fetchapplesource {
-    inherit version;
-    name   = "objc4";
-    sha256 = "1jrdb6yyb5jwwj27c1r0nr2y2ihqjln8ynj61mpkvp144c1cm5bg";
-  };
-
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   # Not strictly necessary, since libSystem depends on it, but it's nice to be explicit so we
