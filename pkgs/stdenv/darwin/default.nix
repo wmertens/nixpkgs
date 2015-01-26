@@ -24,14 +24,11 @@ in rec {
   commonPreHook = ''
     export NIX_ENFORCE_PURITY=1
     export NIX_IGNORE_LD_THROUGH_GCC=1
-    export NIX_DONT_SET_RPATH=1
-    export NIX_NO_SELF_RPATH=1
     stripAllFlags=" " # the Darwin "strip" command doesn't know "-s"
-    xargsFlags=" "
     export MACOSX_DEPLOYMENT_TARGET=10.7
+    export NIX_LDFLAGS_BEFORE+=" -macosx_version_min $MACOSX_DEPLOYMENT_TARGET "
     export SDKROOT=
     export CMAKE_OSX_ARCHITECTURES=x86_64
-    export NIX_CFLAGS_COMPILE+=" --sysroot=/var/empty -Wno-multichar -Wno-deprecated-declarations"
   '';
 
   # libSystem and its transitive dependencies. Get used to this; it's a recurring theme in darwin land
