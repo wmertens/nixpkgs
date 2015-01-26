@@ -6414,7 +6414,7 @@ let
 
   libusb1 = callPackage ../development/libraries/libusb1 {
     libobjc = darwin.libobjc;
-    iokit   = darwin.iokit;
+    iokit   = darwin.IOKit;
   };
 
   libunwind = if stdenv.isDarwin
