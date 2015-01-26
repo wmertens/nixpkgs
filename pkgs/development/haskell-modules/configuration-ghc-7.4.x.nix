@@ -63,4 +63,9 @@ self: super: {
   # Choose appropriate flags for our version of 'bytestring'.
   bytestring-builder = disableCabalFlag super.bytestring-builder "bytestring_has_builder";
 
+  # these conditionally depend on tagged
+  contravariant = addBuildDepend super.contravariant self.tagged;
+
+  # old haddock can't handle reflection.cabal's code blocks
+  reflection = dontHaddock (addBuildDepend super.reflection self.tagged);
 }
