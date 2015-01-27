@@ -1,14 +1,9 @@
 { stdenv, fetchurl, openssl, python, zlib, v8, utillinux, http-parser, c-ares
-, pkgconfig, runCommand, which, unstableVersion ? false 
+, pkgconfig, runCommand, which, unstableVersion ? stdenv.isDarwin, CoreServices, ApplicationServices
 }:
 
 let
-  dtrace = runCommand "dtrace-native" {} ''
-    mkdir -p $out/bin
-    ln -sv /usr/sbin/dtrace $out/bin
-  '';
-
-  version = if unstableVersion then "0.11.13" else "0.10.33";
+  version = if unstableVersion then "0.11.15" else "0.10.36";
 
   # !!! Should we also do shared libuv?
   deps = {
@@ -36,11 +31,11 @@ in stdenv.mkDerivation {
   src = fetchurl {
     url = "http://nodejs.org/dist/v${version}/node-v${version}.tar.gz";
     sha256 = if unstableVersion
-             then "1642zj3sajhqflfhb8fsvy84w9mm85wagm8w8300gydd2q6fkmhm"
-             else "07h8vl750svjg8x5zhxhwjkx03jpy2m6h3fbj7fd1rj4671jdp3m";
+             then "008xk4866gr6mw2qavd6jds8gxrk2i4r5083302rmjd4p9sd44z6"
+             else "10cc2yglmrp8i2l4lm4pnm1pf7jvzjk5v80kddl4dkjb578d3mxr";
   };
 
-  configureFlags = concatMap sharedConfigureFlags (builtins.attrNames deps);
+  configureFlags = concatMap sharedConfigureFlags (builtins.attrNames deps) ++ [ "--without-dtrace" ];
 
   prePatch = ''
     sed -e 's|^#!/usr/bin/env python$|#!${python}/bin/python|g' -i configure
@@ -52,9 +47,13 @@ in stdenv.mkDerivation {
     (cd tools/gyp; patch -Np1 -i ${../../python-modules/gyp/no-darwin-cflags.patch})
   '' else null;
 
+  preBuild = ''
+    sed -e 's|^#!/usr/bin/env python$|#!${python}/bin/python|g' -i out/gyp-mac-tool
+  '';
+
   buildInputs = [ python which ]
     ++ (optional stdenv.isLinux utillinux)
-    ++ optionals stdenv.isDarwin [ pkgconfig openssl dtrace ];
+    ++ optionals stdenv.isDarwin [ pkgconfig openssl CoreServices ApplicationServices ];
   setupHook = ./setup-hook.sh;
 
   meta = {
