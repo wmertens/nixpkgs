@@ -148,5 +148,7 @@
   },
   { "name": "suds",
     "doCheck": false
+  },
+  { "name": "html2text"
   }
 ]

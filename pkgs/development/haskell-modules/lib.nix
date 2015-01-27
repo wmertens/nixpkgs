@@ -20,6 +20,13 @@ rec {
   doCheck = drv: overrideCabal drv (drv: { doCheck = true; });
   dontCheck = drv: overrideCabal drv (drv: { doCheck = false; });
 
+  doCheckOn = system: if pkgs.stdenv.system == system
+    then doCheck
+    else x: x;
+  dontCheckOn = system: if pkgs.stdenv.system == system
+    then dontCheck
+    else x: x;
+
   dontDistribute = drv: overrideCabal drv (drv: { hydraPlatforms = []; });
 
   appendConfigureFlag = drv: x: overrideCabal drv (drv: { configureFlags = (drv.configureFlags or []) ++ [x]; });

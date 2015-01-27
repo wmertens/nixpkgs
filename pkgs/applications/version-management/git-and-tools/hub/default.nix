@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, go, security }:
+{ stdenv, fetchgit, go, Security }:
 
 stdenv.mkDerivation rec {
   name = "hub-${version}";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   };
 
 
-  buildInputs = [ go ] ++ stdenv.lib.optional stdenv.isDarwin security;
+  buildInputs = [ go ] ++ stdenv.lib.optional stdenv.isDarwin Security;
 
   phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 

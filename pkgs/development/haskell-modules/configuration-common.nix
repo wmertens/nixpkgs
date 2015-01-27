@@ -10,6 +10,11 @@ self: super: {
   Cabal_1_22_0_0 = dontCheck super.Cabal_1_22_0_0;
   cabal-install = dontCheck (super.cabal-install.override { Cabal = self.Cabal_1_22_0_0; });
 
+  # These fail in the darwin sandbox.
+  network = dontCheckOn "x86_64-darwin" super.network;
+  system-fileio = dontCheckOn "x86_64-darwin" super.system-fileio;
+  yaml = dontCheckOn "x86_64-darwin" super.yaml;
+
   # Break infinite recursions.
   digest = super.digest.override { inherit (pkgs) zlib; };
   Dust-crypto = dontCheck super.Dust-crypto;
@@ -178,6 +183,7 @@ self: super: {
   memcached-binary = dontCheck super.memcached-binary;
   postgresql-simple = dontCheck super.postgresql-simple;
   snowball = dontCheck super.snowball;
+  wai-middleware-hmac = dontCheck super.wai-middleware-hmac;
   xmlgen = dontCheck super.xmlgen;
 
   # These packages try to access the network.
