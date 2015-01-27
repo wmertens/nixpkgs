@@ -178,6 +178,7 @@ self: super: {
   memcached-binary = dontCheck super.memcached-binary;
   postgresql-simple = dontCheck super.postgresql-simple;
   snowball = dontCheck super.snowball;
+  wai-middleware-hmac = dontCheck super.wai-middleware-hmac;
   xmlgen = dontCheck super.xmlgen;
 
   # These packages try to access the network.
