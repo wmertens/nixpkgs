@@ -8269,6 +8269,7 @@ let
     cmdline_tools = cmdline.tools;
 
     objconv = callPackage ../os-specific/darwin/objconv {};
+    apple_sdk = callPackage ../os-specific/darwin/apple-sdk {};
 
     libobjc = apple-source-releases.objc4;
   };
