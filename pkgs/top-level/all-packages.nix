@@ -1662,7 +1662,7 @@ let
 
   ninka = callPackage ../development/tools/misc/ninka { };
 
-  nodejs = callPackage ../development/web/nodejs { };
+  nodejs = callPackage ../development/web/nodejs { inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices; };
   nodejs-unstable = callPackage ../development/web/nodejs { unstableVersion = true; };
 
   nodePackages = recurseIntoAttrs (
@@ -10454,6 +10454,7 @@ let
 
   mercurial = callPackage ../applications/version-management/mercurial {
     inherit (pythonPackages) curses docutils;
+    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
     guiSupport = false; # use mercurialFull to get hgk GUI
   };
 

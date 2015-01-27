@@ -1,5 +1,5 @@
 { stdenv, fetchurl, python, makeWrapper, docutils, unzip
-, guiSupport ? false, tk ? null, curses }:
+, guiSupport ? false, tk ? null, curses, ApplicationServices }:
 
 let
   version = "3.2.4";
@@ -16,12 +16,10 @@ stdenv.mkDerivation {
     sha256 = "1g7nfvapxj5k44dyp0p08v37s0zmrj2vl0rjgfd8297x0afidm08";
   };
 
-  patches = stdenv.lib.optionals stdenv.isDarwin [ ./disable-gui-darwin.patch ];
-
   inherit python; # pass it so that the same version can be used in hg2git
   pythonPackages = [ curses ];
 
-  buildInputs = [ python makeWrapper docutils unzip ];
+  buildInputs = [ python makeWrapper docutils unzip ] ++ stdenv.lib.optional stdenv.isDarwin ApplicationServices;
 
   makeFlags = "PREFIX=$(out)";
 
