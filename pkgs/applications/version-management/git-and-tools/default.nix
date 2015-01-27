@@ -75,7 +75,7 @@ rec {
   hub = import ./hub {
     inherit go;
     inherit stdenv fetchgit;
-    inherit (darwin) security;
+    inherit (darwin) Security;
   };
 
   gitFastExport = import ./fast-export {

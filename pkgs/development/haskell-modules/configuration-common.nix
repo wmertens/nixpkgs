@@ -10,6 +10,11 @@ self: super: {
   Cabal_1_22_0_0 = dontCheck super.Cabal_1_22_0_0;
   cabal-install = dontCheck (super.cabal-install.override { Cabal = self.Cabal_1_22_0_0; });
 
+  # These fail in the darwin sandbox.
+  network = dontCheckOn "x86_64-darwin" super.network;
+  system-fileio = dontCheckOn "x86_64-darwin" super.system-fileio;
+  yaml = dontCheckOn "x86_64-darwin" super.yaml;
+
   # Break infinite recursions.
   digest = super.digest.override { inherit (pkgs) zlib; };
   Dust-crypto = dontCheck super.Dust-crypto;
