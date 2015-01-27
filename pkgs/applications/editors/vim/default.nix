@@ -1,4 +1,4 @@
-{ stdenv, fetchhg, ncurses, gettext, pkgconfig }:
+{ stdenv, fetchhg, ncurses, gettext, pkgconfig, libobjc, CoreServices, Cocoa, Foundation, CoreData }:
 
 stdenv.mkDerivation rec {
   name = "vim-${version}";
@@ -13,19 +13,15 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildInputs = [ ncurses pkgconfig ];
+  buildInputs = [ ncurses pkgconfig ] ++ stdenv.lib.optionals stdenv.isDarwin [
+    CoreServices Cocoa Foundation CoreData libobjc
+  ];
   nativeBuildInputs = [ gettext ];
 
   configureFlags = [
     "--enable-multibyte"
     "--enable-nls"
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    # These disable darwin-specific code that adds a whole load of impure and unfree
-    # dependencies in our darwin stdenv. This allows vim to stay free. We might make
-    # this an option if people miss the functionality.
-    "--disable-darwin"
-    "--enable-gui=no"
-  ];
+  ] ++ stdenv.lib.optional stdenv.isDarwin "--enable-gui=no";
 
   postInstall = "ln -s $out/bin/vim $out/bin/vi";
 
