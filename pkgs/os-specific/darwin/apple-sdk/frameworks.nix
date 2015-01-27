@@ -10,7 +10,7 @@ with frameworks; with libs; {
   AVKit                   = [];
   Accounts                = [];
   AddressBook             = [ Carbon CoreFoundation ];
-  AppKit                  = [];
+  AppKit                  = [ QuartzCore ];
   AppKitScripting         = [];
   AppleScriptKit          = [];
   AppleScriptObjC         = [];
@@ -47,7 +47,7 @@ with frameworks; with libs; {
   ExceptionHandling       = [];
   FWAUserLib              = [];
   ForceFeedback           = [ CoreFoundation IOKit ];
-  Foundation              = [ CoreFoundation Security ];
+  Foundation              = [ CoreFoundation Security ApplicationServices AppKit ];
   GLKit                   = [ CoreFoundation ];
   GLUT                    = [ GL OpenGL ];
   GSS                     = [];
