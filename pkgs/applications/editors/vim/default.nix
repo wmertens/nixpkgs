@@ -20,7 +20,9 @@ stdenv.mkDerivation rec {
     "--enable-multibyte"
     "--enable-nls"
   ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    # These disable darwin-specific GUI code that doesn't work yet in our stdenv
+    # These disable darwin-specific code that adds a whole load of impure and unfree
+    # dependencies in our darwin stdenv. This allows vim to stay free. We might make
+    # this an option if people miss the functionality.
     "--disable-darwin"
     "--enable-gui=no"
   ];
