@@ -56,6 +56,8 @@ in stdenv.mkDerivation {
     ++ optionals stdenv.isDarwin [ pkgconfig openssl CoreServices ApplicationServices ];
   setupHook = ./setup-hook.sh;
 
+  enableParallelBuilding = true;
+
   meta = {
     description = "Event-driven I/O framework for the V8 JavaScript engine";
     homepage = http://nodejs.org;
