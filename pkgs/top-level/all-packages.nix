@@ -724,6 +724,8 @@ let
 
   enca = callPackage ../tools/text/enca { };
 
+  ent = callPackage ../tools/misc/ent { };
+
   fasd = callPackage ../tools/misc/fasd { };
 
   fop = callPackage ../tools/typesetting/fop { };
@@ -923,6 +925,8 @@ let
   biosdevname = callPackage ../tools/networking/biosdevname { };
 
   clamav = callPackage ../tools/security/clamav { };
+
+  clex = callPackage ../tools/misc/clex { };
 
   cloc = callPackage ../tools/misc/cloc {
     inherit (perlPackages) perl AlgorithmDiff RegexpCommon;
@@ -1153,6 +1157,8 @@ let
   execline = callPackage ../tools/misc/execline { };
 
   exercism = callPackage ../development/tools/exercism { };
+
+  exfat-utils = callPackage ../tools/filesystems/exfat-utils { };
 
   exif = callPackage ../tools/graphics/exif { };
 
@@ -2962,6 +2968,8 @@ let
 
   xdummy = callPackage ../tools/misc/xdummy { };
 
+  xflux = callPackage ../tools/misc/xflux { };
+
   xfsprogs = callPackage ../tools/filesystems/xfsprogs { };
 
   xml2 = callPackage ../tools/text/xml/xml2 { };
@@ -3831,7 +3839,11 @@ let
       gtkmathview = callPackage ../development/libraries/gtkmathview { };
     };
 
-    lambdaTerm = callPackage ../development/ocaml-modules/lambda-term { };
+    lambdaTerm-1_6 = callPackage ../development/ocaml-modules/lambda-term/1.6.nix { };
+    lambdaTerm =
+      if lib.versionOlder "4.01" ocaml_version
+      then callPackage ../development/ocaml-modules/lambda-term { }
+      else lambdaTerm-1_6;
 
     macaque = callPackage ../development/ocaml-modules/macaque { };
 
@@ -3899,6 +3911,8 @@ let
     ocpBuild = callPackage ../development/tools/ocaml/ocp-build { };
 
     ocpIndent = callPackage ../development/tools/ocaml/ocp-indent { };
+
+    ocp-index = callPackage ../development/tools/ocaml/ocp-index { };
 
     ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { };
 
@@ -5830,7 +5844,8 @@ let
   kf55 = recurseIntoAttrs (callPackage ../development/libraries/kde-frameworks-5.5 {
     stdenv = overrideGCC stdenv gccStdInc;
   });
-  kf5_latest = kf55;
+  kf56 = recurseIntoAttrs (callPackage ../development/libraries/kde-frameworks-5.6 {});
+  kf5_latest = kf56;
   kf5_stable = kf55;
 
   krb5 = callPackage ../development/libraries/kerberos/krb5.nix {
@@ -6222,6 +6237,8 @@ let
   libjson_rpc_cpp = callPackage ../development/libraries/libjson-rpc-cpp { };
 
   libkate = callPackage ../development/libraries/libkate { };
+
+  libkeyfinder = callPackage ../development/libraries/libkeyfinder { };
 
   libksba = callPackage ../development/libraries/libksba { };
 
@@ -7940,6 +7957,8 @@ let
 
   influxdb = callPackage ../servers/nosql/influxdb { };
 
+  influxdb-backup = callPackage ../servers/nosql/influxdb/backup.nix { };
+
   hyperdex = callPackage ../servers/nosql/hyperdex { };
 
   mysql51 = import ../servers/sql/mysql/5.1.x.nix {
@@ -8369,6 +8388,8 @@ let
   fbterm = callPackage ../os-specific/linux/fbterm { };
 
   firejail = callPackage ../os-specific/linux/firejail {};
+
+  freefall = callPackage ../os-specific/linux/freefall { };
 
   fuse = callPackage ../os-specific/linux/fuse { };
 
@@ -9307,6 +9328,8 @@ let
   xhtml1 = callPackage ../data/sgml+xml/schemas/xml-dtd/xhtml1 { };
 
   xkeyboard_config = xorg.xkeyboardconfig;
+
+  zeal = callPackage ../data/documentation/zeal { };
 
 
   ### APPLICATIONS
@@ -10354,6 +10377,10 @@ let
 
   kermit = callPackage ../tools/misc/kermit { };
 
+  keyfinder = callPackage ../applications/audio/keyfinder { };
+
+  keyfinder-cli = callPackage ../applications/audio/keyfinder-cli { };
+
   keymon = callPackage ../applications/video/key-mon { };
 
   kid3 = callPackage ../applications/audio/kid3 {
@@ -10489,6 +10516,8 @@ let
   meld = callPackage ../applications/version-management/meld { };
 
   mcomix = callPackage ../applications/graphics/mcomix { };
+
+  mendeley = callPackage ../applications/office/mendeley { };
 
   mercurial = callPackage ../applications/version-management/mercurial {
     inherit (pythonPackages) curses docutils;
@@ -12427,7 +12456,8 @@ let
   plasma51 = recurseIntoAttrs (callPackage ../desktops/plasma-5.1 {
     stdenv = overrideGCC stdenv gccStdInc;
   });
-  plasma5_latest = plasma51;
+  plasma52 = recurseIntoAttrs (callPackage ../desktops/plasma-5.2 {});
+  plasma5_latest = plasma52;
   plasma5_stable = plasma51;
 
   kde5 = kf55 // plasma51 // kdeApps_14_12;
