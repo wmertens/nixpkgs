@@ -5522,6 +5522,27 @@ let
     propagatedBuildInputs = with self; [ unittest2 ];
   };
 
+  loxodo = buildPythonPackage {
+    name = "loxodo-0.20150124";
+    disabled = isPy3k;
+
+    src = pkgs.fetchgit {
+      url = "https://github.com/sommer/loxodo.git";
+      rev = "6c56efb4511fd6f645ad0f8eb3deafc8071c5795";
+      sha256 = "02whmv4am8cz401rplplqzbipkyf0wd69z43sd3yw05rh7f3xbs2";
+    };
+
+    propagatedBuildInputs = with self; [ wxPython modules.readline ];
+    postInstall = "mv $out/bin/loxodo.py $out/bin/loxodo";
+
+    meta = with stdenv.lib; {
+      description = "A Password Safe V3 compatible password vault";
+      homepage = http://www.christoph-sommer.de/loxodo/;
+      license = licenses.gpl2Plus;
+      platforms = platforms.linux;
+    };
+  };
+
   lxml = buildPythonPackage ( rec {
     name = "lxml-3.3.6";
 
@@ -7331,6 +7352,25 @@ let
       description = "A library to manipulate gettext files (po and mo files)";
       homepage = "http://bitbucket.org/izi/polib/";
       license = licenses.mit;
+    };
+  };
+
+
+  polylint = buildPythonPackage rec {
+    name = "polylint-${version}";
+    version = "158125c6ab";
+
+    src = pkgs.fetchgit {
+      url = "https://github.com/bendavis78/polylint";
+      rev = version;
+      sha256 = "ea10c67e9ce6df0936d6e2015382acba4f9cc559e2d6a9471f474f6bda78a266";
+    };
+
+    propagatedBuildInputs = with self; [ html5lib lxml cssselect ];
+
+    meta = {
+      description = "Fast HTML linter for polymer";
+      homepage = https://github.com/bendavis78/polylint;
     };
   };
 
@@ -12955,6 +12995,22 @@ let
     };
   };
 
+  toposort = buildPythonPackage rec {
+    name = "toposort-${version}";
+    version = "1.1";
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/t/toposort/toposort-1.1.tar.gz";
+      sha256 = "1izmirbwmd9xrk7rq83p486cvnsslfa5ljvl7rijj1r64zkcnf3a";
+    };
+    meta = {
+      description = "A topological sort algorithm";
+      homepage = https://pypi.python.org/pypi/toposort/1.1;
+      maintainers = [ stdenv.lib.maintainers.tstrobel ];
+      platforms = stdenv.lib.platforms.linux;
+      #license = stdenv.lib.licenses.apache;
+    };
+  };
+
   snapperGUI = buildPythonPackage rec {
     name = "Snapper-GUI";
 
@@ -13201,7 +13257,6 @@ let
       license     = licenses.mit;
       platforms   = platforms.darwin;
       maintainers = [ maintainers.lovek323 ];
-      broken = true;
     };
   };
 
@@ -13269,6 +13324,21 @@ let
 
     meta = with stdenv.lib; {
       homepage = https://github.com/Alir3z4/html2text/;
+    };
+  };
+
+  pychart = buildPythonPackage rec {
+    name = "pychart-1.39";
+
+    src = pkgs.fetchurl {
+      url = "http://download.gna.org/pychart/PyChart-1.39.tar.gz";
+      sha256 = "882650928776a7ca72e67054a9e0ac98f78645f279c0cfb5910db28f03f07c2e";
+    };
+
+    meta = with stdenv.lib; {
+      description = "Library for creating high quality encapsulated Postscript, PDF, PNG, or SVG charts";
+      homepage = http://home.gna.org/pychart/;
+      license = licenses.gpl2;
     };
   };
 

@@ -250,6 +250,8 @@ let
     theAttrSet = arg;
   };
 
+  autonix = callPackage ../build-support/autonix {};
+
   autoreconfHook = makeSetupHook
     { substitutions = { inherit autoconf automake libtool gettext; }; }
     ../build-support/setup-hooks/autoreconf.sh;
@@ -1625,6 +1627,8 @@ let
   kpcli = callPackage ../tools/security/kpcli { };
 
   kst = callPackage ../tools/graphics/kst { };
+
+  leocad = callPackage ../applications/graphics/leocad { };
 
   less = callPackage ../tools/misc/less { };
 
@@ -4108,6 +4112,27 @@ let
       inherit stdenv gcc binutils libc shell name cross;
     });
 
+  /* Alternative GCC wrapper that uses the standard -I include flag instead of
+   * -isystem. The -isystem flag can change the search order specified by prior
+   * -I flags. For KDE 5 packages, we don't want to interfere with the include
+   * search path order specified by the build system. Some packages depend on
+   * Qt 4 and Qt 5 simultaneously; because the two Qt versions provide headers
+   * with the same filenames, we must respect the search order specified by the
+   * build system so that the Qt 4 components find the Qt 4 headers and the Qt 5
+   * components find the Qt 5 headers.
+   */
+  wrapGCCStdInc = glibc: baseGCC: (import ../build-support/gcc-wrapper) {
+    nativeTools = stdenv.cc.nativeTools or false;
+    nativeLibc = stdenv.cc.nativeLibc or false;
+    nativePrefix = stdenv.cc.nativePrefix or "";
+    gcc = baseGCC;
+    libc = glibc;
+    inherit stdenv binutils coreutils zlib;
+    setupHook = ../build-support/gcc-wrapper/setup-hook-stdinc.sh;
+  };
+
+  gccStdInc = wrapGCCStdInc glibc gcc.gcc;
+
   # prolog
   yap = callPackage ../development/compilers/yap { };
 
@@ -5797,6 +5822,12 @@ let
     automake = automake111x;
   };
 
+  kf55 = recurseIntoAttrs (callPackage ../development/libraries/kde-frameworks-5.5 {
+    stdenv = overrideGCC stdenv gccStdInc;
+  });
+  kf5_latest = kf55;
+  kf5_stable = kf55;
+
   krb5 = callPackage ../development/libraries/kerberos/krb5.nix {
     openldap = openldap.override {
       cyrus_sasl = cyrus_sasl.override { kerberos = null; };
@@ -5926,6 +5957,7 @@ let
   };
 
   libdbusmenu_qt = callPackage ../development/libraries/libdbusmenu-qt { };
+  libdbusmenu_qt5 = callPackage ../development/libraries/libdbusmenu-qt/qt5.nix {};
 
   libdc1394 = callPackage ../development/libraries/libdc1394 { };
 
@@ -6791,23 +6823,16 @@ let
 
   pdf2xml = callPackage ../development/libraries/pdf2xml {} ;
 
-  phonon = callPackage ../development/libraries/phonon { inherit qt4; };
+  phonon = callPackage ../development/libraries/phonon/qt4 {};
 
-  phonon_qt5 = phonon.override {
-    withQt5 = true;
-    inherit qt5;
-    qt4 = null;
-  };
+  phonon_backend_gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer/qt4 {};
 
-  phonon_backend_gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer { };
+  phonon_backend_vlc = callPackage ../development/libraries/phonon-backend-vlc/qt4 {};
 
-  phonon_backend_vlc = callPackage ../development/libraries/phonon-backend-vlc { inherit qt4; };
+  phonon_qt5 = callPackage ../development/libraries/phonon/qt5 {};
 
-  phonon_qt5_backend_vlc = phonon_backend_vlc.override {
-    withQt5 = true;
-    inherit qt5;
-    qt4 = null;
-  };
+  phonon_qt5_backend_gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer/qt5 {};
+  phonon_qt5_backend_vlc = callPackage ../development/libraries/phonon-backend-vlc/qt5 {};
 
   physfs = callPackage ../development/libraries/physfs { };
 
@@ -6840,6 +6865,7 @@ let
 
   poppler = callPackage ../development/libraries/poppler { lcms = lcms2; };
   popplerQt4 = poppler.poppler_qt4;
+  popplerQt5 = poppler.poppler_qt5;
 
   popt = callPackage ../development/libraries/popt { };
 
@@ -7656,8 +7682,7 @@ let
     packages = [];
   };
 
-  rPackages = import ../development/r-modules {
-    inherit pkgs;
+  rPackages = callPackage ../development/r-modules {
     overrides = (config.rPackageOverrides or (p: {})) pkgs;
   };
 
@@ -7808,7 +7833,9 @@ let
 
   lighttpd = callPackage ../servers/http/lighttpd { };
 
-  mailman = callPackage ../servers/mail/mailman { };
+  mailman = callPackage ../servers/mail/mailman {
+    dnspython = pythonPackages.dns;
+  };
 
   mediatomb = callPackage ../servers/mediatomb {
     spidermonkey = spidermonkey_185;
@@ -10310,6 +10337,12 @@ let
     boost = boost155;
   };
 
+  kdeApps_14_12 = recurseIntoAttrs (callPackage ../applications/kde-apps-14.12 {
+    stdenv = overrideGCC stdenv gccStdInc;
+  });
+  kdeApps_latest = kdeApps_14_12;
+  kdeApps_stable = kdeApps_14_12;
+
   keepnote = callPackage ../applications/office/keepnote {
     pygtk = pyGtkGlade;
   };
@@ -10853,6 +10886,17 @@ let
 
   qtractor = callPackage ../applications/audio/qtractor { };
 
+  quassel_qt5 = callPackage ../applications/networking/irc/quassel {
+    monolithic = true;
+    daemon = false;
+    client = false;
+    withKDE = false;
+    useQt5 = true;
+    qt = qt5;
+    dconf = gnome3.dconf;
+    tag = "-qt5";
+  };
+
   quirc = callPackage ../tools/graphics/quirc {};
 
   quodlibet = callPackage ../applications/audio/quodlibet {
@@ -10963,6 +11007,8 @@ let
   slmenu = callPackage ../applications/misc/slmenu {};
 
   slrn = callPackage ../applications/networking/newsreaders/slrn { };
+
+  sooperlooper = callPackage ../applications/audio/sooperlooper { };
 
   spideroak = callPackage ../applications/networking/spideroak { };
 
@@ -12355,6 +12401,8 @@ let
     geoclue = geoclue2;
   };
 
+  orion = callPackage ../misc/themes/orion {};
+
   oxygen-gtk2 = callPackage ../misc/themes/gtk2/oxygen-gtk { };
 
   oxygen-gtk3 = callPackage ../misc/themes/gtk3/oxygen-gtk3 { };
@@ -12370,6 +12418,14 @@ let
   mate-icon-theme = callPackage ../misc/themes/mate-icon-theme { };
 
   mate-themes = callPackage ../misc/themes/mate-themes { };
+
+  plasma51 = recurseIntoAttrs (callPackage ../desktops/plasma-5.1 {
+    stdenv = overrideGCC stdenv gccStdInc;
+  });
+  plasma5_latest = plasma51;
+  plasma5_stable = plasma51;
+
+  kde5 = kf55 // plasma51 // kdeApps_14_12;
 
   xfce = xfce4_10;
   xfce4_10 = recurseIntoAttrs (import ../desktops/xfce { inherit config pkgs newScope; });
@@ -12909,6 +12965,8 @@ let
   nixui = callPackage ../tools/package-management/nixui { node_webkit = node_webkit_0_11; };
 
   nix-prefetch-scripts = callPackage ../tools/package-management/nix-prefetch-scripts { };
+
+  nix-template-rpm = callPackage ../build-support/templaterpm { inherit (pythonPackages) python toposort; };
 
   nix-repl = callPackage ../tools/package-management/nix-repl { };
 

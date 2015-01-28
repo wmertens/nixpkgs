@@ -1,6 +1,6 @@
 { stdenv, fetchurl, fetchpatch, pkgconfig, cmake, libiconv, libintlOrEmpty
 , zlib, curl, cairo, freetype, fontconfig, lcms, libjpeg, openjpeg
-, qt4Support ? false, qt4 ? null
+, qt4Support ? false, qt4 ? null, qt5
 }:
 
 let
@@ -73,4 +73,13 @@ let
     '';
   };
 
-in { inherit poppler_glib poppler_qt4; } // poppler_glib
+  poppler_qt5 = poppler_drv "qt5" {
+    propagatedBuildInputs = [ qt5 poppler_glib ];
+    postConfigure = ''
+      mkdir -p "$out/lib/pkgconfig"
+      install -c -m 644 poppler-qt5.pc "$out/lib/pkgconfig"
+      cd qt5
+    '';
+  };
+
+in { inherit poppler_glib poppler_qt4 poppler_qt5; } // poppler_glib
