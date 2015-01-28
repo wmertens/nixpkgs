@@ -1666,8 +1666,13 @@ let
 
   ninka = callPackage ../development/tools/misc/ninka { };
 
-  nodejs = callPackage ../development/web/nodejs { inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices; };
-  nodejs-unstable = callPackage ../development/web/nodejs { unstableVersion = true; };
+  nodejs = callPackage ../development/web/nodejs {
+    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
+  };
+  nodejs-unstable = callPackage ../development/web/nodejs {
+    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
+    unstableVersion = true;
+  };
 
   nodePackages = recurseIntoAttrs (
     callPackage ./node-packages.nix { self = nodePackages; }
@@ -4098,9 +4103,9 @@ let
     inherit stdenv binutils coreutils zlib;
   };
 
-  wrapGCC = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper)) stdenv.libc;
+  wrapGCC = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper)) glibc;
   # legacy version, used for gnat bootstrapping
-  wrapGCC-old = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper-old)) stdenv.libc;
+  wrapGCC-old = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper-old)) glibc;
 
   wrapGCCCross =
     {gcc, libc, binutils, cross, shell ? "", name ? "gcc-cross-wrapper"}:

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cmake, freetype, libpng, mesa, gettext, openssl, qt4, perl
+{ stdenv, fetchurl, cmake, freetype, libpng, mesa, gettext, openssl, qt5, perl
 , libiconv }:
 
 stdenv.mkDerivation rec {
