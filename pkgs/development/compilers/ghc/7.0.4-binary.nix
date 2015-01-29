@@ -75,9 +75,10 @@ stdenv.mkDerivation rec {
        }
 
        ln -s ${libiconv}/lib/libiconv.dylib ghc-7.0.4/utils/ghc-pwd/dist/build/tmp
+       ln -s ${libiconv}/lib/libiconv.dylib ghc-7.0.4/utils/hpc/dist/build/tmp
        ln -s ${libiconv}/lib/libiconv.dylib ghc-7.0.4/ghc/stage2/build/tmp
 
-       for file in ghc-cabal ghc-pwd ghc-stage2 ghc-pkg hsc2hs; do
+       for file in ghc-cabal ghc-pwd ghc-stage2 ghc-pkg hsc2hs hpc; do
          fix $(find . -type f -name $file)
        done
 
@@ -101,8 +102,10 @@ stdenv.mkDerivation rec {
 
   preInstall = stdenv.lib.optionalString stdenv.isDarwin ''
     mkdir -p $out/lib/ghc-7.0.4
+    mkdir -p $out/bin
     ln -s ${libiconv}/lib/libiconv.dylib $out/lib/ghc-7.0.4/libiconv.dylib
     ln -s ${libiconv}/lib/libiconv.dylib utils/ghc-cabal/dist-install/build/tmp
+    ln -s ${libiconv}/lib/libiconv.dylib $out/bin/libiconv.dylib
 
     install_name_tool -change /usr/lib/libgcc_s.1.dylib @executable_path/libgcc_s.1.dylib \
       $(find . -type f -name unlit)
