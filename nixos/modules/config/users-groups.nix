@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  statics = config.nixpkgs.config.statics;
+  statics = builtins.trace config.nixpkgs.config config.nixpkgs.config.statics;
 
   ids = config.ids;
   cfg = config.users;

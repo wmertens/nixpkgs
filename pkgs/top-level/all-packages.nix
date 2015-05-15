@@ -58,8 +58,8 @@ let
         else if homeDir != "" && pathExists configFile2 then import (toPath configFile2)
         else {};
     in
-      lib.attrsets.recursiveUpdate
-        { statics = import ../../lib/static-paths.lib; }
+      builtins.trace configExpr lib.attrsets.recursiveUpdate
+        { statics = import ../../lib/static-paths.nix; }
         # allow both:
         # { /* the config */ } and
         # { pkgs, ... } : { /* the config */ }
