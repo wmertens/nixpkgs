@@ -1,20 +1,43 @@
-{
+# Registry for all global state shared through files
+# If there are two packages sharing a path, it should be here.
+
+rec {
   # These should be strings, not paths
+  nixos-flag = "/etc/NIXOS";
 
   tz-info = "/etc/localtime";
   tz-dir = "/etc/zoneinfo";
 
-  ca-bundle = "/etc/ssl/certs/ca-certificates.crt";
-  
+  ca-bundle = "/etc/ssl/certs/ca-bundle.crt";
+
   nixos-config-dir = "/etc/nixos";
   nixos-config = "${nixos-config-dir}/configuration.nix";
-  
+
+  nixos-var-lib-dir = "/var/lib/nixos";
+
+  nixpkgs-dir = "${nixos-config-dir}/nixpkgs";
+
   nix-config-dir = "/etc/nix";
   nix-config = "${nix-config-dir}/config.nix";
 
+  nix-profiles-dir = "/nix/var/nix/profiles";
+  nix-user-profile-dirname = ".nix-profile";
+
+  setuid-wrappers-dir = "/var/setuid-wrappers";
+
+  nixos-current-system = "/run/current-system";
+
   root-crontab = "/etc/crontab";
 
+  ssh-conf-dir = "/etc/ssh";
+
+  empty-dir = "/var/empty";
+  no-shell = "/run/current-system/sw/bin/nologin";
+
   # Legacy paths
+  bashrc = "/etc/bashrc";
+  bash-logout = "/etc/bash-logout";
+  fstab = "/etc/fstab";
   passwd = "/etc/passwd";
   group = "/etc/group";
   shadow = "/etc/shadow";

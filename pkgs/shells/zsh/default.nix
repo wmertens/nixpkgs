@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, ncurses, coreutils, pcre }:
+{ stdenv, config, fetchurl, ncurses, coreutils, pcre }:
 
 let
 
@@ -31,7 +31,7 @@ stdenv.mkDerivation {
     tar xf ${documentation} -C $out/share
     mkdir -p $out/etc/
     cat > $out/etc/zprofile <<EOF
-if test -e /etc/NIXOS; then
+if test -e ${config.statics.nixos-flag}; then
   if test -r /etc/zprofile; then
     . /etc/zprofile
   else

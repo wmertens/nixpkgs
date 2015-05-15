@@ -8,6 +8,8 @@ with lib;
 
 let
 
+  statics = config.nixpkgs.config.statics;
+
   versionFile = pkgs.writeText "nixos-version" config.system.nixosVersion;
 
 in
@@ -51,7 +53,7 @@ in
     # script and the top-level system configuration directory.
     tarball.storeContents =
       [ { object = config.system.build.toplevel;
-          symlink = "/run/current-system";
+          symlink = statics.nixos-current-system;
         }
       ];
 
@@ -84,8 +86,8 @@ in
 
         # nixos-rebuild also requires a "system" profile and an
         # /etc/NIXOS tag.
-        touch /etc/NIXOS
-        ${config.nix.package}/bin/nix-env -p /nix/var/nix/profiles/system --set /run/current-system
+        touch ${statics.nixos-flag}
+        ${config.nix.package}/bin/nix-env -p ${statics.nix-profiles-dir}/system --set ${statics.nixos-current-system}
       '';
 
   };

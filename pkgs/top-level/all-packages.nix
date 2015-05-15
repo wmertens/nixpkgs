@@ -2306,7 +2306,7 @@ let
 
   openntpd_nixos = openntpd.override {
     privsepUser = "ntp";
-    privsepPath = "/var/empty";
+    privsepPath = config.statics.empty-dir;
   };
 
   openobex = callPackage ../tools/bluetooth/openobex { };
@@ -2327,7 +2327,7 @@ let
     callPackage ../tools/networking/openssh {
       hpnSupport = false;
       withKerberos = false;
-      etcDir = "/etc/ssh";
+      etcDir = config.statics.ssh-conf-dir;
       pam = if stdenv.isLinux then pam else null;
     };
 

@@ -9,7 +9,7 @@ with lib;
 let
 
   cfg = config.environment;
-
+  statics = config.nixpkgs.config.statics;
 in
 
 {
@@ -18,24 +18,24 @@ in
 
     environment.variables =
       { LOCATE_PATH = "/var/cache/locatedb";
-        NIXPKGS_CONFIG = "/etc/nix/nixpkgs-config.nix";
+        NIXPKGS_CONFIG = "${statics.nix-config-dir}/nixpkgs-config.nix";
         PAGER = mkDefault "less -R";
         EDITOR = mkDefault "nano";
       };
 
     environment.sessionVariables =
       { NIX_PATH =
-          [ "/nix/var/nix/profiles/per-user/root/channels/nixos"
-            "nixpkgs=/etc/nixos/nixpkgs"
-            "nixos-config=/etc/nixos/configuration.nix"
-            "/nix/var/nix/profiles/per-user/root/channels"
+          [ "${statics.nix-profiles-dir}/per-user/root/channels/nixos"
+            "nixpkgs=${statics.nixpkgs-dir}"
+            "nixos-config=${statics.nixos-config}"
+            "${statics.nix-profiles-dir}/per-user/root/channels"
           ];
       };
 
     environment.profiles =
-      [ "$HOME/.nix-profile"
-        "/nix/var/nix/profiles/default"
-        "/run/current-system/sw"
+      [ "$HOME/${statics.nix-user-profile-dirname}"
+        "${statics.nix-profiles-dir}/default"
+        "${statics.nixos-current-system}/sw"
       ];
 
     # TODO: move most of these elsewhere
@@ -70,7 +70,7 @@ in
            fi
          done
 
-         export NIX_USER_PROFILE_DIR="/nix/var/nix/profiles/per-user/$USER"
+         export NIX_USER_PROFILE_DIR="${statics.nix-profiles-dir}/per-user/$USER"
          export NIX_PROFILES="${concatStringsSep " " (reverseList cfg.profiles)}"
       '';
 

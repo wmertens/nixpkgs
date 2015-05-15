@@ -4,6 +4,8 @@ with lib;
 
 let
 
+  statics = config.nixpkgs.config.statics;
+
   ids = config.ids;
   cfg = config.users;
 
@@ -104,13 +106,13 @@ let
 
       home = mkOption {
         type = types.str;
-        default = "/var/empty";
+        default = statics.empty-dir;
         description = "The user's home directory.";
       };
 
       shell = mkOption {
         type = types.str;
-        default = "/run/current-system/sw/bin/nologin";
+        default = statics.no-shell;
         description = "The path to the user's shell.";
       };
 
@@ -281,7 +283,7 @@ let
         default = [];
         description = ''
           The user names of the group members, added to the
-          <literal>/etc/group</literal> file.
+          <literal>${statics.group}</literal> file.
         '';
       };
 

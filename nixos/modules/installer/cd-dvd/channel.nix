@@ -7,6 +7,8 @@ with lib;
 
 let
 
+  statics = config.nixpkgs.config.statics;
+
   # We need a copy of the Nix expressions for Nixpkgs and NixOS on the
   # CD.  These are installed into the "nixos" channel of the root
   # user, as expected by nixos-rebuild/nixos-install.
@@ -30,15 +32,15 @@ in
   # for nixos-install.
   boot.postBootCommands = mkAfter
     ''
-      if ! [ -e /var/lib/nixos/did-channel-init ]; then
+      if ! [ -e ${statics.nixos-var-lib-dir}/did-channel-init ]; then
         echo "unpacking the NixOS/Nixpkgs sources..."
-        mkdir -p /nix/var/nix/profiles/per-user/root
-        ${config.nix.package}/bin/nix-env -p /nix/var/nix/profiles/per-user/root/channels \
+        mkdir -p ${statics.nix-profiles-dir}/per-user/root
+        ${config.nix.package}/bin/nix-env -p ${statics.nix-profiles-dir}/per-user/root/channels \
           -i ${channelSources} --quiet --option use-substitutes false
         mkdir -m 0700 -p /root/.nix-defexpr
-        ln -s /nix/var/nix/profiles/per-user/root/channels /root/.nix-defexpr/channels
-        mkdir -m 0755 -p /var/lib/nixos
-        touch /var/lib/nixos/did-channel-init
+        ln -s ${statics.nix-profiles-dir}/per-user/root/channels /root/.nix-defexpr/channels
+        mkdir -m 0755 -p ${statics.nixos-var-lib-dir}
+        touch ${statics.nixos-var-lib-dir}/did-channel-init
       fi
     '';
 }

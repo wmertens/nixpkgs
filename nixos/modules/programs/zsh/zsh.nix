@@ -6,6 +6,8 @@ with lib;
 
 let
 
+  statics = config.nixpkgs.config.statics;
+
   cfge = config.environment;
 
   cfg = config.programs.zsh;
@@ -163,10 +165,10 @@ in
 
     environment.systemPackages = [ pkgs.zsh ];
 
-    #users.defaultUserShell = mkDefault "/run/current-system/sw/bin/zsh";
+    #users.defaultUserShell = mkDefault "${statics.nixos-current-system}/sw/bin/zsh";
 
     environment.shells =
-      [ "/run/current-system/sw/bin/zsh"
+      [ "${statics.nixos-current-system}/sw/bin/zsh"
         "/var/run/current-system/sw/bin/zsh"
         "${pkgs.zsh}/bin/zsh"
       ];

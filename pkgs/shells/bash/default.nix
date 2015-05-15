@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, readline ? null, interactive ? false, texinfo ? null, bison }:
+{ stdenv, config, fetchurl, readline ? null, interactive ? false, texinfo ? null, bison }:
 
 assert interactive -> readline != null;
 
@@ -16,8 +16,8 @@ stdenv.mkDerivation rec {
   };
 
   NIX_CFLAGS_COMPILE = ''
-    -DSYS_BASHRC="/etc/bashrc"
-    -DSYS_BASH_LOGOUT="/etc/bash_logout"
+    -DSYS_BASHRC="${config.statics.bashrc}"
+    -DSYS_BASH_LOGOUT="${config.statics.bash-logout}"
     -DDEFAULT_PATH_VALUE="/no-such-path"
     -DSTANDARD_UTILS_PATH="/no-such-path"
     -DNON_INTERACTIVE_LOGIN_SHELLS
