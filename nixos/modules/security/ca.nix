@@ -26,7 +26,7 @@ in
       description = ''
         A list of files containing trusted root certificates in PEM
         format. These are concatenated to form
-        <filename>/etc/ssl/certs/ca-bundle.crt</filename>, which is
+        <filename>${pkgs.config.statics.ca-bundle}</filename>, which is
         used by many programs that use OpenSSL, such as
         <command>curl</command> and <command>git</command>.
       '';
@@ -51,11 +51,21 @@ in
 
   };
 
-  config = {
+  config = let
+
+    static-bundle = pkgs.config.statics.ca-bundle;
+    bundle-etc = lib.strings.removePrefix "/etc/" static-bundle;
+
+  in {
+
+    # NixOS canonical location (normally the same as Debian etc)
+    environment.etc.${bundle-etc}.source = caBundle;
+
+  } // {  
 
     security.pki.certificateFiles = [ "${pkgs.cacert}/etc/ca-bundle.crt" ];
 
-    # NixOS canonical location + Debian/Ubuntu/Arch/Gentoo compatibility.
+    # Debian/Ubuntu/Arch/Gentoo compatibility.
     environment.etc."ssl/certs/ca-certificates.crt".source = caBundle;
 
     # Old NixOS compatibility.
@@ -65,11 +75,11 @@ in
     environment.etc."pki/tls/certs/ca-bundle.crt".source = caBundle;
 
     environment.sessionVariables =
-      { SSL_CERT_FILE          = "/etc/ssl/certs/ca-certificates.crt";
+      { SSL_CERT_FILE          = static-bundle;
         # FIXME: unneeded - remove eventually.
-        OPENSSL_X509_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+        OPENSSL_X509_CERT_FILE = static-bundle;
         # FIXME: unneeded - remove eventually.
-        GIT_SSL_CAINFO         = "/etc/ssl/certs/ca-certificates.crt";
+        GIT_SSL_CAINFO         = static-bundle;
       };
 
   };
